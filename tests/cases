@@ -1,0 +1,17 @@
+echo \"test
+echo test     \    test
+echo "something" arg "''" 
+>> f1 >> f2 > f3 
+cat << eof | cat << eof 
+cat << eof | head arg | wc > f1 >>f2 
+echo a lot of word | echo some new words > file > other_file | < infile cat | grep al her
+echo test tout
+echo test      tout 
+cat tests/lorem.txt | grep arcu | grep a
+< file < file
+pwd 
+> > 
+ ><|
+> file > file
+env | head | head
+env | head > some_file

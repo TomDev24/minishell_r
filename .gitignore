@@ -1,0 +1,5 @@
+./libft/libft.a
+._*
+./libft/._*
+./srcs/._*
+./tests/._*
