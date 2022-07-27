@@ -36,6 +36,7 @@ typedef struct s_cmd{
 	char		*outfile;
 	char		**argv;
 	t_token		*cmd;
+	t_list		*args;
 	struct s_cmd	*next;
 }			t_cmd;
 

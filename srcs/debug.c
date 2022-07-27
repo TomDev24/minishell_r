@@ -27,22 +27,7 @@ static char *type_to_string(int type){
 	return NULL;
 }
 
-/*
-enum	lexer_types{
-	CMD,
-	ARG,
-	PIPE,
-	FILEN,
-	OUT,
-	IN,
-	ININ,
-	OUTOUT
-};
-*/
-
-void	print_tokens(t_token *tokens){
-	while(tokens){
-		printf("//TOKEN//\n");
+void	print_tokens(t_token *tokens){ while(tokens){ printf("//TOKEN//\n");
 		printf("Type: %d  ", tokens->type);
 		printf("Value: %s  ", tokens->value);
 		printf("Addr: %s\n", tokens->addr);
@@ -61,10 +46,24 @@ static	char *array_to_line(char **arr){
 	return res;
 }
 
+static	char *list_to_line(t_list *lst){
+	char	*res;
+	t_token	*el;
+
+	res = "";
+	while(lst){
+		el = lst->content;
+		res = ft_strjoin(res, ft_strjoin(el->value, " "));
+		lst = lst->next;
+	}
+	return res;
+}
+
 void	print_cmds(t_cmd *cmds){
 	while(cmds){
 		printf("--CMD--\n");
-		printf("INDEX: %d|ARGV: %s\n", cmds->i, array_to_line(cmds->argv));
+		//printf("INDEX: %d|ARGV: %s\n", cmds->i, array_to_line(cmds->argv));
+		printf("INDEX: %d|CMD: %s|ARGS: %s\n", cmds->i, cmds->cmd->value, list_to_line(cmds->args));
 		cmds = cmds->next;
 	}
 }
