@@ -1,0 +1,3 @@
+echo ad bub
+ls -la < f1 > f2
+cat | cat | cat | cat | cat

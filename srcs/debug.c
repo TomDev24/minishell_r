@@ -63,7 +63,13 @@ void	print_cmds(t_cmd *cmds){
 	while(cmds){
 		printf("--CMD--\n");
 		//printf("INDEX: %d|ARGV: %s\n", cmds->i, array_to_line(cmds->argv));
-		printf("INDEX: %d|CMD: %s|ARGS: %s\n", cmds->i, cmds->cmd->value, list_to_line(cmds->args));
+		/*
+		while(*(cmds->argv)){
+			printf("%s\n", *(cmds->argv));
+			(cmds->argv)++;
+		}*/
+		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |ARGV:%s\n", cmds->i, cmds->cmd->value, 
+				cmds->infile, cmds->outfile, array_to_line(cmds->argv)); //arr_to_line add space at the end
 		cmds = cmds->next;
 	}
 }

@@ -53,6 +53,30 @@ void	init_cmd(t_cmd *cmd){
 	cmd->next = NULL;
 }
 
+char	**make_argv(t_cmd *cmd){
+	char	**res;
+	int	size;
+	t_list	*tmp;
+	t_token	*tkn;
+
+	size = 1 + ft_lstsize(cmd->args);
+	//raise(SIGTRAP);
+	tmp = cmd->args;
+
+	res = (char **)malloc(sizeof(res) * (size + 1));
+	if (!res)
+		exit(1); // make better exit
+
+	*(res++) = cmd->cmd->value;
+	while (tmp){
+		tkn = tmp->content;
+		*(res++) = tkn->value;
+		tmp = tmp->next;
+	}
+	*res = NULL;
+	return res - size;
+}
+
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	//cmd_push(cmds, 0, ft_split("ls -la", ' ')); 
 	t_cmd	*new;
@@ -66,10 +90,23 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 			new->cmd = tokens;
 		if (tokens->type == ARG)
 			ft_lstadd_back(&new->args, ft_lstnew(tokens));
-			
+		if (tokens->type == IN){
+			if (tokens->next->type == FILEN){
+				tokens = tokens->next;
+				new->infile = tokens->value;
+			}
+		}	
+		if (tokens->type == OUT){
+			if (tokens->next->type == FILEN){
+				tokens = tokens->next;
+				new->outfile = tokens->value;
+			}
+		}
 		tokens = tokens->next;
-	}
+	}	
 
+	//when packing in **argv everything should be trimmed
+	new->argv = make_argv(new);
 	add_cmd_to_list(cmds, new);
 	return tokens;
 }

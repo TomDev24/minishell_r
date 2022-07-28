@@ -13,6 +13,13 @@ test_lexer:
 	bash ./tests/test_lexer.sh
 	rm test_lexer;	
 
+test_parser:
+	gcc tests/parser.c srcs/lexer.c srcs/parser.c srcs/debug.c $(INCLUDES) $(LIBFT) -lreadline -o test_parser
+	./test_parser;
+	echo "\n------FINISH-------\n";
+	rm test_parser;	
+
+
 clean:
 	rm a.out;
 	rm -rf a.out.dSYM;
