@@ -104,7 +104,6 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 		}
 		tokens = tokens->next;
 	}	
-
 	//when packing in **argv everything should be trimmed
 	new->argv = make_argv(new);
 	add_cmd_to_list(cmds, new);

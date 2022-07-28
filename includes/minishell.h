@@ -46,6 +46,9 @@ int		tokens_push(t_token **tokens, int type, char *val, char *addr);
 
 t_cmd		*parser(t_token *tokens);
 
+/* UTILS */
+int		cmdlst_size(t_cmd *cmds);
+
 /* DEBUG */
 void		print_tokens(t_token *tokens);
 void		print_cmds(t_cmd *cmds);
