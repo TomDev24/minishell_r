@@ -55,16 +55,32 @@ void	close_pipes(int	**pipes, int pipe_amount){
 
 void	handle_pipes(t_cmd *cmd, int **pipes, int cmd_amount){
 	if (cmd->i == 0){
-		//dup2(all->infile, 0);
-		dup2(pipes[0][1], 1);
+		if (!cmd->outfile)
+			dup2(pipes[0][1], 1);
 	} else if (cmd->i == cmd_amount - 1){
-		dup2(pipes[cmd_amount-2][0], 0); //pipe_amount = cmd_amount -1; and  -1 for indexing
-		//dup2(all->outfile, 1);
+		if (!cmd->infile)
+			dup2(pipes[cmd_amount-2][0], 0); //pipe_amount = cmd_amount -1; and  -1 for indexing
 	} else {
 		//read from prev
-		dup2(pipes[cmd->i - 1][0], 0);
+		if (!cmd->infile)
+			dup2(pipes[cmd->i - 1][0], 0);
 		//write to next
-		dup2(pipes[cmd->i][1], 1);
+		if (!cmd->outfile)
+			dup2(pipes[cmd->i][1], 1);
+	}
+}
+
+void	handle_redirects(t_cmd *cmd){
+	int	fd;
+
+	//is duplecation of descriptor, second time is good thing?
+	if (cmd->infile){
+		fd = open(cmd->infile, O_RDONLY);
+		dup2(fd, 0);
+	}
+	if (cmd->outfile){
+		fd = open(cmd->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0664);
+		dup2(fd, 1);
 	}
 }
 
@@ -81,6 +97,8 @@ void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_am
 	}
 	if (allowed < 0)
 		return;	
+
+	handle_redirects(cmd);
 	if (pipe_amount > 0)
 		handle_pipes(cmd, pipes, cmd_amount);
 	
