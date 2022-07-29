@@ -31,18 +31,6 @@ void	free_pipes(int **pipes, int pipe_amount){
 	
 	free(pipes);
 }
-
-/*
-void	free_pids(int *pids, int cmd_amount){
-	int	i;
-
-	i = 0;
-	while (i < cmd_amount){
-		free(pids[i]);
-		i++;
-	}
-} */
-
 void	close_pipes(int	**pipes, int pipe_amount){
 	int i;
 	
@@ -84,6 +72,37 @@ void	handle_redirects(t_cmd *cmd){
 	}
 }
 
+int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
+	int	code;
+	
+	code = -42;
+	if (ft_strncmp(cmd->argv[0], "echo", 4) == 0){
+		handle_redirects(cmd);
+		if (pipe_amount > 0)
+			handle_pipes(cmd, pipes, cmd_amount);
+
+		close_pipes(pipes, pipe_amount);
+
+		code = b_echo(cmd->argv);
+		if (pipe_amount > 0)
+			exit(1);
+
+	} else if (ft_strncmp(cmd->argv[0], "pwd", 3) == 0){
+		handle_redirects(cmd);
+		if (pipe_amount > 0)
+			handle_pipes(cmd, pipes, cmd_amount);
+		close_pipes(pipes, pipe_amount);
+
+		code = b_pwd();
+		if (pipe_amount > 0)
+			exit(1);
+
+	}
+
+	return code;
+}
+
+
 void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_amount, int cmd_amount){
 	char	*path;
 	int	allowed;
@@ -120,10 +139,19 @@ void	executor(t_cmd *cmds, char **envp, char **cmd_paths){
 	i = 0;
 
 	//printf("Pipe amount %d\n", cmd_amount - 1);	
+	if (cmd_amount == 1){
+		if (exec_builtin(cmds, pipes, pipe_amount, cmd_amount) == -42){
+			pids[i] = fork();
+			if (pids[i] == 0)
+				run_cmd(cmds, cmd_paths, envp, pipes, pipe_amount, cmd_amount);
+		}
+		cmds = cmds->next;
+	}
 	while(cmds){
 		pids[i] = fork();
 		if (pids[i] == 0)
-			run_cmd(cmds, cmd_paths, envp, pipes, pipe_amount, cmd_amount);
+			if (exec_builtin(cmds, pipes, pipe_amount, cmd_amount) == -42)
+				run_cmd(cmds, cmd_paths, envp, pipes, pipe_amount, cmd_amount);
 		cmds = cmds->next;
 	}
 	
@@ -135,3 +163,5 @@ void	executor(t_cmd *cmds, char **envp, char **cmd_paths){
 	//free_pipes(pipes, pipe_amount);	
 	free(pids);
 }
+
+

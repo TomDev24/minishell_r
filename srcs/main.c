@@ -76,5 +76,6 @@ int	main(int argc, char **argv, char **envp){
 		free_tokens(tokens);
 		free_cmds(cmds);
 	}
+	//b_pwd();
 	return 0;
 }

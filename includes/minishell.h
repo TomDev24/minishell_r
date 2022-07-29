@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sys/param.h>
 
 #include "signal.h"
 #include "libft.h"
@@ -54,5 +55,9 @@ int		cmdlst_size(t_cmd *cmds);
 void		print_tokens(t_token *tokens);
 void		print_cmds(t_cmd *cmds);
 void 		pretty_lexer(t_token *tokens);
+
+/* BUILTINS */
+int		b_pwd();
+int		b_echo(char **argv);
 
 #endif
