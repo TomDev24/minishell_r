@@ -1,29 +1,5 @@
 #include "minishell.h"
 
-int	cmd_push(t_cmd **cmds, int i, char **argv){
-	t_cmd	*new;
-	t_cmd *tmp;
-
-	//printf("CReating token\n");
-	tmp = *cmds;
-	new = (t_cmd*)malloc(sizeof(t_cmd));
-	if (!new)
-		exit(1); // make better error
-	
-	new->i = i;
-	new->argv = argv;
-	new->next = NULL;
-	if (*cmds == NULL){
-		*cmds = new;
-		return 1;
-	}
-	while (tmp->next){	
-		tmp = tmp->next;
-	}
-	tmp->next = new;	
-	return 1;
-}
-
 void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
 	t_cmd 	*tmp;
 	int	i;
@@ -78,7 +54,6 @@ char	**make_argv(t_cmd *cmd){
 }
 
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
-	//cmd_push(cmds, 0, ft_split("ls -la", ' ')); 
 	t_cmd	*new;
 
 	new = (t_cmd*)malloc(sizeof(t_cmd));

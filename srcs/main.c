@@ -17,6 +17,7 @@ char    **parse_envp(char **envp){
 
 void	free_tokens(t_token *tokens){
 	t_token	*tmp;
+
 	while(tokens){
 		tmp = tokens;
 		tokens = tokens->next;
@@ -52,10 +53,18 @@ int	main(int argc, char **argv, char **envp){
 	t_cmd		*cmds;
 	char	**cmd_paths;
 
-	tokens = NULL;
-	cmds = NULL;
 	cmd_paths = parse_envp(envp);
-	while(1){
+	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0){
+		tokens = NULL;
+		cmds = NULL;
+		line = argv[2];
+		tokens = lexer(line);
+		cmds = parser(tokens);	
+		executor(cmds, envp, cmd_paths);
+	}	
+	while(1 && argc == 1){
+		tokens = NULL;
+		cmds = NULL;
 		line = readline(">>");
 		tokens = lexer(line);
 		//pretty_lexer(tokens);

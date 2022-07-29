@@ -4,15 +4,16 @@ int	**init_pipes(int pipes_amount){
 	int	i = 0;
 	int	**res;
 
-	res = (int**)malloc( (sizeof(int*) * pipes_amount) + 1 );
+	res = (int**)malloc( sizeof(int*) * (pipes_amount + 1) );
 	if (!res){
 		perror("CANT ALLOCATE MEM\n");
 		exit(1);
 	}
-	res[pipes_amount] = NULL;
+	//res[pipes_amount] = NULL;
 	while (i < pipes_amount){
-		res[i] = (int*)malloc(sizeof(int*) * 2);
-		pipe(res[i]);
+		res[i] = (int*)malloc(sizeof(int) * 2);	
+		if (pipe(res[i]) < 0)
+			perror("PIPE ERROR");
 		i++;
 	}
 
@@ -48,8 +49,7 @@ void	close_pipes(int	**pipes, int pipe_amount){
 	i = 0;
 	while (i < pipe_amount){
 		close(pipes[i][0]);
-		close(pipes[i][1]);
-		i++;
+		close(pipes[i][1]); i++;
 	}
 }
 
@@ -83,20 +83,7 @@ void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_am
 		return;	
 	if (pipe_amount > 0)
 		handle_pipes(cmd, pipes, cmd_amount);
-	/*
-	if (cmd->i == 0){
-		//dup2(all->infile, 0);
-		dup2(pipes[0][1], 1);
-	} else if (cmd->i == cmd_amount - 1){
-		dup2(pipes[cmd_amount-2][0], 0); //pipe_amount = cmd_amount -1; and  -1 for indexing
-		//dup2(all->outfile, 1);
-	} else {
-		//read from prev
-		dup2(pipes[cmd->i - 1][0], 0);
-		//write to next
-		dup2(pipes[cmd->i][1], 1);
-	} */
-
+	
 	close_pipes(pipes, pipe_amount);
 	execve(path, cmd->argv, envp);
 }
@@ -123,7 +110,10 @@ void	executor(t_cmd *cmds, char **envp, char **cmd_paths){
 	}
 	
 	close_pipes(pipes, pipe_amount);
-	waitpid(-1, NULL, 0);
-	free_pipes(pipes, pipe_amount);	
+	//waitpid(-1, NULL, 0);
+	int j = -1;
+	while (++j < cmd_amount)
+		waitpid(pids[j], NULL, 0);
+	//free_pipes(pipes, pipe_amount);	
 	free(pids);
 }
