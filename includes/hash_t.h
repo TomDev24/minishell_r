@@ -19,6 +19,8 @@ t_entry		*ht_pair(char *key, char *value);
 t_ht		*ht_create();
 void		ht_set(t_ht *hashtable, char *key, char *value);
 char		*ht_get(t_ht *hashtable, const char *key);
+unsigned int	ht_size(t_ht *ht);
+char		**hash_to_array(t_ht *ht);
 void		print_ht(t_ht *ht);
 
 

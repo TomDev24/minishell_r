@@ -125,13 +125,17 @@ void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_am
 	execve(path, cmd->argv, envp);
 }
 
-void	executor(t_cmd *cmds, char **envp, char **cmd_paths){
+void	executor(t_cmd *cmds, char **envp){
 	int	**pipes;
 	int	cmd_amount;
 	int	pipe_amount;
 	int	*pids;
 	int	i;
+	char	**cmd_paths;
 	
+	//cmd_paths = hash_to_array(mshell.hash_envp);
+	//printf("%s", *cmd_paths);
+	cmd_paths = parse_envp(envp);
 	cmd_amount = cmdlst_size(cmds);
 	pipe_amount = cmd_amount - 1;
 	pids = (int*)malloc(sizeof(int) * cmd_amount);
@@ -142,8 +146,9 @@ void	executor(t_cmd *cmds, char **envp, char **cmd_paths){
 	if (cmd_amount == 1){
 		if (exec_builtin(cmds, pipes, pipe_amount, cmd_amount) == -42){
 			pids[i] = fork();
-			if (pids[i] == 0)
+			if (pids[i] == 0){
 				run_cmd(cmds, cmd_paths, envp, pipes, pipe_amount, cmd_amount);
+			}
 		}
 		cmds = cmds->next;
 	}

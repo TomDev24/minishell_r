@@ -5,8 +5,7 @@ void	init_hash_envp(char **envp){
 	char	*key;
 	char	*tmp;
 
-	shell.hash_envp = ht_create(); 
-	ht = shell.hash_envp;
+	ht = mshell.hash_envp;
 	while(*envp){
 		//its very bad, think of something else
 		key = ft_strdup(*envp);
@@ -16,5 +15,11 @@ void	init_hash_envp(char **envp){
 		envp++;
 	}
 
-	print_ht(ht);
+	//print_ht(ht);
+	//char **s = hash_to_array(ht);
+	//while(*s)
+	//	printf("%s\n", *s++);
 }
+
+
+

@@ -47,37 +47,40 @@ void	free_cmds(t_cmd *cmds){
 	}
 }
 
+void	python_test(t_token *tokens, t_cmd *cmds, char *line, char **envp){
+	tokens = NULL;
+	cmds = NULL;
+	tokens = lexer(line);
+	cmds = parser(tokens);	
+	executor(cmds, envp);
+}
+
+t_global	mshell;
+
 int	main(int argc, char **argv, char **envp){
 	char		*line;
 	t_token		*tokens;
 	t_cmd		*cmds;
-	char	**cmd_paths;
 
-	cmd_paths = parse_envp(envp);
+	mshell.hash_envp = ht_create(); 
 	init_hash_envp(envp);
-	return 1;
-	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0){
-		tokens = NULL;
-		cmds = NULL;
-		line = argv[2];
-		tokens = lexer(line);
-		cmds = parser(tokens);	
-		executor(cmds, envp, cmd_paths);
-	}	
+
+	//testing
+	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
+		python_test(tokens, cmds, argv[2], envp);
+
 	while(1 && argc == 1){
 		tokens = NULL;
 		cmds = NULL;
 		line = readline(">>");
 		tokens = lexer(line);
-		//pretty_lexer(tokens);
-	
+		//pretty_lexer(tokens);	
+
 		cmds = parser(tokens);	
 		//print_cmds(cmds);
-
-		executor(cmds, envp, cmd_paths);
+		executor(cmds, envp);
 		free_tokens(tokens);
 		free_cmds(cmds);
 	}
-	//b_pwd();
 	return 0;
 }

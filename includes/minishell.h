@@ -44,16 +44,19 @@ typedef struct s_cmd{
 }			t_cmd;
 
 typedef struct s_global{
-	t_ht	*hash_envp;
+	t_ht		*hash_envp;
+	//char		**array_envp;
 }		t_global;
 
-t_global	shell;
+extern	t_global	mshell;
 
 t_token		*lexer(char *line);
 int		get_next_token(char *line, t_token **tokens);
 int		tokens_push(t_token **tokens, int type, char *val, char *addr);
 
 t_cmd		*parser(t_token *tokens);
+//delete this one bellow
+char		**parse_envp(char **envp);
 
 /* UTILS */
 int		cmdlst_size(t_cmd *cmds);
@@ -67,4 +70,6 @@ void 		pretty_lexer(t_token *tokens);
 int		b_pwd();
 int		b_echo(char **argv);
 
+
+void		init_hash_envp(char **envp);
 #endif

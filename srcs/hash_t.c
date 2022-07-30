@@ -85,6 +85,39 @@ char	*ht_get(t_ht *ht, const char *key) {
 	return NULL;
 }
 
+unsigned int ht_size(t_ht *ht){
+	unsigned int i;
+	unsigned int count;
+
+	i = -1;
+	count = 0;
+	while(++i < SLOT_AMOUNT)
+		if(ht->entries[i])
+			count++;
+	return count;
+}
+
+char	**hash_to_array(t_ht *ht){
+	unsigned int	i;
+	char	**res;
+	unsigned int	size_ht;
+	int	j;
+
+	i = -1;
+	j = 0;
+	size_ht = ht_size(ht);
+	res = (char **)malloc(sizeof(char*) * (size_ht + 1));
+	if (!res)
+		exit(1); //better
+	while(++i < SLOT_AMOUNT){
+		if(!ht->entries[i])
+			continue;
+		res[j++] =  ht->entries[i]->value;
+	}
+	res[j] = NULL;
+	return res;
+}
+
 
 void		print_ht(t_ht *ht){
 	unsigned int	i;

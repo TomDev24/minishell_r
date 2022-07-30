@@ -35,3 +35,13 @@ int	b_echo(char	**argv){
 		printf("\n");
 	return code;
 }
+
+int	b_env(){
+	int code;
+
+	code = 0;
+	char **s = hash_to_array(mshell.hash_envp);
+	while(*s)
+		printf("%s\n", *s++);
+	return code;
+}
