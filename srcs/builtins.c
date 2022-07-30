@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-
 int	b_pwd(){
 	char	buff[MAXPATHLEN];
 	int	code;

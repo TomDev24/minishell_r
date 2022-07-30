@@ -54,6 +54,8 @@ int	main(int argc, char **argv, char **envp){
 	char	**cmd_paths;
 
 	cmd_paths = parse_envp(envp);
+	init_hash_envp(envp);
+	return 1;
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0){
 		tokens = NULL;
 		cmds = NULL;

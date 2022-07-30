@@ -19,6 +19,10 @@ test_parser:
 	echo "\n------FINISH-------\n";
 	rm test_parser;	
 
+test_ht:
+	gcc tests/test_ht.c srcs/hash_t.c $(INCLUDES) $(LIBFT) -lreadline -o test_ht
+	./test_ht
+	rm ./test_ht;
 
 clean:
 	rm a.out;

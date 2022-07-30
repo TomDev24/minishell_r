@@ -9,6 +9,7 @@
 
 #include "signal.h"
 #include "libft.h"
+#include "hash_t.h"
 
 enum	lexer_types{
 	CMD,
@@ -41,6 +42,12 @@ typedef struct s_cmd{
 	t_list		*args;
 	struct s_cmd	*next;
 }			t_cmd;
+
+typedef struct s_global{
+	t_ht	*hash_envp;
+}		t_global;
+
+t_global	shell;
 
 t_token		*lexer(char *line);
 int		get_next_token(char *line, t_token **tokens);
