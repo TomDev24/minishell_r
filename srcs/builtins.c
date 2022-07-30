@@ -6,7 +6,7 @@ int	b_pwd(){
 	
 	code = 0;
 	if (getcwd(buff, MAXPATHLEN))
-		printf("my%s\n", buff);
+		printf("%s\n", buff);
 	else
 		code = 1;
 
@@ -20,7 +20,7 @@ int	b_echo(char	**argv){
 	code = 0;
 	n_flag = 0;
 	argv++;
-	printf("%s","myECHO");
+	//printf("%s","myECHO");
 	if (*argv && ft_strncmp(*argv, "-n", 2) == 0){
 		n_flag = 1;
 		argv++;
@@ -43,5 +43,20 @@ int	b_env(){
 	char **s = hash_to_array(mshell.hash_envp);
 	while(*s)
 		printf("%s\n", *s++);
+	return code;
+}
+
+int	b_export(char **argv){
+	int	code;
+	char	**envp;
+
+	code = 0;
+	if (!argv[1]){
+		//print sorted env
+		envp = hash_to_array(mshell.hash_envp);
+		envp = sort_array(envp);
+		while(*envp)
+			printf("declare -x %s", *envp++);
+	}
 	return code;
 }

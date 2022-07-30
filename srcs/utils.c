@@ -14,3 +14,7 @@ int	cmdlst_size(t_cmd *cmds){
         return (i);
 	
 }
+
+char	**sort_array(char **s){
+	return NULL;	
+}

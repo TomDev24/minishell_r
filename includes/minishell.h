@@ -69,6 +69,8 @@ void 		pretty_lexer(t_token *tokens);
 /* BUILTINS */
 int		b_pwd();
 int		b_echo(char **argv);
+int		b_env();
+int		b_export(char **argv);
 
 
 void		init_hash_envp(char **envp);

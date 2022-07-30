@@ -72,32 +72,41 @@ void	handle_redirects(t_cmd *cmd){
 	}
 }
 
+
+void	pre_exec(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
+	handle_redirects(cmd);
+	if (pipe_amount > 0)
+		handle_pipes(cmd, pipes, cmd_amount);
+
+	close_pipes(pipes, pipe_amount);
+
+}
+
 int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	int	code;
 	
 	code = -42;
 	if (ft_strncmp(cmd->argv[0], "echo", 4) == 0){
-		handle_redirects(cmd);
-		if (pipe_amount > 0)
-			handle_pipes(cmd, pipes, cmd_amount);
-
-		close_pipes(pipes, pipe_amount);
-
+		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 		code = b_echo(cmd->argv);
 		if (pipe_amount > 0)
 			exit(1);
 
 	} else if (ft_strncmp(cmd->argv[0], "pwd", 3) == 0){
-		handle_redirects(cmd);
-		if (pipe_amount > 0)
-			handle_pipes(cmd, pipes, cmd_amount);
-		close_pipes(pipes, pipe_amount);
-
+		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 		code = b_pwd();
 		if (pipe_amount > 0)
 			exit(1);
-
-	}
+	} else if (ft_strncmp(cmd->argv[0], "env", 3) == 0){
+		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+		code = b_env();
+		if (pipe_amount > 0)
+			exit(1);
+	} else if (ft_strncmp(cmd->argv[0], "export", 6) == 0){
+		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+		code = b_export(cmd->argv);
+		if (pipe_amount > 0)
+			exit(1);
 
 	return code;
 }
@@ -117,11 +126,7 @@ void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_am
 	if (allowed < 0)
 		return;	
 
-	handle_redirects(cmd);
-	if (pipe_amount > 0)
-		handle_pipes(cmd, pipes, cmd_amount);
-	
-	close_pipes(pipes, pipe_amount);
+	pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 	execve(path, cmd->argv, envp);
 }
 
@@ -168,5 +173,4 @@ void	executor(t_cmd *cmds, char **envp){
 	//free_pipes(pipes, pipe_amount);	
 	free(pids);
 }
-
 
