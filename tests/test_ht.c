@@ -1,8 +1,10 @@
 #include "minishell.h"
 
+#define SLOT_AMOUNT 20
+
 void	test(t_ht *ht){
 	int	i = 0;
-	int 	max = 500;
+	int 	max = 100;
 	char	*str1;
 	char	*str2;
 
@@ -17,11 +19,35 @@ void	test(t_ht *ht){
 	}
 }
 
+void	test_del(t_ht *ht){
+	int	i = 50;
+	int 	max = 100;
+	char	*key;
+	char	*res;
+
+	key = NULL;
+	res = NULL;
+	while(++i < max){
+		key = ft_itoa(i);
+
+		res = ht_get(ht, key);
+		//printf("Before res: %s\n", res);
+		ht_del(ht, key);
+
+		res = ht_get(ht, key);
+		//printf("After res: %s\n", res);
+		if (res != NULL)
+			printf("ERROR: element not deleted\n");
+	}
+}
+
 int	main(int argc, char **argv){
 	t_ht	*ht = ht_create();
-
+	
+	printf("SLOT AMOUNT %d\n", SLOT_AMOUNT);
 	//ht_set(ht, "path", "/eys/fdss:/fsefw/dds/:ds");
 	//printf("Get by key path %s\n", ht_get(ht, "path")); 
-	test(ht);	
+	test(ht);
+	test_del(ht);
 	return 0;
 }

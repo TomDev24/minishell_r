@@ -1,9 +1,6 @@
 #include "minishell.h"
 
-int	**init_pipes(int pipes_amount){
-	int	i = 0;
-	int	**res;
-
+int	**init_pipes(int pipes_amount){ int	i = 0; int	**res; 
 	res = (int**)malloc( sizeof(int*) * (pipes_amount + 1) );
 	if (!res){
 		perror("CANT ALLOCATE MEM\n");
@@ -107,6 +104,12 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		code = b_export(cmd->argv);
 		if (pipe_amount > 0)
 			exit(1);
+	} else if (ft_strncmp(cmd->argv[0], "unset", 5) == 0){
+		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+		code = b_unset(cmd->argv);
+		if (pipe_amount > 0)
+			exit(1);
+	}
 
 	return code;
 }
@@ -119,6 +122,7 @@ void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_am
 	while(*cmd_paths){
 		path = ft_strjoin(*cmd_paths, ft_strjoin("/", cmd->argv[0]));
 		allowed = access(path, X_OK);
+		//printf("PAth %s access %d\n", path, allowed);
 		if (allowed == 0)
 			break;
 		cmd_paths++;
