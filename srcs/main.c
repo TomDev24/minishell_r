@@ -65,6 +65,9 @@ int	main(int argc, char **argv, char **envp){
 	mshell.hash_envp = ht_create(); 
 	init_hash_envp(envp);
 
+	//char **s;
+	//s = sort_array(envp);
+	//return 1;
 	//testing
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
 		python_test(tokens, cmds, argv[2], envp);

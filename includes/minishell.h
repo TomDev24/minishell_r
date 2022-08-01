@@ -65,6 +65,7 @@ char		**parse_envp(char **envp);
 
 /* UTILS */
 int		cmdlst_size(t_cmd *cmds);
+char		**sort_array(char **s);
 
 /* DEBUG */
 void		print_tokens(t_token *tokens);
@@ -76,6 +77,7 @@ int		b_pwd();
 int		b_echo(char **argv);
 int		b_env();
 int		b_export(char **argv);
+int		b_unset(char **argv);
 
 
 void		init_hash_envp(char **envp);

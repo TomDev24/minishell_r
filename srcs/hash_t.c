@@ -85,6 +85,37 @@ char	*ht_get(t_ht *ht, const char *key) {
 	return NULL;
 }
 
+void	ht_del(t_ht *ht, const char *key){
+	unsigned int slot;
+	t_entry	*entry;
+	t_entry *prev;
+	t_entry	*next;
+
+	slot = hash(key);
+	entry = ht->entries[slot];
+	prev = NULL;
+	next = NULL;
+	if (!entry)
+		return;
+	while(entry){
+		next = entry->next;
+		if (ft_strncmp(entry->key, key, ft_strlen(key) + 1) == 0){
+			free(entry->key);
+			free(entry->value);
+			if (prev && next)
+				prev->next = next;
+			else if (prev && !next)
+				prev->next = NULL;
+			else if (!prev && next)
+				ht->entries[slot] = next;
+			else if (!prev && !next)
+				ht->entries[slot] = NULL;
+		}
+		prev = entry;
+		entry = entry->next;
+	}
+}
+
 unsigned int ht_size(t_ht *ht){
 	unsigned int i;
 	unsigned int count;
