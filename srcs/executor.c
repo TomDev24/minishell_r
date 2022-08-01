@@ -107,6 +107,7 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		code = b_export(cmd->argv);
 		if (pipe_amount > 0)
 			exit(1);
+	}
 
 	return code;
 }

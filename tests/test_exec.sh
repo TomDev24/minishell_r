@@ -91,3 +91,13 @@ test 'pwd | cat | echo yes'
 test 'echo | pwd | echo | pwd | env | pwd | echo | env | head | echo | pwd'
 test 'env | head -10 | head -10 | echo some text val yes | pwd | env | grep P | wc | wc'
 test 'env'
+
+
+
+printf " $BOLWHTIE-----------------------QUTATION MARKS TESTS-----------------------$RESET\n"
+
+test "echo \"some va '\""
+test "some va '\""
+test "echo \"'\" \"val '\""
+test "echo \"''\"" 
+test "echo 'ad e' 'ads \" s \"\"'"

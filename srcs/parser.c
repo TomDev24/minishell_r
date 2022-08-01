@@ -53,10 +53,49 @@ char	**make_argv(t_cmd *cmd){
 	return res - size;
 }
 
+t_quotes	*init_quotes(){
+	t_quotes	*res;
+	
+	res = malloc(sizeof(t_quotes));
+	res->type = 0;
+
+	return res;
+}
+
+static	char *list_to_line(t_list *lst){
+	char	*res;
+	t_token	*el;
+
+	res = "";
+	while(lst){
+		el = lst->content;
+		res = ft_strjoin(res, el->value);//ft_strjoin(el->value, " "));
+		lst = lst->next;
+	}
+	return res;
+}
+
+t_token		*look_next_quote(t_list *q_list, t_token *tokens, int qts_type){
+	t_token *prev;
+
+	
+	while(tokens && (tokens->type == Q1 || tokens->type == Q2) && tokens->type != qts_type ){
+
+		ft_lstadd_back(&q_list, ft_lstnew(tokens));
+
+		prev = tokens;	
+		tokens = tokens->next;
+	}
+	
+	return prev;
+}
+
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
-	t_cmd	*new;
+	t_cmd		*new;
+	t_quotes	*quotes;
 
 	new = (t_cmd*)malloc(sizeof(t_cmd));
+	quotes = init_quotes();
 	if (!new)
 		exit(1); // make better error
 	init_cmd(new);
@@ -76,6 +115,30 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 				tokens = tokens->next;
 				new->outfile = tokens->value;
 			}
+		}
+		if (tokens->type == Q1 || tokens->type == Q2){
+			//quotes struct, started quote
+			if (quotes->type == 0)
+				quotes->type = tokens->type;
+			else if (quotes->type == tokens->type)
+				quotes->type = 0;
+
+			if (quotes->type && tokens->type != quotes->type){
+				t_list *q_list;
+				q_list = ft_lstnew(tokens);
+				tokens = look_next_quote(q_list, tokens->next, quotes->type);
+
+				t_token *t;
+				t = (t_token*)malloc(sizeof(t_token));
+				if (!t)
+					exit(1); // make better error	
+				t->type = ARG;
+				t->value = list_to_line(q_list);
+				t->addr= NULL; 
+				t->next = NULL;
+				ft_lstadd_back(&new->args, ft_lstnew(t));
+			}
+
 		}
 		tokens = tokens->next;
 	}	

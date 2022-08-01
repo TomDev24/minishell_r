@@ -74,10 +74,10 @@ int	main(int argc, char **argv, char **envp){
 		cmds = NULL;
 		line = readline(">>");
 		tokens = lexer(line);
-		//pretty_lexer(tokens);	
+		pretty_lexer(tokens);	
 
 		cmds = parser(tokens);	
-		//print_cmds(cmds);
+		print_cmds(cmds);
 		executor(cmds, envp);
 		free_tokens(tokens);
 		free_cmds(cmds);

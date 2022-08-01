@@ -43,6 +43,11 @@ typedef struct s_cmd{
 	struct s_cmd	*next;
 }			t_cmd;
 
+typedef struct s_quotes{
+	int		type;
+
+}		t_quotes;
+
 typedef struct s_global{
 	t_ht		*hash_envp;
 	//char		**array_envp;
