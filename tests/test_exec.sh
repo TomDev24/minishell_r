@@ -58,8 +58,10 @@ function test(){
 	MY=$(./minishell -c "$1")
 	#BASH=$($1)
 	BASH=$(echo $@ "; exit" | bash 2>&-)
-	
+		
 	printf $BOLDGREEN"TEST CASE:$RESET $CYAN$1$RESET\n"
+	#echo "$MY"
+	#echo "$BASH"
 	if [ "$MY" == "$BASH" ]; then
 		for i in {1..20}
 		do
@@ -101,10 +103,14 @@ test "echo \"some va '\""
 test "echo \"'\" \"val '\""
 test "echo \"''\"" 
 test "echo 'ad e' 'ads \" s \"\"'"
-test "echo \"         ' ' ' fsdf dsaf '''  d"
 test "echo \"\""
 
-test "echo '     \"\"\" d\" dsd '  'ss ss \"  \" \"'"
+#echo "         ' ' ' fsdf dsaf '''  d
+#test "echo '     \"\" d\" dsd '  'ss ss \"  \" \"'"
 
 test "echo 'as 'a''"
 test "echo 'as 'a'a'"
+test "echo \"asd '\"  \"ad\""
+
+test "echo \"< no pipe | or semicolon will ; stop me >\""
+test "echo \"some ' text\" 'a d' 'sd\"ds\"\"' 'ds\"sd\" d'"

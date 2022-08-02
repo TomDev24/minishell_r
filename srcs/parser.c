@@ -97,8 +97,25 @@ t_token		*look_next_quote(t_list *q_list, t_token *tokens, int qts_type){
 	return prev;
 } */
 
+t_token	*find_token_by_addr(char *addr, t_token *tokens){
+	t_token *res;
+	t_token *prev;
+	
+	res = NULL;
+	prev = NULL;
+	//printf("ADDR%s\n", addr);
+	while(tokens){
+		//printf("TOKEN ADDR %s\n", tokens->addr);
+		if (ft_strncmp(tokens->addr, addr, ft_strlen(addr)) == 0){ //(tokens->addr == addr)
+			return prev;
+		}
+		prev = tokens;
+		tokens = tokens->next;
+	}
+	return res;
+}
 
-void	handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last){
+t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token *tokens){
 	t_list				*head;
 	char				*value;
 	int		str_len;
@@ -107,11 +124,24 @@ void	handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last){
 	t_token		*first_p;
 	char		*tmp;
 	int		i;
+	t_token		*return_tkn;
 	
 	i = 0;
+	return_tkn = NULL;
 	head = quotes->q_list;
 	last_p =last->content;
 	first_p = head->content;
+	//printf("----LAST %s\n", (last_p->addr)); 
+	while (*(last_p->addr + 1) && *(last_p->addr + 1) != ' ')
+		last_p->addr++;
+
+	int j = 1;	
+	while (*(last_p->addr + j) == ' ')
+		j++;
+	return_tkn = find_token_by_addr(last_p->addr + j, tokens);
+
+	//printf("///////////////\n");
+	//printf("----LAST %s\n", (last_p->addr)); 
 	str_len = last_p->addr - first_p->addr;
 	//printf("STR_LEN %d\n", str_len);
 	value = (char*)ft_calloc(str_len, sizeof(char));
@@ -122,8 +152,12 @@ void	handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last){
 
 	tmp = first_p->addr;
 	tmp++; //skip first quote
-	while(tmp + i != last_p->addr){
-		//printf("%c\n", value[i]);
+	while(*(tmp+i) && tmp + i != last_p->addr){
+		//printf("char %c\n", tmp[i]);
+		if(tmp[i] == *(first_p->value)){ //if(tmp[i] == '"' || tmp[i] == '\''){
+			tmp++;
+			continue;
+		}
 		value[i] = tmp[i];	
 		i++;
 	}	
@@ -145,6 +179,7 @@ void	handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last){
 	ft_lstadd_back(&new->args, ft_lstnew(t));
 	//reset quote block
 	quotes->q_list = NULL;
+	return return_tkn;
 }
 
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
@@ -189,7 +224,9 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 			}
 			else if (quotes->type == tokens->type){
 				quotes->type = 0;
-				handle_quote_block(new, quotes, el);
+				tokens = handle_quote_block(new, quotes, el, tokens);
+				if (!tokens)
+					break;
 			}
 
 			////PLACE HERE
