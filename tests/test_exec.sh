@@ -97,7 +97,14 @@ test 'env'
 printf " $BOLWHTIE-----------------------QUTATION MARKS TESTS-----------------------$RESET\n"
 
 test "echo \"some va '\""
-test "some va '\""
+#test "echo some va '\""
 test "echo \"'\" \"val '\""
 test "echo \"''\"" 
 test "echo 'ad e' 'ads \" s \"\"'"
+test "echo \"         ' ' ' fsdf dsaf '''  d"
+test "echo \"\""
+
+test "echo '     \"\"\" d\" dsd '  'ss ss \"  \" \"'"
+
+test "echo 'as 'a''"
+test "echo 'as 'a'a'"

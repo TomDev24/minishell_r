@@ -121,6 +121,7 @@ void	handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last){
 	}	
 
 	tmp = first_p->addr;
+	tmp++; //skip first quote
 	while(tmp + i != last_p->addr){
 		//printf("%c\n", value[i]);
 		value[i] = tmp[i];	
@@ -129,7 +130,7 @@ void	handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last){
 	//
 	//char	*r;
 	//r = list_to_line(head);
-	printf("QUOTES BLOCK: %s\n", value);
+	//printf("QUOTES BLOCK: %s\n", value);
 	//exit(2);
 	//
 	if (!value)
@@ -155,7 +156,7 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	if (!new)
 		exit(1); // make better error
 	init_cmd(new);
-	while(tokens && tokens->type != PIPE){
+	while(tokens && (tokens->type != PIPE || quotes->type != 0)){
 		//handling quotes
 		if (quotes->type != 0){
 			el = ft_lstnew(tokens);
