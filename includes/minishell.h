@@ -45,8 +45,9 @@ typedef struct s_cmd{
 
 typedef struct s_quotes{
 	int		type;
+	t_list		*q_list;
 
-}		t_quotes;
+}			t_quotes;
 
 typedef struct s_global{
 	t_ht		*hash_envp;
