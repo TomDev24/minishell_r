@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+//FREE FUNCTIONS SHOULD REWRITTEN AND PLACED ELSEWHERE
+
 char    **parse_envp(char **envp){
 	char **res;
 	int i = 0;
@@ -65,10 +67,6 @@ int	main(int argc, char **argv, char **envp){
 	mshell.hash_envp = ht_create(); 
 	init_hash_envp(envp);
 
-	//char **s;
-	//s = sort_array(envp);
-	//return 1;
-	//testing
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
 		python_test(tokens, cmds, argv[2], envp);
 
@@ -76,14 +74,15 @@ int	main(int argc, char **argv, char **envp){
 		tokens = NULL;
 		cmds = NULL;
 		line = readline(">>");
+		add_history(line);
 		tokens = lexer(line);
 		pretty_lexer(tokens);	
 
 		cmds = parser(tokens);	
-		print_cmds(cmds);
+		//print_cmds(cmds);
 		executor(cmds, envp);
-		free_tokens(tokens);
-		free_cmds(cmds);
+		//free_tokens(tokens);
+		//free_cmds(cmds);
 	}
 	return 0;
 }

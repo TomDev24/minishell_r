@@ -30,6 +30,7 @@ void	init_cmd(t_cmd *cmd){
 }
 
 char	**make_argv(t_cmd *cmd){
+	//when packing in **argv everything should be trimmed
 	char	**res;
 	int	size;
 	t_list	*tmp;
@@ -81,22 +82,6 @@ static	char *list_to_line(t_list *lst){
 }
 
 
-/*
-t_token		*look_next_quote(t_list *q_list, t_token *tokens, int qts_type){
-	t_token *prev;
-
-	prev = tokens;	
-	while(tokens && (tokens->type == Q1 || tokens->type == Q2) && tokens->type != qts_type ){
-
-		ft_lstadd_back(&q_list, ft_lstnew(tokens));
-
-		prev = tokens;	
-		tokens = tokens->next;
-	}
-	
-	return prev;
-} */
-
 t_token	*find_token_by_addr(char *addr, t_token *tokens){
 	t_token *res;
 	t_token *prev;
@@ -115,59 +100,10 @@ t_token	*find_token_by_addr(char *addr, t_token *tokens){
 	return res;
 }
 
-t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token *tokens){
-	t_list				*head;
-	char				*value;
-	int		str_len;
+void	add_token_to_args(t_cmd *new, char *value){
 	t_token		*t;
-	t_token		*last_p;
-	t_token		*first_p;
-	char		*tmp;
-	int		i;
-	t_token		*return_tkn;
-	
-	i = 0;
-	return_tkn = NULL;
-	head = quotes->q_list;
-	last_p =last->content;
-	first_p = head->content;
-	//printf("----LAST %s\n", (last_p->addr)); 
-	while (*(last_p->addr + 1) && *(last_p->addr + 1) != ' ')
-		last_p->addr++;
 
-	int j = 1;	
-	while (*(last_p->addr + j) == ' ')
-		j++;
-	return_tkn = find_token_by_addr(last_p->addr + j, tokens);
-
-	//printf("///////////////\n");
-	//printf("----LAST %s\n", (last_p->addr)); 
-	str_len = last_p->addr - first_p->addr;
-	//printf("STR_LEN %d\n", str_len);
-	value = (char*)ft_calloc(str_len, sizeof(char));
-	if (!value){
-		printf("Cant allocate line\n");
-		exit(1);
-	}	
-
-	tmp = first_p->addr;
-	tmp++; //skip first quote
-	while(*(tmp+i) && tmp + i != last_p->addr){
-		//printf("char %c\n", tmp[i]);
-		if(tmp[i] == *(first_p->value)){ //if(tmp[i] == '"' || tmp[i] == '\''){
-			tmp++;
-			continue;
-		}
-		value[i] = tmp[i];	
-		i++;
-	}	
-	//
-	//char	*r;
-	//r = list_to_line(head);
-	//printf("QUOTES BLOCK: %s\n", value);
-	//exit(2);
-	//
-	if (!value)
+	if (!value) //should be diffrent check
 		exit(1);
 	t = (t_token*)malloc(sizeof(t_token));
 	if (!t)
@@ -177,64 +113,106 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 	t->addr= NULL; 
 	t->next = NULL;
 	ft_lstadd_back(&new->args, ft_lstnew(t));
-	//reset quote block
-	quotes->q_list = NULL;
-	return return_tkn;
+
 }
 
+t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token *tokens){
+	char		*value;
+	t_token		*last_p;
+	t_token		*first_p;
+	char		*tmp;
+	int		i;
+	
+	i = 0;
+	last_p = last->content;
+	first_p = quotes->q_list->content;
+
+	//if something is next to quote, it must be part of quote_block
+	while (*(last_p->addr + 1) && *(last_p->addr + 1) != ' ')
+		last_p->addr++;
+
+	value = (char*)ft_calloc(last_p->addr - first_p->addr, sizeof(char));
+	if (!value)
+		exit(1);
+	tmp = first_p->addr + 1; //skip first quote
+	while(tmp + i < last_p->addr)
+		if(tmp[i] != *(first_p->value))
+			value[i++] = tmp[i];
+		else
+			tmp++;
+
+	add_token_to_args(new, value);
+	quotes->q_list = NULL;
+	//finding next token, after adding a lot of them to q_list
+	while (*(last_p->addr + 1) && *(last_p->addr + 1) == ' ')
+		last_p->addr++;
+	return find_token_by_addr(last_p->addr + 1, tokens);
+}
+
+t_cmd	*allocate_cmd(){
+	t_cmd	*new;
+
+	new = (t_cmd*)malloc(sizeof(t_cmd));
+	if (!new)
+		exit(1); // make better error init_cmd(new);
+	return new;
+}
+
+t_token	*save_redirection(t_token *tokens, t_cmd *new, int FD_TYPE){
+	if (tokens->next->type == FILEN){
+		tokens = tokens->next;
+		if (FD_TYPE == IN) 
+			new->infile = tokens->value;
+		else if (FD_TYPE == OUT)
+			new->outfile = tokens->value;
+	}
+	
+	return tokens;
+}
+
+t_token *quotes_manager(t_token *tokens, t_quotes *quotes, t_list *el, t_cmd *new){
+	if (quotes->type == 0){
+		el = ft_lstnew(tokens);
+		ft_lstadd_back(&quotes->q_list, el);
+		quotes->type = tokens->type;
+	}
+	else if (quotes->type == tokens->type){
+		quotes->type = 0;
+		tokens = handle_quote_block(new, quotes, el, tokens);
+	}
+	return tokens;
+}
+
+
+//we got problems with redirection
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	t_cmd		*new;
 	t_quotes	*quotes;
 	t_list		*el;
-	new = (t_cmd*)malloc(sizeof(t_cmd));
+
+	el = NULL;
+	new = allocate_cmd();
 	quotes = init_quotes();
-	if (!new)
-		exit(1); // make better error
-	init_cmd(new);
 	while(tokens && (tokens->type != PIPE || quotes->type != 0)){
-		//handling quotes
 		if (quotes->type != 0){
 			el = ft_lstnew(tokens);
 			ft_lstadd_back(&quotes->q_list, el);
 		}
-		/////////////////
 		else if (tokens->type == CMD && !new->cmd)
 			new->cmd = tokens;
 		else if (tokens->type == ARG)
 			ft_lstadd_back(&new->args, ft_lstnew(tokens));
-		else if (tokens->type == IN){
-			if (tokens->next->type == FILEN){
-				tokens = tokens->next;
-				new->infile = tokens->value;
-			}
-		}	
-		else if (tokens->type == OUT){
-			if (tokens->next->type == FILEN){
-				tokens = tokens->next;
-				new->outfile = tokens->value;
-			}
-		}
-		if (tokens->type == Q1 || tokens->type == Q2){
-			//quotes struct, started quote
-
-			if (quotes->type == 0){
-				el = ft_lstnew(tokens);
-				ft_lstadd_back(&quotes->q_list, el);
-				quotes->type = tokens->type;
-			}
-			else if (quotes->type == tokens->type){
-				quotes->type = 0;
-				tokens = handle_quote_block(new, quotes, el, tokens);
-				if (!tokens)
-					break;
-			}
-
-			////PLACE HERE
-			
-		}
+		else if (tokens->type == IN)
+			tokens = save_redirection(tokens, new, IN);
+		else if (tokens->type == OUT)
+			tokens = save_redirection(tokens, new, OUT);
+		if (tokens->type == Q1 || tokens->type == Q2)
+			tokens = quotes_manager(tokens, quotes, el, new);
+		if (!tokens)
+			break;
 		tokens = tokens->next;
-	}	
-	//when packing in **argv everything should be trimmed
+	}
+
 	new->argv = make_argv(new);
 	add_cmd_to_list(cmds, new);
 	return tokens;
@@ -252,28 +230,3 @@ t_cmd	*parser(t_token *tokens){
 	}
 	return cmds;
 }
-
-
-
-
-////PLACE HERE
-/*
-			if (quotes->type && tokens->type != quotes->type){
-				t_list *q_list;
-				q_list = ft_lstnew(tokens);
-				tokens = look_next_quote(q_list, tokens->next, quotes->type);
-
-				t_token *t;
-				t = (t_token*)malloc(sizeof(t_token));
-				if (!t)
-					exit(1); // make better error	
-				t->type = ARG;
-				t->value = list_to_line(q_list);
-				t->addr= NULL; 
-				t->next = NULL;
-				ft_lstadd_back(&new->args, ft_lstnew(t));
-			}
-*/
-
-
-

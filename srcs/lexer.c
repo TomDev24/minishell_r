@@ -84,39 +84,26 @@ int	get_next_token(char *line, t_token **tokens){
 	int	i;
 	
 	i = 0;
-	if (line[i] == '\''){
-		tokens_push(tokens, Q1, "'", line + i);
-		i++; 
-		return inspect_string(line, i, ARG, tokens);
-	}
-	if (line[i] == '"'){
-		tokens_push(tokens, Q2, "\"", line + i);
-		i++;
-		return inspect_string(line, i, ARG, tokens);
-	}
-	if (ft_strncmp(line+i, "<<", 2) == 0){
-		tokens_push(tokens, ININ, "<<", line + i);
-		i += 2;
-		return inspect_string(line, i, DELIMITER, tokens);
-	}
-	if (ft_strncmp(line+i, ">>", 2) == 0){
-		tokens_push(tokens, OUTOUT, ">>", line + i);
-		i += 2;
-		return inspect_string(line, i, FILEN, tokens);
-	}
-	if (line[i] == '>'){
-		tokens_push(tokens, OUT, ">", line + i);
-		i++;
-		return inspect_string(line, i, FILEN, tokens);
-	}
-	if (line[i] == '<'){
-		tokens_push(tokens, IN, "<", line + i);
-		i++;	
-		return inspect_string(line, i, FILEN, tokens);
-	}
+	if (line[i] == '\'')
+		return tokens_push(tokens, Q1, "'", line + i)
+			* inspect_string(line, ++i, ARG, tokens);
+	if (line[i] == '"')
+		return tokens_push(tokens, Q2, "\"", line + i)
+			* inspect_string(line, ++i, ARG, tokens);
+	if (ft_strncmp(line+i, "<<", 2) == 0)
+		return tokens_push(tokens, ININ, "<<", line + i++)
+			* inspect_string(line, ++i, DELIMITER, tokens);
+	if (ft_strncmp(line+i, ">>", 2) == 0)
+		return tokens_push(tokens, OUTOUT, ">>", line + i++)
+			* inspect_string(line, ++i, FILEN, tokens);
+	if (line[i] == '>')
+		return tokens_push(tokens, OUT, ">", line + i)
+			* inspect_string(line, ++i, FILEN, tokens);
+	if (line[i] == '<')
+		return tokens_push(tokens, IN, "<", line + i)
+			* inspect_string(line, ++i, FILEN, tokens);
 	if (line[i] == '|')
-		return (i+1) * tokens_push(tokens, PIPE, "|", line + i);	
-
+		return (i+1) * tokens_push(tokens, PIPE, "|", line + i);
 	return inspect_string(line, i, CMD, tokens);
 }
 

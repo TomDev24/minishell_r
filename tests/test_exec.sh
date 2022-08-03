@@ -114,7 +114,6 @@ test "echo \"\""
 test "echo 'as 'a''"
 test "echo 'as 'a'a'"
 test "echo \"asd '\"  \"ad\""
-
 test "echo \"< no pipe | or semicolon will ; stop me >\""
 test "echo \"some ' text\" 'a d' 'sd\"ds\"\"' 'ds\"sd\" d'"
 
