@@ -49,7 +49,7 @@ int	main(int argc, char **argv){
 
 	tokens = NULL;
 	cmds = NULL;
-	fp = fopen("./tests/cases_parser", "r");
+	fp = fopen("./tests/parser/cases_parser", "r");
 	while ( (line=test_read_file(fp)) != NULL && *line){
 		tokens = lexer(line);
 		cmds = parser(tokens);

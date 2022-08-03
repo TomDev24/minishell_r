@@ -44,6 +44,7 @@ void	test_del(t_ht *ht){
 int	main(int argc, char **argv){
 	t_ht	*ht = ht_create();
 	
+	printf("ERROR SHOULD BE PRINTED, IF NOT EVERYHTIN IS OK\n");
 	printf("SLOT AMOUNT %d\n", SLOT_AMOUNT);
 	//ht_set(ht, "path", "/eys/fdss:/fsefw/dds/:ds");
 	//printf("Get by key path %s\n", ht_get(ht, "path")); 

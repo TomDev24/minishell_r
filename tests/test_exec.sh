@@ -22,6 +22,8 @@ BOLDWHITE="\033[1m\033[37m"
 # Compile and set executable rights
 make -C ../ > /dev/null
 cp ../minishell .
+cp minishell ./tests/
+
 chmod 755 minishell
 
 
@@ -101,3 +103,7 @@ test "some va '\""
 test "echo \"'\" \"val '\""
 test "echo \"''\"" 
 test "echo 'ad e' 'ads \" s \"\"'"
+
+
+rm minishell
+rm ./tests/minishell
