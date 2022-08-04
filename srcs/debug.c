@@ -27,13 +27,6 @@ static char *type_to_string(int type){
 	return NULL;
 }
 
-void	print_tokens(t_token *tokens){ while(tokens){ printf("//TOKEN//\n");
-		printf("Type: %d  ", tokens->type);
-		printf("Value: %s  ", tokens->value);
-		printf("Addr: %s\n", tokens->addr);
-		tokens = tokens->next;
-	}	
-}
 
 static	char *array_to_line(char **arr){
 	char *res;
@@ -46,6 +39,7 @@ static	char *array_to_line(char **arr){
 	return res;
 }
 
+/*
 static	char *list_to_line(t_list *lst){
 	char	*res;
 	t_token	*el;
@@ -58,20 +52,29 @@ static	char *list_to_line(t_list *lst){
 	}
 	return res;
 }
+*/
+
+/* CMDS PRINTER */
 
 void	print_cmds(t_cmd *cmds){
 	while(cmds){
 		printf("--CMD--\n");
-		//printf("INDEX: %d|ARGV: %s\n", cmds->i, array_to_line(cmds->argv));
-		/*
-		while(*(cmds->argv)){
-			printf("%s\n", *(cmds->argv));
-			(cmds->argv)++;
-		}*/
 		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |ARGV:%s\n", cmds->i, cmds->cmd->value, 
 				cmds->infile, cmds->outfile, array_to_line(cmds->argv)); //arr_to_line add space at the end
 		cmds = cmds->next;
 	}
+}
+
+/* TOKENS PRINTER */
+
+void	print_tokens(t_token *tokens){
+	while(tokens){
+		printf("//TOKEN//\n");
+		printf("Type: %d  ", tokens->type);
+		printf("Value: %s  ", tokens->value);
+		printf("Addr: %s\n", tokens->addr);
+		tokens = tokens->next;
+	}	
 }
 
 void 	pretty_lexer(t_token *tokens){

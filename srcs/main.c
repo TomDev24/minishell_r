@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-//FREE FUNCTIONS SHOULD REWRITTEN AND PLACED ELSEWHERE
+t_global	mshell;
 
 char    **parse_envp(char **envp){
 	char **res;
@@ -17,58 +17,14 @@ char    **parse_envp(char **envp){
 	return res;
 }
 
-void	free_tokens(t_token *tokens){
-	t_token	*tmp;
-
-	while(tokens){
-		tmp = tokens;
-		tokens = tokens->next;
-		free(tmp);
-	}
-}
-
-void	free_arr(char **line){
-	while(*line){
-		free(*line);
-		line++;
-	}
-	free(line);
-}
-
-void	free_cmds(t_cmd *cmds){
-	//not best way
-	t_cmd	*tmp;
-	while(cmds){
-		tmp = cmds;
-		cmds = cmds->next;
-		free(tmp->infile);
-		free(tmp->outfile);
-		//free_arr(tmp->argv);
-		//ft_lstclear(
-		free(tmp);
-	}
-}
-
-void	python_test(t_token *tokens, t_cmd *cmds, char *line, char **envp){
-	tokens = NULL;
-	cmds = NULL;
-	tokens = lexer(line);
-	cmds = parser(tokens);	
-	executor(cmds, envp);
-}
-
-t_global	mshell;
-
 int	main(int argc, char **argv, char **envp){
 	char		*line;
 	t_token		*tokens;
 	t_cmd		*cmds;
 
-	mshell.hash_envp = ht_create(); 
 	init_hash_envp(envp);
-
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
-		python_test(tokens, cmds, argv[2], envp);
+		python_test(argv[2], envp);
 
 	while(1 && argc == 1){
 		tokens = NULL;
@@ -76,7 +32,7 @@ int	main(int argc, char **argv, char **envp){
 		line = readline(">>");
 		add_history(line);
 		tokens = lexer(line);
-		pretty_lexer(tokens);	
+		//pretty_lexer(tokens);	
 
 		cmds = parser(tokens);	
 		//print_cmds(cmds);

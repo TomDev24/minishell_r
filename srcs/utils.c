@@ -1,11 +1,22 @@
 #include "minishell.h"
 
+void	python_test(char *line, char **envp){
+	t_token		*tokens;
+	t_cmd		*cmds;
+
+	tokens = NULL;
+	cmds = NULL;
+	tokens = lexer(line);
+	cmds = parser(tokens);	
+	executor(cmds, envp);
+}
+
 int	cmdlst_size(t_cmd *cmds){
         int i;
 
+	i = 1;
         if (!cmds)
                 return (0);
-        i = 1;
         while (cmds->next != NULL)
         {
                 i++;
@@ -15,7 +26,7 @@ int	cmdlst_size(t_cmd *cmds){
 	
 }
 
-static int array_size(char **s){
+int	array_size(char **s){
 	int	i;
 
 	i = 0;

@@ -20,7 +20,6 @@ int	b_echo(char	**argv){
 	code = 0;
 	n_flag = 0;
 	argv++;
-	//printf("%s","myECHO");
 	if (*argv && ft_strncmp(*argv, "-n", 2) == 0){
 		n_flag = 1;
 		argv++;
@@ -70,9 +69,9 @@ int	b_export(char **argv){
 		key_value = ft_split(*argv, '=');	
 		equal_ptr = ft_strchr(*argv, '=');
 		if (key_value[1])
-			ht_set(mshell.hash_envp, key_value[0], key_value[1]); 
+			ht_set(mshell.hash_envp, key_value[0], *argv); //key_value[0], key_value[1]); 
 		else if (equal_ptr != NULL)
-			ht_set(mshell.hash_envp, key_value[0], "empty"); 
+			ht_set(mshell.hash_envp, key_value[0], ft_strjoin(*argv,"empty")); 
 		else
 			ht_set(mshell.hash_envp, key_value[0], ""); 
 		printf("value %s\n", ht_get(mshell.hash_envp, key_value[0]));

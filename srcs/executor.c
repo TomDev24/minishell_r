@@ -62,10 +62,12 @@ void	handle_redirects(t_cmd *cmd){
 	if (cmd->infile){
 		fd = open(cmd->infile, O_RDONLY);
 		dup2(fd, 0);
+		close(fd);
 	}
 	if (cmd->outfile){
 		fd = open(cmd->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0664);
 		dup2(fd, 1);
+		close(fd);
 	}
 }
 
@@ -81,13 +83,18 @@ void	pre_exec(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	int	code;
+	int	save_fd;
 	
 	code = -42;
+	save_fd = -1;
 	if (ft_strncmp(cmd->argv[0], "echo", 4) == 0){
+		save_fd = dup(1);
 		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 		code = b_echo(cmd->argv);
 		if (pipe_amount > 0)
 			exit(1);
+		else
+			dup2(save_fd, 1);
 
 	} else if (ft_strncmp(cmd->argv[0], "pwd", 3) == 0){
 		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
@@ -100,10 +107,13 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		if (pipe_amount > 0)
 			exit(1);
 	} else if (ft_strncmp(cmd->argv[0], "export", 6) == 0){
+		save_fd = dup(1);
 		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 		code = b_export(cmd->argv);
 		if (pipe_amount > 0)
 			exit(1);
+		else
+			dup2(save_fd, 1);
 	} else if (ft_strncmp(cmd->argv[0], "unset", 5) == 0){
 		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 		code = b_unset(cmd->argv);

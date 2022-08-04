@@ -68,7 +68,7 @@ void	ht_set(t_ht *ht, char *key, char *value) {
 	prev->next = ht_pair(key, value);
 }
 
-char	*ht_get(t_ht *ht, const char *key) {
+char	*ht_get(t_ht *ht, char *key) {
 	unsigned int	slot;
 	t_entry		*entry;  
 
@@ -85,7 +85,7 @@ char	*ht_get(t_ht *ht, const char *key) {
 	return NULL;
 }
 
-void	ht_del(t_ht *ht, const char *key){
+void	ht_del(t_ht *ht, char *key){
 	unsigned int slot;
 	t_entry	*entry;
 	t_entry *prev;
@@ -116,15 +116,24 @@ void	ht_del(t_ht *ht, const char *key){
 	}
 }
 
+//calculated amount of existing keys (not just slots)
 unsigned int ht_size(t_ht *ht){
 	unsigned int i;
 	unsigned int count;
+	t_entry		*tmp;
+
 
 	i = -1;
 	count = 0;
-	while(++i < SLOT_AMOUNT)
-		if(ht->entries[i])
-			count++;
+	while(++i < SLOT_AMOUNT){
+		if(ht->entries[i]){
+			tmp = ht->entries[i];
+			while(tmp){
+				count++;
+				tmp = tmp->next;
+			}
+		}
+	}
 	return count;
 }
 
@@ -133,6 +142,7 @@ char	**hash_to_array(t_ht *ht){
 	char	**res;
 	unsigned int	size_ht;
 	int	j;
+	t_entry		*tmp;
 
 	i = -1;
 	j = 0;
@@ -143,7 +153,11 @@ char	**hash_to_array(t_ht *ht){
 	while(++i < SLOT_AMOUNT){
 		if(!ht->entries[i])
 			continue;
-		res[j++] =  ht->entries[i]->value;
+		tmp = ht->entries[i];
+		while(tmp){
+			res[j++] = tmp->value;
+			tmp = tmp->next;
+		}
 	}
 	res[j] = NULL;
 	return res;
@@ -152,9 +166,16 @@ char	**hash_to_array(t_ht *ht){
 
 void		print_ht(t_ht *ht){
 	unsigned int	i;
+	t_entry		*tmp;
 
 	i = -1;
-	while(++i < SLOT_AMOUNT)
-		if (ht->entries[i])
-			printf("Slot: %d|Key %s|Value: %s\n", i, ht->entries[i]->key, ht->entries[i]->value);
+	while(++i < SLOT_AMOUNT){
+		if (ht->entries[i]){
+			tmp = ht->entries[i];
+			while(tmp){
+				printf("Slot: %d|Key %s|Value: %s\n", i, tmp->key, tmp->value);
+				tmp = tmp->next;
+			}
+		}
+	}
 }

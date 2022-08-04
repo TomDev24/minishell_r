@@ -64,23 +64,6 @@ t_quotes	*init_quotes(){
 	return res;
 }
 
-static	char *list_to_line(t_list *lst){
-	char	*res;
-	t_token	*el;
-	int	i;
-
-	res = "";
-	i = 0;
-	while(lst){
-		el = lst->content;
-		printf("i: %d, value: %s\n", i, el->value);
-		res = ft_strjoin(res, el->value); //ft_strjoin(el->value, " "));
-		lst = lst->next;
-		i++;
-	}
-	return res;
-}
-
 
 t_token	*find_token_by_addr(char *addr, t_token *tokens){
 	t_token *res;
@@ -136,8 +119,10 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 		exit(1);
 	tmp = first_p->addr + 1; //skip first quote
 	while(tmp + i < last_p->addr)
-		if(tmp[i] != *(first_p->value))
-			value[i++] = tmp[i];
+		if(tmp[i] != *(first_p->value)){
+			value[i] = tmp[i];
+			i++;
+		}
 		else
 			tmp++;
 
@@ -155,6 +140,7 @@ t_cmd	*allocate_cmd(){
 	new = (t_cmd*)malloc(sizeof(t_cmd));
 	if (!new)
 		exit(1); // make better error init_cmd(new);
+	init_cmd(new);
 	return new;
 }
 

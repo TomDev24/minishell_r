@@ -6,6 +6,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <sys/param.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "signal.h"
 #include "libft.h"
@@ -25,7 +27,6 @@ enum	lexer_types{
 	Q2
 };
 
-//addr is where token located in parsing line
 typedef struct s_token{
 	int		type;
 	char		*value;
@@ -52,26 +53,22 @@ typedef struct s_quotes{
 typedef struct s_global{
 	t_ht		*hash_envp;
 	//char		**array_envp;
-}		t_global;
+}			t_global;
 
 extern	t_global	mshell;
 
-t_token		*lexer(char *line);
-int		get_next_token(char *line, t_token **tokens);
+/* LEXER */
 int		tokens_push(t_token **tokens, int type, char *val, char *addr);
+int		inspect_string(char *line, int i, int type, t_token **tokens);
+int		get_next_token(char *line, t_token **tokens);
+t_token		*lexer(char *line);
 
+/* PARSER */
 t_cmd		*parser(t_token *tokens);
-//delete this one bellow
 char		**parse_envp(char **envp);
 
-/* UTILS */
-int		cmdlst_size(t_cmd *cmds);
-char		**sort_array(char **s);
-
-/* DEBUG */
-void		print_tokens(t_token *tokens);
-void		print_cmds(t_cmd *cmds);
-void 		pretty_lexer(t_token *tokens);
+/* EXECUTOR */
+void		executor(t_cmd *cmds, char **envp);
 
 /* BUILTINS */
 int		b_pwd();
@@ -80,6 +77,23 @@ int		b_env();
 int		b_export(char **argv);
 int		b_unset(char **argv);
 
-
+/* ENV	*/
 void		init_hash_envp(char **envp);
+
+/* UTILS */
+void		python_test(char *line, char **envp);
+int		cmdlst_size(t_cmd *cmds);
+int		array_size(char **s);
+char		**sort_array(char **s);
+
+/* FREEING */
+void		free_tokens(t_token *tokens);
+void		free_arr(char **line);
+void		free_cmds(t_cmd *cmds);
+
+/* DEBUG */
+void		print_cmds(t_cmd *cmds);
+void		print_tokens(t_token *tokens);
+void 		pretty_lexer(t_token *tokens);
+
 #endif

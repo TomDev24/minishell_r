@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+//ITS USELESS HERE
 #define SLOT_AMOUNT 20
 
 void	test(t_ht *ht){
@@ -8,6 +9,7 @@ void	test(t_ht *ht){
 	char	*str1;
 	char	*str2;
 
+	printf("ALLOCATED KEYS IN HASH_TABLE  %d\n", max);
 	while (i < max){
 		str1 = ft_itoa(i + 100);
 		ht_set(ht, ft_itoa(i), str1);
@@ -49,6 +51,8 @@ int	main(int argc, char **argv){
 	//ht_set(ht, "path", "/eys/fdss:/fsefw/dds/:ds");
 	//printf("Get by key path %s\n", ht_get(ht, "path")); 
 	test(ht);
+	//print_ht(ht);
+	printf("HT SIZE IS %d\n", ht_size(ht));
 	test_del(ht);
 	return 0;
 }

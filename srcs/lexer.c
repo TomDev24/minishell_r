@@ -4,7 +4,6 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr){
 	t_token	*new;
 	t_token *tmp;
 
-	//printf("CReating token\n");
 	tmp = *tokens;
 	new = (t_token*)malloc(sizeof(t_token));
 	if (!new)
@@ -62,8 +61,6 @@ int	inspect_string(char *line, int i, int type, t_token **tokens){
 
 	while(line[i] == ' ')
 		i++;
-	//should check on ft_isprint, but exclude <>|
-	//ft_isalnum(line[i])
 	if (is_char(line+i)) { 
 		tmp = select_min(line+i);
 		c = *tmp;
@@ -73,7 +70,6 @@ int	inspect_string(char *line, int i, int type, t_token **tokens){
 		*tmp = c; 
 		tokens_push(tokens, type, val, line + i);
 		if (type == CMD || type == ARG){
-			//printf("ones\n");
 			return inspect_string(line, i + ft_strlen(val), ARG, tokens);
 		}
 	}
@@ -84,24 +80,24 @@ int	get_next_token(char *line, t_token **tokens){
 	int	i;
 	
 	i = 0;
-	if (line[i] == '\'')
-		return tokens_push(tokens, Q1, "'", line + i)
-			* inspect_string(line, ++i, ARG, tokens);
-	if (line[i] == '"')
-		return tokens_push(tokens, Q2, "\"", line + i)
-			* inspect_string(line, ++i, ARG, tokens);
+	if (line[i] == '\'' && ++i)
+		return tokens_push(tokens, Q1, "'", line + i - 1)
+			* inspect_string(line, i, ARG, tokens);
+	if (line[i] == '"' && ++i)
+		return tokens_push(tokens, Q2, "\"", line + i - 1)
+			* inspect_string(line, i, ARG, tokens);
 	if (ft_strncmp(line+i, "<<", 2) == 0)
-		return tokens_push(tokens, ININ, "<<", line + i++)
-			* inspect_string(line, ++i, DELIMITER, tokens);
+		return tokens_push(tokens, ININ, "<<", line + i)
+			* inspect_string(line, i + 2, DELIMITER, tokens);
 	if (ft_strncmp(line+i, ">>", 2) == 0)
-		return tokens_push(tokens, OUTOUT, ">>", line + i++)
-			* inspect_string(line, ++i, FILEN, tokens);
-	if (line[i] == '>')
-		return tokens_push(tokens, OUT, ">", line + i)
-			* inspect_string(line, ++i, FILEN, tokens);
-	if (line[i] == '<')
-		return tokens_push(tokens, IN, "<", line + i)
-			* inspect_string(line, ++i, FILEN, tokens);
+		return tokens_push(tokens, OUTOUT, ">>", line + i)
+			* inspect_string(line, i + 2, FILEN, tokens);
+	if (line[i] == '>' && ++i)
+		return tokens_push(tokens, OUT, ">", line + i - 1)
+			* inspect_string(line, i, FILEN, tokens);
+	if (line[i] == '<' && ++i)
+		return tokens_push(tokens, IN, "<", line + i - 1)
+			* inspect_string(line, i, FILEN, tokens);
 	if (line[i] == '|')
 		return (i+1) * tokens_push(tokens, PIPE, "|", line + i);
 	return inspect_string(line, i, CMD, tokens);
