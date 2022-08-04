@@ -54,7 +54,7 @@ typedef struct s_exec{
 	int	**pipes;
 	int	pipe_amount;
 	int	*pids;
-
+	t_list	*built_ins;
 }			t_exec;
 
 typedef struct s_global{

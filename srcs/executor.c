@@ -63,44 +63,40 @@ void	pre_exec(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 }
 
+
+int (*find_builtin(char *name))(char **){
+	if (ft_strncmp("echo", name, ft_strlen(name) + 1) == 0)
+		return &b_echo;
+	if (ft_strncmp("pwd", name, ft_strlen(name) + 1) == 0)
+		return &b_pwd;
+	if (ft_strncmp("env", name, ft_strlen(name) + 1) == 0)
+		return &b_env;
+	if (ft_strncmp("export", name, ft_strlen(name) + 1) == 0)
+		return &b_export;
+	if (ft_strncmp("unset", name, ft_strlen(name) + 1) == 0)
+		return &b_unset;
+	return NULL;
+}
+
 int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	int	code;
 	int	save_fd;
+	int	(*func)(char**);
 	
 	code = -42;
 	save_fd = -1;
-	if (ft_strncmp(cmd->argv[0], "echo", 4) == 0){
-		save_fd = dup(1);
-		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
-		code = b_echo(cmd->argv);
-		if (pipe_amount > 0)
-			exit(1);
-		else
-			dup2(save_fd, 1);
 
-	} else if (ft_strncmp(cmd->argv[0], "pwd", 3) == 0){
-		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
-		code = b_pwd();
-		if (pipe_amount > 0)
-			exit(1);
-	} else if (ft_strncmp(cmd->argv[0], "env", 3) == 0){
-		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
-		code = b_env();
-		if (pipe_amount > 0)
-			exit(1);
-	} else if (ft_strncmp(cmd->argv[0], "export", 6) == 0){
-		save_fd = dup(1);
-		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
-		code = b_export(cmd->argv);
-		if (pipe_amount > 0)
-			exit(1);
-		else
-			dup2(save_fd, 1); } else if (ft_strncmp(cmd->argv[0], "unset", 5) == 0){
-		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
-		code = b_unset(cmd->argv);
-		if (pipe_amount > 0)
-			exit(1);
-	}
+	func = find_builtin(cmd->argv[0]);
+	if(func == NULL)
+		return code;
+
+	save_fd = dup(1);
+	pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+	code = func(cmd->argv);
+	if (pipe_amount > 0)
+		exit(1);
+	else
+		dup2(save_fd, 1);
 
 	return code;
 }

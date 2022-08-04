@@ -4,7 +4,7 @@ LIBFT = ./libft/libft.a
 MAC = -L/Users/dbrittan/.brew/Cellar/readline/8.1.2/lib/ -I/Users/dbrittan/.brew/Cellar/readline/8.1.2/include/readline
 
 all:
-	gcc -Wall -g $(INCLUDES) $(SRCS) $(LIBFT) -lreadline -o minishell 
+	gcc -Wall -Wextra -Werror -g $(INCLUDES) $(SRCS) $(LIBFT) -lreadline -o minishell 
  
 test_lexer:
 	gcc tests/lexer/lexer.c srcs/lexer.c srcs/debug.c $(INCLUDES) $(LIBFT) -lreadline -o test_lexer
