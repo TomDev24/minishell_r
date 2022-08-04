@@ -1,6 +1,9 @@
 #include "minishell.h"
 
-int	**init_pipes(int pipes_amount){ int	i = 0; int	**res; 
+int	**init_pipes(int pipes_amount){
+	int	i = 0;
+	int	**res; 
+
 	res = (int**)malloc( sizeof(int*) * (pipes_amount + 1) );
 	if (!res){
 		perror("CANT ALLOCATE MEM\n");
@@ -15,27 +18,6 @@ int	**init_pipes(int pipes_amount){ int	i = 0; int	**res;
 	}
 
 	return res;
-}
-
-void	free_pipes(int **pipes, int pipe_amount){
-	int	i;
-
-	i = 0;
-	while (i < pipe_amount){
-		free(pipes[i]);
-		i++;
-	}
-	
-	free(pipes);
-}
-void	close_pipes(int	**pipes, int pipe_amount){
-	int i;
-	
-	i = 0;
-	while (i < pipe_amount){
-		close(pipes[i][0]);
-		close(pipes[i][1]); i++;
-	}
 }
 
 void	handle_pipes(t_cmd *cmd, int **pipes, int cmd_amount){
@@ -113,8 +95,7 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		if (pipe_amount > 0)
 			exit(1);
 		else
-			dup2(save_fd, 1);
-	} else if (ft_strncmp(cmd->argv[0], "unset", 5) == 0){
+			dup2(save_fd, 1); } else if (ft_strncmp(cmd->argv[0], "unset", 5) == 0){
 		pre_exec(cmd, pipes, pipe_amount, cmd_amount);
 		code = b_unset(cmd->argv);
 		if (pipe_amount > 0)
@@ -125,10 +106,12 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 }
 
 
-void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_amount, int cmd_amount){
+void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amount){
 	char	*path;
 	int	allowed;
-	
+	char	**cmd_paths;
+
+	cmd_paths = parse_envp(envp);
 	while(*cmd_paths){
 		path = ft_strjoin(*cmd_paths, ft_strjoin("/", cmd->argv[0]));
 		allowed = access(path, X_OK);
@@ -144,47 +127,59 @@ void	run_cmd(t_cmd *cmd, char **cmd_paths, char **envp, int **pipes, int pipe_am
 	execve(path, cmd->argv, envp);
 }
 
-void	executor(t_cmd *cmds, char **envp){
+int	post_process(t_exec *exec, int cmd_amount){
+	int	j;
+
+	j = -1;
+	close_pipes(exec->pipes, exec->pipe_amount);
+	while (++j < cmd_amount)
+		waitpid(exec->pids[j], NULL, 0);
+	//free_pipes(exec->pipes, exec->pipe_amount);	
+	free(exec->pids);
+	
+	return 1;
+}
+
+void	pre_process(t_exec *exec, int cmd_amount){
 	int	**pipes;
-	int	cmd_amount;
 	int	pipe_amount;
 	int	*pids;
-	int	i;
-	char	**cmd_paths;
-	
-	//cmd_paths = hash_to_array(mshell.hash_envp);
-	//printf("%s", *cmd_paths);
-	cmd_paths = parse_envp(envp);
-	cmd_amount = cmdlst_size(cmds);
+
 	pipe_amount = cmd_amount - 1;
 	pids = (int*)malloc(sizeof(int) * cmd_amount);
-	pipes = init_pipes(cmd_amount - 1);
-	i = 0;
+	pipes = init_pipes(pipe_amount);
+	
+	exec->pipe_amount = pipe_amount;
+	exec->pids = pids;
+	exec->pipes = pipes;	
+}
 
-	//printf("Pipe amount %d\n", cmd_amount - 1);	
-	if (cmd_amount == 1){
-		if (exec_builtin(cmds, pipes, pipe_amount, cmd_amount) == -42){
-			pids[i] = fork();
-			if (pids[i] == 0){
-				run_cmd(cmds, cmd_paths, envp, pipes, pipe_amount, cmd_amount);
-			}
+void	executor(t_cmd *cmds, char **envp){
+	t_exec	exec;	
+	int	cmd_amount;
+	int	code;
+	int	i;
+	
+	cmd_amount = cmdlst_size(cmds);	
+	i = 0;
+	code = 0;
+	if (cmd_amount == 0)
+		return; //should return code?
+	pre_process(&exec, cmd_amount);
+	//here for now exec_buitlin calls two times
+	while(cmds){
+		if (cmd_amount == 1){
+			code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
+			if (code != -42)
+				return;
+		}
+		exec.pids[i] = fork();
+		if (exec.pids[i] == 0){
+			code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
+			if (code == -42)
+				run_cmd(cmds,  envp, exec.pipes, exec.pipe_amount, cmd_amount);
 		}
 		cmds = cmds->next;
 	}
-	while(cmds){
-		pids[i] = fork();
-		if (pids[i] == 0)
-			if (exec_builtin(cmds, pipes, pipe_amount, cmd_amount) == -42)
-				run_cmd(cmds, cmd_paths, envp, pipes, pipe_amount, cmd_amount);
-		cmds = cmds->next;
-	}
-	
-	close_pipes(pipes, pipe_amount);
-	//waitpid(-1, NULL, 0);
-	int j = -1;
-	while (++j < cmd_amount)
-		waitpid(pids[j], NULL, 0);
-	//free_pipes(pipes, pipe_amount);	
-	free(pids);
+	post_process(&exec, cmd_amount);
 }
-

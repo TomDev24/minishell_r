@@ -32,3 +32,25 @@ void	free_cmds(t_cmd *cmds){
 		free(tmp);
 	}
 }
+
+void	free_pipes(int **pipes, int pipe_amount){
+	int	i;
+
+	i = 0;
+	while (i < pipe_amount){
+		free(pipes[i]);
+		i++;
+	}
+	
+	free(pipes);
+}
+
+void	close_pipes(int	**pipes, int pipe_amount){
+	int i;
+	
+	i = 0;
+	while (i < pipe_amount){
+		close(pipes[i][0]);
+		close(pipes[i][1]); i++;
+	}
+}

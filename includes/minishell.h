@@ -50,6 +50,13 @@ typedef struct s_quotes{
 
 }			t_quotes;
 
+typedef struct s_exec{
+	int	**pipes;
+	int	pipe_amount;
+	int	*pids;
+
+}			t_exec;
+
 typedef struct s_global{
 	t_ht		*hash_envp;
 	//char		**array_envp;
@@ -90,6 +97,8 @@ char		**sort_array(char **s);
 void		free_tokens(t_token *tokens);
 void		free_arr(char **line);
 void		free_cmds(t_cmd *cmds);
+void		free_pipes(int **pipes, int pipe_amount);
+void		close_pipes(int	**pipes, int pipe_amount);
 
 /* DEBUG */
 void		print_cmds(t_cmd *cmds);
