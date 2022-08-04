@@ -44,25 +44,14 @@ void	handle_redirects(t_cmd *cmd){
 	if (cmd->infile){
 		fd = open(cmd->infile, O_RDONLY);
 		dup2(fd, 0);
-		close(fd);
+		close(fd); //could set errno to error
 	}
 	if (cmd->outfile){
 		fd = open(cmd->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0664);
 		dup2(fd, 1);
-		close(fd);
+		close(fd); //could set errno to error
 	}
 }
-
-
-void	pre_exec(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
-	handle_redirects(cmd);
-	if (pipe_amount > 0)
-		handle_pipes(cmd, pipes, cmd_amount);
-
-	close_pipes(pipes, pipe_amount);
-
-}
-
 
 int (*find_builtin(char *name))(char **){
 	if (ft_strncmp("echo", name, ft_strlen(name) + 1) == 0)
@@ -91,7 +80,12 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		return code;
 
 	save_fd = dup(1);
-	pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+	//pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+	handle_redirects(cmd);
+	if (pipe_amount > 0)
+		handle_pipes(cmd, pipes, cmd_amount);
+	close_pipes(pipes, pipe_amount);
+
 	code = func(cmd->argv);
 	if (pipe_amount > 0)
 		exit(1);
@@ -116,10 +110,21 @@ void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amou
 			break;
 		cmd_paths++;
 	}
-	if (allowed < 0)
-		return;	
+	//checking if cmd itself is path // is check on '.' or '/' required?
+	if (allowed < 0){
+		allowed = access(cmd->argv[0], X_OK);
+		if (allowed == 0)
+			path = cmd->argv[0];
+		else
+			return;	
+	}
 
-	pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+	//pre_exec(cmd, pipes, pipe_amount, cmd_amount);
+	handle_redirects(cmd);
+	if (pipe_amount > 0)
+		handle_pipes(cmd, pipes, cmd_amount);
+
+	close_pipes(pipes, pipe_amount);
 	execve(path, cmd->argv, envp);
 }
 
