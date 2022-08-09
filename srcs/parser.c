@@ -1,5 +1,28 @@
 #include "minishell.h"
 
+//test it
+char	*expand(t_token *tokens, char *value){
+	char	*line;
+	char	*pos;
+	char	*res;
+
+	res = "";
+	line = tokens->value + 1;
+	if (*value == 0 || *value == ' ' || *value == '$')
+		return tokens->value;
+
+	while(*line){
+		pos = ft_strchr(line, '$');	
+		if (pos)
+			*pos = 0;
+		else
+			pos = ft_strrchr(line, 0) - 1;
+		res = ft_strjoin(res, ht_get(mshell.hash_envp, line)); 
+		line = pos + 1;
+	}
+	return res;
+}
+
 void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
 	t_cmd 	*tmp;
 	int	i;
@@ -65,6 +88,7 @@ t_quotes	*init_quotes(){
 }
 
 
+//Needs refactor // I have some questions about it
 t_token	*find_token_by_addr(char *addr, t_token *tokens){
 	t_token *res;
 	t_token *prev;
@@ -74,11 +98,27 @@ t_token	*find_token_by_addr(char *addr, t_token *tokens){
 	//printf("ADDR%s\n", addr);
 	while(tokens){
 		//printf("TOKEN ADDR %s\n", tokens->addr);
-		if (ft_strncmp(tokens->addr, addr, ft_strlen(addr)) == 0){ //(tokens->addr == addr)
+		//if (ft_strncmp(tokens->addr, addr, ft_strlen(addr)) == 0){ //(tokens->addr == addr)
+		if (tokens->addr == addr){
 			return prev;
 		}
 		prev = tokens;
 		tokens = tokens->next;
+	}
+	return res;
+}
+
+//REFACTOR NEEDED
+t_token	*find_item_by_addr(char *addr, t_list *q_list){
+	t_token *res;
+	t_token *cur;
+	
+	res = NULL;
+	while(q_list){
+		cur = q_list->content;
+		if (cur->addr == addr)
+			return cur;
+		q_list = q_list->next;
 	}
 	return res;
 }
@@ -99,12 +139,28 @@ void	add_token_to_args(t_cmd *new, char *value){
 
 }
 
+int	count_vars_len(t_list *q_list){
+	int	res;
+	t_token	*cur;
+
+	res = 0;
+	while(q_list){
+		cur = q_list->content;
+		if (*(cur->addr) == '$')
+			res += ft_strlen(cur->value);
+		q_list = q_list->next;
+	}
+
+	return res;
+}
+
 t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token *tokens){
 	char		*value;
 	t_token		*last_p;
 	t_token		*first_p;
 	char		*tmp;
 	int		i;
+	t_token		*var_token;
 	
 	i = 0;
 	last_p = last->content;
@@ -113,24 +169,35 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 	//if something is next to quote, it must be part of quote_block
 	while (*(last_p->addr + 1) && *(last_p->addr + 1) != ' ')
 		last_p->addr++;
-
-	value = (char*)ft_calloc(last_p->addr - first_p->addr, sizeof(char));
+	
+	//Better memory managment??
+	value = (char*)ft_calloc((last_p->addr - first_p->addr) + count_vars_len(quotes->q_list), sizeof(char));
 	if (!value)
 		exit(1);
 	tmp = first_p->addr + 1; //skip first quote
-	while(tmp + i < last_p->addr)
+	while(tmp + i < last_p->addr){
+		if (tmp[i] == '$'){
+			var_token = find_item_by_addr(tmp + i, quotes->q_list);
+			//raise(SIGTRAP);
+			if (var_token){
+				ft_strlcpy(value + i, var_token->value, ft_strlen(var_token->value) + 1);
+				i += ft_strlen(var_token->value) + 1;
+			}
+		}
 		if(tmp[i] != *(first_p->value)){
 			value[i] = tmp[i];
 			i++;
 		}
 		else
 			tmp++;
-
+	}
 	add_token_to_args(new, value);
 	quotes->q_list = NULL;
 	//finding next token, after adding a lot of them to q_list
 	while (*(last_p->addr + 1) && *(last_p->addr + 1) == ' ')
 		last_p->addr++;
+	//!!! HERE MIGHT BE ERROR, BECAUSE TOKENS POINTS TO LAST ITEM
+	//OR ITS EVEN NOT MUST TO USE THIS FUNC HERE
 	return find_token_by_addr(last_p->addr + 1, tokens);
 }
 
@@ -169,7 +236,6 @@ t_token *quotes_manager(t_token *tokens, t_quotes *quotes, t_list *el, t_cmd *ne
 	return tokens;
 }
 
-
 //we got problems with redirection
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	t_cmd		*new;
@@ -180,6 +246,8 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	new = allocate_cmd();
 	quotes = init_quotes();
 	while(tokens && (tokens->type != PIPE || quotes->type != 0)){
+		if (*(tokens->addr) == '$')
+			tokens->value = expand(tokens, tokens->addr + 1);
 		if (quotes->type != 0){
 			el = ft_lstnew(tokens);
 			ft_lstadd_back(&quotes->q_list, el);

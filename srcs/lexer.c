@@ -76,6 +76,7 @@ int	inspect_string(char *line, int i, int type, t_token **tokens){
 	return (i + ft_strlen(val));
 }
 
+//we need to split $a$b$c on separate args
 int	get_next_token(char *line, t_token **tokens){
 	int	i;
 	
