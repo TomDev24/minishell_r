@@ -20,6 +20,8 @@ char	*expand(t_token *tokens, char *value){
 		res = ft_strjoin(res, ht_get(mshell.hash_envp, line)); 
 		line = pos + 1;
 	}
+	if (res == NULL)
+		res = "";
 	return res;
 }
 
@@ -60,7 +62,6 @@ char	**make_argv(t_cmd *cmd){
 	t_token	*tkn;
 
 	size = 1 + ft_lstsize(cmd->args);
-	//raise(SIGTRAP);
 	tmp = cmd->args;
 
 	res = (char **)malloc(sizeof(res) * (size + 1));
@@ -70,6 +71,14 @@ char	**make_argv(t_cmd *cmd){
 	*(res++) = cmd->cmd->value;
 	while (tmp){
 		tkn = tmp->content;
+		/*
+		printf("tkn->value %s\n", tkn->value);
+		if (!tkn->value){
+			printf("null\n");
+			tmp = tmp->next;
+			continue;
+		}*/
+		//if (tkn->value)
 		*(res++) = tkn->value;
 		tmp = tmp->next;
 	}
@@ -146,8 +155,9 @@ int	count_vars_len(t_list *q_list){
 	res = 0;
 	while(q_list){
 		cur = q_list->content;
-		if (*(cur->addr) == '$')
+		if (*(cur->addr) == '$' && cur->value){
 			res += ft_strlen(cur->value);
+		}
 		q_list = q_list->next;
 	}
 
@@ -179,10 +189,10 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 		if (tmp[i] == '$'){
 			var_token = find_item_by_addr(tmp + i, quotes->q_list);
 			//raise(SIGTRAP);
-			if (var_token){
+			if (var_token && var_token->value[0] != 0){
 				ft_strlcpy(value + i, var_token->value, ft_strlen(var_token->value) + 1);
 				i += ft_strlen(var_token->value) + 1;
-			}
+			} 
 		}
 		if(tmp[i] != *(first_p->value)){
 			value[i] = tmp[i];

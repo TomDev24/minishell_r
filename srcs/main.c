@@ -35,7 +35,7 @@ int	main(int argc, char **argv, char **envp){
 		//pretty_lexer(tokens);	
 
 		cmds = parser(tokens);	
-		//print_cmds(cmds);
+		print_cmds(cmds);
 		executor(cmds, envp);
 		//free_tokens(tokens);
 		//free_cmds(cmds);

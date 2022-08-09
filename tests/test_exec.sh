@@ -121,5 +121,23 @@ printf " $BOLWHTIE-----------------------QUTATION && \$ENV----------------------
 test "echo \$USER\$PWD"
 test "echo \"\$USER\$SHLVL\$\$\"" 
 
+test 'echo $TEST'
+test 'echo "$TEST"'
+test "echo '$TEST'"
+test 'echo "$TEST$TEST$TEST"'
+test 'echo "$TEST$TEST=lol$TEST"'
+test 'echo "   $TEST lol $TEST"'
+test 'echo $TEST$TEST$TEST'
+test 'echo $TEST$TEST=lol$TEST""lol'
+test 'echo    $TEST lol $TEST'
+test 'echo test "" test "" test'
+test 'echo "$=TEST"'
+test 'echo "$"'
+test 'echo "$?TEST"'
+test 'echo $TEST $TEST'
+test 'echo "$1TEST"'
+test 'echo "$T1TEST"'
+
+
 rm minishell
 rm ./tests/minishell
