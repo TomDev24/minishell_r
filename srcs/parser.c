@@ -72,13 +72,18 @@ char	**make_argv(t_cmd *cmd){
 	while (tmp){
 		tkn = tmp->content;
 		/*
-		printf("tkn->value %s\n", tkn->value);
 		if (!tkn->value){
 			printf("null\n");
 			tmp = tmp->next;
 			continue;
 		}*/
-		//if (tkn->value)
+		//printf("tkn->value %s\n", tkn->value);
+		//printf("tkn->value[0] %c\n", tkn->value[0]);
+		if (tkn->value[0] == 0 && tkn->addr[0] != '"' && tkn->addr[0] != '\''){
+			size--; // correcting size for valid return
+			tmp = tmp->next;
+			continue;
+		}
 		*(res++) = tkn->value;
 		tmp = tmp->next;
 	}
@@ -132,7 +137,7 @@ t_token	*find_item_by_addr(char *addr, t_list *q_list){
 	return res;
 }
 
-void	add_token_to_args(t_cmd *new, char *value){
+void	add_token_to_args(t_cmd *new, char *value, char *quote){
 	t_token		*t;
 
 	if (!value) //should be diffrent check
@@ -142,7 +147,7 @@ void	add_token_to_args(t_cmd *new, char *value){
 		exit(1); // make better error	
 	t->type = ARG;
 	t->value = value; //list_to_line(q_list);
-	t->addr= NULL; 
+	t->addr= quote; 
 	t->next = NULL;
 	ft_lstadd_back(&new->args, ft_lstnew(t));
 
@@ -179,6 +184,8 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 	//if something is next to quote, it must be part of quote_block
 	while (*(last_p->addr + 1) && *(last_p->addr + 1) != ' ')
 		last_p->addr++;
+	if (*(last_p->addr + 1) == 0 && *(last_p->addr) != ' ')  
+		last_p->addr++;
 	
 	//Better memory managment??
 	value = (char*)ft_calloc((last_p->addr - first_p->addr) + count_vars_len(quotes->q_list), sizeof(char));
@@ -192,7 +199,16 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 			if (var_token && var_token->value[0] != 0){
 				ft_strlcpy(value + i, var_token->value, ft_strlen(var_token->value) + 1);
 				i += ft_strlen(var_token->value) + 1;
-			} 
+			} else if (var_token->value[0] == 0){
+				//handling one $ or not existing var
+				if (tmp[i + 1] == ' ' || tmp[i + 1] == 0 || tmp[i+1] == *(first_p->value))
+					value[i++] = '$';
+				else{
+					tmp++; //skip $
+					while (tmp[i] && tmp[i] != ' ')
+						tmp++;
+				}
+			}
 		}
 		if(tmp[i] != *(first_p->value)){
 			value[i] = tmp[i];
@@ -201,7 +217,8 @@ t_token	*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token 
 		else
 			tmp++;
 	}
-	add_token_to_args(new, value);
+	//printf("Value %s||\n", value);
+	add_token_to_args(new, value, first_p->value);
 	quotes->q_list = NULL;
 	//finding next token, after adding a lot of them to q_list
 	while (*(last_p->addr + 1) && *(last_p->addr + 1) == ' ')

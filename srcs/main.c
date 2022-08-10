@@ -32,7 +32,8 @@ int	main(int argc, char **argv, char **envp){
 		line = readline(">>");
 		add_history(line);
 		tokens = lexer(line);
-		//pretty_lexer(tokens);	
+		pretty_lexer(tokens);	
+		//print_tokens(tokens);
 
 		cmds = parser(tokens);	
 		print_cmds(cmds);

@@ -22,11 +22,7 @@ BOLDWHITE="\033[1m\033[37m"
 # Compile and set executable rights
 make -C ../ > /dev/null
 cp ../minishell .
-cp minishell ./tests/
-
-chmod 755 minishell
-
-
+cp minishell ./tests/ chmod 755 minishell 
 function exec_test()
 {
 	TEST1=$(echo $@ "; exit" | ./minishell 2>&-)
@@ -58,12 +54,13 @@ function exec_test()
 #TEST WITH NO EXIT STATUS !!!!! !!!! !!!
 function test(){
 	MY=$(./minishell -c "$1")
+	#MY=$(echo $@ "; exit" | ./minishell 2>&-)
+	BASH=$(echo $1 "; exit" | bash )
 	#BASH=$($1)
-	BASH=$(echo $@ "; exit" | bash 2>&-)
 		
 	printf $BOLDGREEN"TEST CASE:$RESET $CYAN$1$RESET\n"
-	#echo "$MY"
-	#echo "$BASH"
+	#echo "$MY% < MY"
+	#echo "$BASH% < BASH"
 	if [ "$MY" == "$BASH" ]; then
 		for i in {1..20}
 		do
@@ -119,23 +116,26 @@ test "echo \"some ' text\" 'a d' 'sd\"ds\"\"' 'ds\"sd\" d'"
 
 printf " $BOLWHTIE-----------------------QUTATION && \$ENV-----------------------$RESET\n"
 test "echo \$USER\$PWD"
-test "echo \"\$USER\$SHLVL\$\$\"" 
-
+#test "echo \"\$USER\$SHLVL\$\$\"" 
 test 'echo $TEST'
 test 'echo "$TEST"'
 test "echo '$TEST'"
 test 'echo "$TEST$TEST$TEST"'
-test 'echo "$TEST$TEST=lol$TEST"'
+test 'echo "$TEST lol"'
+test 'echo "$TEST     lol"'
+test "echo \"   \$TEST lol \""
 test 'echo "   $TEST lol $TEST"'
 test 'echo $TEST$TEST$TEST'
+test 'echo ""lol'
 test 'echo $TEST$TEST=lol$TEST""lol'
 test 'echo    $TEST lol $TEST'
 test 'echo test "" test "" test'
 test 'echo "$=TEST"'
-test 'echo "$"'
+test 'echo "$TEST$TEST=lol$TEST"'
 test 'echo "$?TEST"'
-test 'echo $TEST $TEST'
 test 'echo "$1TEST"'
+test 'echo "$"'
+test 'echo $TEST $TEST'
 test 'echo "$T1TEST"'
 
 
