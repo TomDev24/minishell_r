@@ -145,6 +145,7 @@ void	add_token_to_args(t_cmd *new, char *value, char *quote){
 	t = (t_token*)malloc(sizeof(t_token));
 	if (!t)
 		exit(1); // make better error	
+	//its not just arg, i should add logic to choose corect one
 	t->type = ARG;
 	t->value = value; //list_to_line(q_list);
 	t->addr= quote; 
