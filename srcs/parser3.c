@@ -11,11 +11,6 @@ t_stack		*init_context(){
 	return res;
 }
 
-/* t_token	*del_from_list(t_token *prev, t_token *current, t_token *next){
-	return	NULL;
-}
-*/
-
 void	print_list(t_list *lst){
 	t_token	*tkn;
 
@@ -31,7 +26,7 @@ void	replace_token(t_token *replacer, t_stack **context, t_token *current, t_tok
 
 	//first el of context could be PREV or Q1
 	context_el = (*context)->elements->content;
-	print_list((*context)->elements);
+	//print_list((*context)->elements);
 	if (next)
 		replacer->next = next;
 	if (context_el->type != current->type)
@@ -79,7 +74,7 @@ t_token		*resolve_context(t_stack *context){
 	return new;
 }
 
-void	manage_context(t_token *current, t_token *prev, t_token *next, t_stack **context, t_token **tokens){
+t_token	*manage_context(t_token *current, t_token *prev, t_token *next, t_stack **context, t_token **tokens){
 	t_token		*replacer;
 
 	if (*context == NULL)
@@ -109,7 +104,9 @@ void	manage_context(t_token *current, t_token *prev, t_token *next, t_stack **co
 		//print_tokens((*context)->elements);
 		(*context)->q_type = 0;
 		*context = NULL;
+		return replacer;
 	}
+	return current;
 }
 
 ////context LIST[PREV, Q1, ARG, ARG, Q2, Q1, NEXT]
@@ -125,9 +122,7 @@ void	unquote(t_token **tokens){
 	prev = NULL;
 	while(current){
 		next = current->next ? current->next : NULL; 
-		manage_context(current, prev, next, &context, tokens);
-		//if(!context && (current->type == Q1 || current->type == Q2))
-		//	continue;
+		current = manage_context(current, prev, next, &context, tokens);
 		prev = current;
 		current = current->next;
 	}
