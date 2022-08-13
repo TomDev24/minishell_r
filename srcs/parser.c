@@ -82,20 +82,10 @@ t_token	*save_redirection(t_token *tokens, t_cmd *new, int FD_TYPE){
 //we got problems with redirection
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	t_cmd		*new;
-	t_quotes	*quotes;
-	t_list		*el;
 
-	el = NULL;
 	new = allocate_cmd();
-	quotes = init_quotes();
-	while(tokens && (tokens->type != PIPE || quotes->type != 0)){
-		if (*(tokens->addr) == '$')
-			tokens->value = expand(tokens, tokens->addr + 1);
-		if (quotes->type != 0){
-			el = ft_lstnew(tokens);
-			ft_lstadd_back(&quotes->q_list, el);
-		}
-		else if (tokens->type == CMD && !new->cmd)
+	while(tokens && tokens->type != PIPE){
+		if (tokens->type == CMD && !new->cmd)
 			new->cmd = tokens;
 		else if (tokens->type == ARG)
 			ft_lstadd_back(&new->args, ft_lstnew(tokens));
@@ -103,10 +93,6 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 			tokens = save_redirection(tokens, new, IN);
 		else if (tokens->type == OUT)
 			tokens = save_redirection(tokens, new, OUT);
-		if (tokens->type == Q1 || tokens->type == Q2)
-			tokens = quotes_manager(tokens, quotes, el, new);
-		if (!tokens)
-			break;
 		tokens = tokens->next;
 	}
 
@@ -115,15 +101,22 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	return tokens;
 }
 
-t_cmd	*parser(t_token *tokens){
+t_cmd	*parser(t_token **tokens){
 	t_cmd		*cmds;
 	
-	cmds = NULL;	
+	cmds = NULL;
+
+	pretty_lexer(*tokens);
+	unquote(tokens);
+	printf("\nAFTER:\n");
+	pretty_lexer(*tokens);
+	exit(1);
+
 	//We should read each token until PIPE or end_of_list (; is not included for now)	
-	while(tokens){
-		tokens = pack_cmd(tokens, &cmds);
-		if (tokens && tokens->type == PIPE)
-			tokens = tokens->next;
+	while(*tokens){
+		*tokens = pack_cmd(*tokens, &cmds);
+		if (*tokens && (*tokens)->type == PIPE)
+			*tokens = (*tokens)->next;
 	}
 	return cmds;
 }
