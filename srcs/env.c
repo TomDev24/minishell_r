@@ -12,7 +12,7 @@ void	init_hash_envp(char **envp){
 		key = ft_strdup(*envp);
 		tmp = ft_strchr(key, '=');
 		*tmp = '\0';
-		ht_set(ht, key, *envp);
+		ht_set(ht, key, tmp + 1);
 		envp++;
 	}
 }

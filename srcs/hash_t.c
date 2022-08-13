@@ -155,7 +155,7 @@ char	**hash_to_array(t_ht *ht){
 			continue;
 		tmp = ht->entries[i];
 		while(tmp){
-			res[j++] = tmp->value;
+			res[j++] = ft_strjoin(ft_strjoin(tmp->key, "="), tmp->value);
 			tmp = tmp->next;
 		}
 	}

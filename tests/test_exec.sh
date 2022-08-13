@@ -113,6 +113,7 @@ test "echo 'as 'a'a'"
 test "echo \"asd '\"  \"ad\""
 test "echo \"< no pipe | or semicolon will ; stop me >\""
 test "echo \"some ' text\" 'a d' 'sd\"ds\"\"' 'ds\"sd\" d'"
+test "e'c'h\"o\" \"hello\""
 
 printf " $BOLWHTIE-----------------------QUTATION && \$ENV-----------------------$RESET\n"
 test "echo \$USER\$PWD"
