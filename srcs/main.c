@@ -2,21 +2,6 @@
 
 t_global	mshell;
 
-char    **parse_envp(char **envp){
-	char **res;
-	int i = 0;
-
-	res = NULL;
-	while(envp[i]){
-		if (ft_strncmp(envp[i], "PATH", 4) == 0){
-			res = ft_split(ft_strchr(envp[i], '=') + 1, ':');
-			break;
-		}
-		i++;
-	}
-	return res;
-}
-
 int	main(int argc, char **argv, char **envp){
 	char		*line;
 	t_token		*tokens;

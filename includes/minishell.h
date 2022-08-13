@@ -72,9 +72,18 @@ t_token		*lexer(char *line);
 
 /* PARSER */
 t_cmd		*parser(t_token *tokens);
-char		**parse_envp(char **envp);
+/* PARSER 2*/
+t_quotes	*init_quotes();
+char		*expand(t_token *tokens, char *value);
+t_token		*find_token_by_addr(char *addr, t_token *tokens);
+t_token		*find_item_by_addr(char *addr, t_list *q_list);
+void		add_token_to_args(t_cmd *new, char *value, char *quote);
+int		count_vars_len(t_list *q_list);
+t_token		*handle_quote_block(t_cmd *new, t_quotes *quotes, t_list *last, t_token *tokens);
+t_token		*quotes_manager(t_token *tokens, t_quotes *quotes, t_list *el, t_cmd *new);
 
 /* EXECUTOR */
+char		**parse_envp(char **envp);
 void		executor(t_cmd *cmds, char **envp);
 
 /* BUILTINS */
