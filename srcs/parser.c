@@ -57,10 +57,10 @@ char	**make_argv(t_cmd *cmd){
 		//printf("tkn->value %s\n", tkn->value);
 		//printf("tkn->value[0] %c\n", tkn->value[0]);
 		//QUOTES LOGIC !!!!!! GET IT OUT
-		if (tkn->value[0] == 0 && tkn->addr[0] != '"' && tkn->addr[0] != '\'') //val is null and not " or '
-			size--; // correcting size for valid return
-		else
-			*(res++) = tkn->value;
+		//if (tkn->value[0] == 0 && tkn->addr[0] != '"' && tkn->addr[0] != '\'') //val is null and not " or '
+		//	size--; // correcting size for valid return
+		//else
+		*(res++) = tkn->value;
 		tmp = tmp->next;
 	}
 	*res = NULL;

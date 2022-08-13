@@ -17,8 +17,7 @@ enum	lexer_types{
 	CMD,
 	ARG,
 	PIPE,
-	FILEN,
-	OUT,
+	FILEN, OUT,
 	IN,
 	ININ,
 	OUTOUT,
@@ -53,6 +52,7 @@ typedef struct s_quotes{
 typedef struct s_stack{
 	//save last and first token here
 	int		q_type;
+	int		replace;
 	t_list		*elements;
 
 }			t_stack;
@@ -81,6 +81,7 @@ t_token		*lexer(char *line);
 /* PARSER */
 t_cmd		*parser(t_token **tokens);
 /* PARSER 3*/
+t_token		*get_prev_token_by_addr(char *addr, t_token *tokens);
 void		unquote(t_token **tokens);
 
 /* EXECUTOR */

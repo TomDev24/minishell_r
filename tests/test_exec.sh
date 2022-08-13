@@ -89,8 +89,7 @@ test 'ls | head'
 test 'ls | head | wc'
 test 'pwd | cat'
 test 'pwd | cat | echo yes'
-test 'echo | pwd | echo | pwd | env | pwd | echo | env | head | echo | pwd'
-test 'env | head -10 | head -10 | echo some text val yes | pwd | env | grep P | wc | wc'
+test 'echo | pwd | echo | pwd | env | pwd | echo | env | head | echo | pwd' test 'env | head -10 | head -10 | echo some text val yes | pwd | env | grep P | wc | wc'
 test 'env'
 
 
@@ -104,6 +103,15 @@ test "echo \"''\""
 test "echo 'ad e' 'ads \" s \"\"'"
 
 test "echo \"\""
+test '"echo" "-n"'
+test '"echo" "-n" "args"'
+test '"echo" "-n" "args" | "wc"'
+test '"echo" "-n" "args" | cat /bin/ls | head "-1"'
+test '"echo" "-n""args"'
+test 'echo a"ba"'
+test 'echo aaa"ba"'
+test 'echo "ba"c'
+test 'echo "ba"ccc'
 
 #echo "         ' ' ' fsdf dsaf '''  d
 #test "echo '     \"\" d\" dsd '  'ss ss \"  \" \"'"
