@@ -2,21 +2,6 @@
 
 t_global	mshell;
 
-char    **parse_envp(char **envp){
-	char **res;
-	int i = 0;
-
-	res = NULL;
-	while(envp[i]){
-		if (ft_strncmp(envp[i], "PATH", 4) == 0){
-			res = ft_split(ft_strchr(envp[i], '=') + 1, ':');
-			break;
-		}
-		i++;
-	}
-	return res;
-}
-
 int	main(int argc, char **argv, char **envp){
 	char		*line;
 	t_token		*tokens;
@@ -32,11 +17,11 @@ int	main(int argc, char **argv, char **envp){
 		line = readline(">>");
 		add_history(line);
 		tokens = lexer(line);
-		pretty_lexer(tokens);	
+		//pretty_lexer(tokens);	
 		//print_tokens(tokens);
 
-		cmds = parser(tokens);	
-		print_cmds(cmds);
+		cmds = parser(&tokens);	
+		//print_cmds(cmds);
 		executor(cmds, envp);
 		//free_tokens(tokens);
 		//free_cmds(cmds);

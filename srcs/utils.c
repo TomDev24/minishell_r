@@ -7,7 +7,7 @@ void	python_test(char *line, char **envp){
 	tokens = NULL;
 	cmds = NULL;
 	tokens = lexer(line);
-	cmds = parser(tokens);	
+	cmds = parser(&tokens);	
 	executor(cmds, envp);
 }
 

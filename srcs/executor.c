@@ -1,5 +1,20 @@
 #include "minishell.h"
 
+char    **parse_envp(char **envp){
+	char **res;
+	int i = 0;
+
+	res = NULL;
+	while(envp[i]){
+		if (ft_strncmp(envp[i], "PATH", 4) == 0){
+			res = ft_split(ft_strchr(envp[i], '=') + 1, ':');
+			break;
+		}
+		i++;
+	}
+	return res;
+}
+
 int	**init_pipes(int pipes_amount){
 	int	i = 0;
 	int	**res; 
@@ -161,9 +176,9 @@ void	executor(t_cmd *cmds, char **envp){
 	int	code;
 	int	i;
 	
-	cmd_amount = cmdlst_size(cmds);	
 	i = 0;
 	code = 0;
+	cmd_amount = cmdlst_size(cmds);	
 	if (cmd_amount == 0)
 		return; //should return code?
 	pre_process(&exec, cmd_amount);
