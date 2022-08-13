@@ -59,21 +59,55 @@ void	replace_token(t_token *replacer, t_stack **context, t_token *current, t_tok
 	}*/	
 }
 
+//st_token=Q1/Q2/PREV en_token=Q1/Q2
+int	determine_type(t_token *st_token, t_token *en_token){
+	en_token++;
+	// DELIMITER FILEN CMD ARG
+	if (st_token->type == ININ)
+		return DELIMITER;
+	if (st_token->type == IN || st_token->type == OUT || st_token->type == OUTOUT)
+		return FILEN;
+	if ((st_token->type == Q1 || st_token->type == Q2))
+		return CMD;
+	if (st_token->type == PIPE)
+		return CMD;
+	return ARG;
+}
 
-t_token		*resolve_context(t_stack *context){
+//SHOULD CHOSE CORRECT TYPE
+//SHOULD PARSE VALUE RIGHT
+t_token		*resolve_context(t_stack *context, t_token *current){
 	//delete all from context
-	context++;
 	t_token	*new;
+	char	*value;
+	t_token	*st_token;
+	t_token	*en_token;
+	int	i;
 
-	new = (t_token*)malloc(sizeof(t_token));	
-	new->type = 2;
-	new->value = "AWESEMOO";
+	i = 0;
+	st_token = context->elements->content;
+	en_token = current;
+	new = (t_token*)malloc(sizeof(t_token));
+	new->type = determine_type(st_token, en_token);
+
+	while(context->q_type != st_token->type)
+		st_token = st_token->next;
+	st_token = st_token->next;
+	value = (char*)ft_calloc(en_token->addr - st_token->addr, sizeof(char));		
+	//cpy from Q to Q
+	while(st_token->addr < en_token->addr)
+		value[i++] = *st_token->addr++;
+
+	new->value = value;
 	new->addr= NULL; 
 	new->next = NULL;
 
 	return new;
 }
 
+//LEFT MOST PREV and RIGHT MOST NEXT, determine type of token
+//context LIST[PREV, Q1, ARG, ARG, Q2, Q1, NEXT]
+//context LIST[PREV, Q1, ..., Q1,(nospace)NEXT, (nospace)NEXT); should go as one context
 t_token	*manage_context(t_token *current, t_token *prev, t_token *next, t_stack **context, t_token **tokens){
 	t_token		*replacer;
 
@@ -85,9 +119,6 @@ t_token	*manage_context(t_token *current, t_token *prev, t_token *next, t_stack 
 		if (prev)
 			ft_lstadd_back(&(*context)->elements, ft_lstnew(prev));
 		ft_lstadd_back(&(*context)->elements, ft_lstnew(current));
-		//if (prev)
-		//	tokens_push(&(*context)->elements, prev->type, prev->value, prev->addr);
-		//tokens_push(&(*context)->elements, current->type, current->value, current->addr);	
 	}
 	else if ((*context)->q_type != -1 && (*context)->q_type != current->type)
 		ft_lstadd_back(&(*context)->elements, ft_lstnew(current));
@@ -95,10 +126,9 @@ t_token	*manage_context(t_token *current, t_token *prev, t_token *next, t_stack 
 		ft_lstadd_back(&(*context)->elements, ft_lstnew(current));
 		if (next)
 			ft_lstadd_back(&(*context)->elements, ft_lstnew(next));
-			//tokens_push(&(*context)->elements, next->type, next->value, next->addr);
 
 		//resolve context -> t_token
-		replacer = resolve_context(*context);	
+		replacer = resolve_context(*context, current);
 		//replace context [PREV, Q1 ... Q1] with token
 		replace_token(replacer, context, current, next, tokens);
 		//print_tokens((*context)->elements);
@@ -109,12 +139,10 @@ t_token	*manage_context(t_token *current, t_token *prev, t_token *next, t_stack 
 	return current;
 }
 
-////context LIST[PREV, Q1, ARG, ARG, Q2, Q1, NEXT]
 void	unquote(t_token **tokens){
 	t_token	*current;
 	t_token	*prev;
 	t_token	*next;
-
 	t_stack *context;
 
 	current = *tokens;

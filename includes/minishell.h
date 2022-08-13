@@ -51,6 +51,7 @@ typedef struct s_quotes{
 }			t_quotes;
 
 typedef struct s_stack{
+	//save last and first token here
 	int		q_type;
 	t_list		*elements;
 

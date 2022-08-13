@@ -106,13 +106,13 @@ t_cmd	*parser(t_token **tokens){
 	
 	cmds = NULL;
 
-	pretty_lexer(*tokens);
+	//pretty_lexer(*tokens);
 	unquote(tokens);
-	printf("\nAFTER:\n");
-	pretty_lexer(*tokens);
-	printf("\n");
-	print_tokens(*tokens);
-	exit(1);
+	//printf("\nAFTER:\n");
+	//pretty_lexer(*tokens);
+	//printf("\n");
+	//print_tokens(*tokens);
+	//exit(1);
 
 	//We should read each token until PIPE or end_of_list (; is not included for now)	
 	while(*tokens){
