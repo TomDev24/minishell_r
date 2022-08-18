@@ -108,6 +108,15 @@ int	determine_type(t_token *st_token){
 	return ARG;
 }
 
+char	*tkn_eof(t_token *tkn){
+	int	i;
+
+	i = 0;
+	while(tkn->value[i] && tkn->addr[i] == tkn->value[i])
+		i++;
+	return tkn->addr + i - 1;
+}
+
 void	prep_end_start_addr(t_stack *context, t_token **s_token, t_token **e_token, t_token **tokens){
 	t_token		*prev_s_token;
 	char		*str;
@@ -133,12 +142,13 @@ void	prep_end_start_addr(t_stack *context, t_token **s_token, t_token **e_token,
 			context->prev = get_prev_token_by_addr((*s_token)->addr, *tokens);
 	}
 	
-	e_token++;
 	prev_s_token++;
 	//s_token++;
 	//s_token we dont change
-	//while ((*e_token)->next && (*e_token)->next->addr - (*e_token)->addr == 1)
-	//	*e_token = (*e_token)->next; 	
+	//e_token first points to currrent
+	while ((*e_token)->next && (*e_token)->next->addr - tkn_eof(*e_token) == 1)
+		*e_token = (*e_token)->next; 	
+	context->next = (*e_token)->next;
 	/*
 	while(*(*e_token)->addr && *(*e_token)->addr !=  ' ')
 		(*e_token)->addr++; 
@@ -166,6 +176,7 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	char	*value;
 	t_token	*st_token;
 	t_token	*en_token;
+	char	*en_addr;
 	int	i;
 
 	i = 0;
@@ -175,8 +186,6 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	new->type = determine_type(st_token);
 	
 	prep_end_start_addr(context, &st_token, &en_token, tokens);
-	//if (st_token->type != context->q_type)	
-	//	st_token = st_token->next;
 	/*while(*en_token->addr && *en_token->addr !=  ' ')
 		en_token->addr++; 
 	while(*en_token->addr && *en_token->addr == ' ')
@@ -191,9 +200,12 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	if (!value)
 		exit(2);
 	//cpy from Q to Q
-	while(st_token->addr < en_token->addr){
+	en_addr = tkn_eof(en_token);
+	while(st_token->addr <= en_addr){
 		//printf("Char %c\n", *st_token->addr);
 		if (*st_token->addr == type_to_char(context->q_type))
+			st_token->addr++;
+		else if(en_addr == st_token->addr && *en_addr == ' ')
 			st_token->addr++;
 		else
 			value[i++] = *st_token->addr++;
