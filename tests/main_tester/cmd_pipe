@@ -1,0 +1,16 @@
+pwd
+echo
+echo this text yes
+echo -n
+echo -n some val
+pwd | echo
+pwd | echo | wc
+pwd | echo | wc | wc
+ls
+whoami
+ls | head
+ls | head | wc
+pwd | cat
+pwd | cat | echo yes
+echo | pwd | head | echo | env | head -10 | head -10 | echo some text val yes | pwd | env | grep P | wc | wc
+env

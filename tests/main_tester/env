@@ -1,0 +1,22 @@
+echo $USER$PWD
+echo "$USER$SHLVL$$" 
+echo $TEST
+echo "$TEST"
+echo '$TEST'
+echo "$TEST$TEST$TEST"
+echo "$TEST lol"
+echo "$TEST     lol"
+echo "   $TEST lol "
+echo "   $TEST lol $TEST"
+echo $TEST$TEST$TEST
+echo ""lol
+echo $TEST$TEST=lol$TEST""lol
+echo    $TEST lol $TEST
+echo test "" test "" test
+echo "$=TEST"
+echo "$TEST$TEST=lol$TEST"
+echo "$?TEST"
+echo "$1TEST"
+echo "$"
+echo $TEST $TEST
+echo "$T1TEST"

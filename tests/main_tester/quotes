@@ -1,0 +1,28 @@
+echo "some va '"
+echo "'" "val '"
+echo "''" 
+echo 'ad e' 'ads " s ""'
+
+echo ""
+"echo" "-n"
+"echo" "-n" "args"
+"echo" "-n" "args" | "wc"
+"echo" "-n" "args" | cat /bin/ls | head "-1"
+"echo" "-n""args"
+"echo" "n""args"
+echo a"ba"
+echo aaa"ba"
+echo aaa"ba" aaa"ba"
+echo "ba"c
+echo "ba"ccc
+echo "ba"ccc "ba"ccc
+
+"echo \"         ' ' ' fsdf dsaf '''  d"
+"echo '     \"\" d\" dsd '  'ss ss \"  \" \"'"
+
+echo 'as 'a''
+echo 'as 'a'a'
+echo "asd '"  "ad"
+echo "< no pipe | or semicolon will ; stop me >"
+echo "some ' text" 'a d' 'sd"ds""' 'ds"sd" d'
+e'c'h"o" "hello"
