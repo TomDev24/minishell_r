@@ -53,6 +53,7 @@ typedef struct s_stack{
 	//save last and first token here
 	int		q_type;
 	int		replace;
+	char		temp_type;
 	t_token		*prev;
 	t_token		*next;
 	t_list		*elements;

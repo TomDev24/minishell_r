@@ -6,6 +6,7 @@ t_stack		*init_context(){
 	
 	res = malloc(sizeof(t_stack));
 	res->q_type = -1;
+	res->temp_type = '0';
 	res->replace = 0;
 	res->prev = NULL;
 	res->next = NULL;
@@ -83,9 +84,13 @@ void	replace_token(t_token *replacer, t_stack **context, t_token *current, t_tok
 	if ((*context)->prev){
 		(*context)->prev->next = replacer;
 	}
+	else if ((*context)->replace == 1){
+		*tokens = replacer;
+		replacer->type = CMD;
+	}
 	else if (context_el->type != current->type){
 		//printf("Prev %s\n", context_el->value);
-		//printf("prev->next = \n");
+		printf("prev->next = \n");
 		//printf("Prev->next %s\n", replacer->value);
 		context_el->next = replacer;
 	}
@@ -138,8 +143,11 @@ void	prep_end_start_addr(t_stack *context, t_token **s_token, t_token **e_token,
 			str++;
 		//printf("str %s\n", str);
 		*s_token = get_token_by_addr(str, *tokens);
-		if (*s_token)
+		if (*s_token){
 			context->prev = get_prev_token_by_addr((*s_token)->addr, *tokens);
+			if (!context->prev)
+				context->replace = 1;
+		}
 	}
 	
 	prev_s_token++;
@@ -202,13 +210,22 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	//cpy from Q to Q
 	en_addr = tkn_eof(en_token);
 	while(st_token->addr <= en_addr){
-		//printf("Char %c\n", *st_token->addr);
-		if (*st_token->addr == type_to_char(context->q_type))
+		if (context->temp_type == '0' && (*st_token->addr == '"' || *st_token->addr == '\'')){
+			context->temp_type = *st_token->addr; 
 			st_token->addr++;
+		}
+
+		//printf("temp_type %c Char %c\n", context->temp_type, *st_token->addr);
+		if (*st_token->addr == context->temp_type){
+			context->temp_type = '0';
+			st_token->addr++;
+		}
 		else if(en_addr == st_token->addr && *en_addr == ' ')
 			st_token->addr++;
 		else
 			value[i++] = *st_token->addr++;
+
+
 	}
 	//printf("Value %s$\n", value);
 	new->value = value;
