@@ -23,33 +23,7 @@ BOLDWHITE="\033[1m\033[37m"
 make -C ../ > /dev/null
 cp ../minishell .
 cp minishell ./tests/ chmod 755 minishell 
-function exec_test()
-{
-	TEST1=$(echo $@ "; exit" | ./minishell 2>&-)
-	ES_1=$?
-	TEST2=$(echo $@ "; exit" | bash 2>&-)
-	ES_2=$?
-	if [ "$TEST1" == "$TEST2" ] && [ "$ES_1" == "$ES_2" ]; then
-		printf " $BOLDGREEN%s$RESET" "✓ "
-	else
-		printf " $BOLDRED%s$RESET" "✗ "
-	fi
-	printf "$CYAN \"$@\" $RESET"
-	if [ "$TEST1" != "$TEST2" ]; then
-		echo
-		echo
-		printf $BOLDRED"Your output : \n%.20s\n$BOLDRED$TEST1\n%.20s$RESET\n" "-----------------------------------------" "-----------------------------------------"
-		printf $BOLDGREEN"Expected output : \n%.20s\n$BOLDGREEN$TEST2\n%.20s$RESET\n" "-----------------------------------------" "-----------------------------------------"
-	fi
-	if [ "$ES_1" != "$ES_2" ]; then
-		echo
-		echo
-		printf $BOLDRED"Your exit status : $BOLDRED$ES_1$RESET\n"
-		printf $BOLDGREEN"Expected exit status : $BOLDGREEN$ES_2$RESET\n"
-	fi
-	echo
-	sleep 0.1
-}
+
 
 #TEST WITH NO EXIT STATUS !!!!! !!!! !!!
 function test(){
@@ -59,8 +33,7 @@ function test(){
 	#BASH=$($1)
 		
 	printf $BOLDGREEN"TEST CASE:$RESET $CYAN$1$RESET\n"
-	#echo "$MY% < MY"
-	#echo "$BASH% < BASH"
+	#echo "$MY% < MY" ; echo "$BASH% < BASH"
 	if [ "$MY" == "$BASH" ]; then
 		for i in {1..20}
 		do
@@ -108,10 +81,13 @@ test '"echo" "-n" "args"'
 test '"echo" "-n" "args" | "wc"'
 test '"echo" "-n" "args" | cat /bin/ls | head "-1"'
 test '"echo" "-n""args"'
+test '"echo" "n""args"'
 test 'echo a"ba"'
 test 'echo aaa"ba"'
+test 'echo aaa"ba" aaa"ba"'
 test 'echo "ba"c'
 test 'echo "ba"ccc'
+test 'echo "ba"ccc "ba"ccc'
 
 #echo "         ' ' ' fsdf dsaf '''  d
 #test "echo '     \"\" d\" dsd '  'ss ss \"  \" \"'"

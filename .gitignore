@@ -3,3 +3,6 @@
 ./libft/._*
 ./srcs/._*
 ./tests/._*
+
+*.swp
+minishell
