@@ -43,12 +43,6 @@ typedef struct s_cmd{
 	struct s_cmd	*next;
 }			t_cmd;
 
-typedef struct s_quotes{
-	int		type;
-	t_list		*q_list;
-
-}			t_quotes;
-
 typedef struct s_stack{
 	//save last and first token here
 	int		q_type;
@@ -57,6 +51,7 @@ typedef struct s_stack{
 	t_token		*prev;
 	t_token		*next;
 	t_list		*elements;
+	t_token		**tokens;
 
 }			t_stack;
 
@@ -83,8 +78,9 @@ t_token		*lexer(char *line);
 
 /* PARSER */
 t_cmd		*parser(t_token **tokens);
+
 /* PARSER 3*/
-t_token		*get_prev_token_by_addr(char *addr, t_token *tokens);
+t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);
 void		unquote(t_token **tokens);
 
 /* EXECUTOR */
@@ -102,10 +98,12 @@ int		b_unset(char **argv);
 void		init_hash_envp(char **envp);
 
 /* UTILS */
+char		type_to_char(int Q);
 void		python_test(char *line, char **envp);
 int		cmdlst_size(t_cmd *cmds);
 int		array_size(char **s);
 char		**sort_array(char **s);
+
 
 /* FREEING */
 void		free_tokens(t_token *tokens);
@@ -115,6 +113,8 @@ void		free_pipes(int **pipes, int pipe_amount);
 void		close_pipes(int	**pipes, int pipe_amount);
 
 /* DEBUG */
+char		*type_to_string(int type);
+void		print_list(t_list *lst);
 void		print_cmds(t_cmd *cmds);
 void		print_tokens(t_token *tokens);
 void 		pretty_lexer(t_token *tokens);

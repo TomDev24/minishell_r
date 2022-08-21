@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static char *type_to_string(int type){
+char *type_to_string(int type){
 	if (type == 0)
 		return "CMD";
 	if (type == 1)
@@ -27,7 +27,6 @@ static char *type_to_string(int type){
 	return NULL;
 }
 
-
 static	char *array_to_line(char **arr){
 	char *res;
 
@@ -53,6 +52,16 @@ static	char *list_to_line(t_list *lst){
 	return res;
 }
 */
+
+void	print_list(t_list *lst){
+	t_token	*tkn;
+
+	while(lst){
+		tkn = lst->content;
+		printf("Token value %s\n", tkn->value);
+		lst = lst->next;
+	}
+}
 
 /* CMDS PRINTER */
 

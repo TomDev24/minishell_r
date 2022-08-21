@@ -1,5 +1,12 @@
 #include "minishell.h"
 
+char	type_to_char(int Q){
+	if (Q == Q1)
+		return '\'';
+	else
+		return '"';
+}
+
 void	python_test(char *line, char **envp){
 	t_token		*tokens;
 	t_cmd		*cmds;
@@ -61,3 +68,4 @@ char	**sort_array(char **s){
 	}
 	return	s;
 }
+
