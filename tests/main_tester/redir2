@@ -1,0 +1,2 @@
+echo s > file1
+echo longer text > file2

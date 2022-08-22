@@ -105,6 +105,7 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	if (pipe_amount > 0)
 		exit(1);
 	else
+		//printf does not write immedialty to fd!!!(it has buffer)
 		dup2(save_fd, 1);
 
 	return code;

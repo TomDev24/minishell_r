@@ -25,13 +25,16 @@ int	b_echo(char	**argv){
 		argv++;
 	}
 	while(*argv){
-		printf("%s",*argv++);
+		ft_putstr_fd(*argv++, 1);
+		//printf("%s",*argv++);
 		if (*argv)
-			printf(" ");
+			ft_putstr_fd(" ", 1);
+			//printf(" ");
 	}
 	
 	if (!n_flag)
-		printf("\n");
+		ft_putstr_fd("\n", 1);
+		//printf("\n");
 	return code;
 }
 

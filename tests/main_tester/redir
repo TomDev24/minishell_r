@@ -1,0 +1,6 @@
+cat < main_tester/f1
+cat < main_tester/f1 < main_tester/f2
+ < main_tester/f1 cat
+< main_tester/f1 < main_tester/f2 cat
+< main_tester/f1 cat < main_tester/f2
+< main_tester/f1 cat < main_tester/f2 | < main_tester/f1 cat < main_tester/f2 | < main_tester/f1 < main_tester/f2 cat
