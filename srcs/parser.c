@@ -53,14 +53,10 @@ char	**make_argv(t_cmd *cmd){
 	*(res++) = cmd->cmd->value;
 	while (tmp){
 		tkn = tmp->content;
-		//if (!tkn->value){ printf("null\n"); tmp = tmp->next; continue;}
-		//printf("tkn->value %s\n", tkn->value);
-		//printf("tkn->value[0] %c\n", tkn->value[0]);
-		//QUOTES LOGIC !!!!!! GET IT OUT
-		//if (tkn->value[0] == 0 && tkn->addr[0] != '"' && tkn->addr[0] != '\'') //val is null and not " or '
-		//	size--; // correcting size for valid return
-		//else
-		*(res++) = tkn->value;
+		if (*tkn->value)
+			*(res++) = tkn->value;
+		else
+			size--;
 		tmp = tmp->next;
 	}
 	*res = NULL;
@@ -106,14 +102,7 @@ t_cmd	*parser(t_token **tokens){
 	
 	cmds = NULL;
 
-	//pretty_lexer(*tokens);
 	unquote(tokens);
-	//printf("\nAFTER:\n");
-	//pretty_lexer(*tokens);
-	//printf("\n");
-	//print_tokens(*tokens);
-	//exit(1);
-
 	//We should read each token until PIPE or end_of_list (; is not included for now)	
 	while(*tokens){
 		*tokens = pack_cmd(*tokens, &cmds);

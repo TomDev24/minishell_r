@@ -4,6 +4,7 @@ t_stack		*init_context(t_token **tokens){
 	t_stack	*res;
 	
 	res = malloc(sizeof(t_stack));
+	res->evars_len = 0;
 	res->q_type = -1;
 	res->temp_type = '0';
 	res->replace = 0;
@@ -24,12 +25,20 @@ void	free_context(t_stack **context){
 t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag){
 	t_token *res;
 	t_token *prev;
+	t_token *next;
 	
 	res = NULL;
 	prev = NULL;
 	while(tokens){
-		if (tokens->addr == addr)
-			return prev_flag == 1 ? prev : tokens;
+		next = tokens->next ? tokens->next : NULL; 
+		if (tokens->addr == addr){
+			if (prev_flag == 1)
+				return prev;
+			if (prev_flag == 0)
+				return tokens;
+			if (prev_flag == 2)
+				return next;
+		}
 		prev = tokens;
 		tokens = tokens->next;
 	}
@@ -113,7 +122,7 @@ t_token	*create_replacer(t_token *st_token){
 	return new;
 }
 
-void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, char *value){
+void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, char *value, t_token *tokens){
 	int	i;
 	char	*en_addr;
 
@@ -124,13 +133,12 @@ void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, 
 			context->temp_type = *st_token->addr; 
 			st_token->addr++;
 		}
-
+		if (context->temp_type == '"')
+			 try_replace_env(tokens, st_token, value, &i);
 		if (*st_token->addr == context->temp_type){
 			context->temp_type = '0';
 			st_token->addr++;
 		}
-		//else if(en_addr == st_token->addr && *en_addr == ' ')
-		//	st_token->addr++;
 		else
 			value[i++] = *st_token->addr++;
 	}
@@ -148,12 +156,12 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	en_token = current;
 	new = create_replacer(st_token);
 	prep_end_start_addr(context, &st_token, &en_token, tokens);
-	value = (char*)ft_calloc((size_t)en_token->addr - (size_t)st_token->addr, sizeof(char));
+	value = (char*)ft_calloc((size_t)en_token->addr - (size_t)st_token->addr + context->evars_len, sizeof(char));
 	if (!value)
 		exit(2);
 
 	//can catch error here
-	set_replacer_value(context, st_token, en_token, value);
+	set_replacer_value(context, st_token, en_token, value, *tokens);
 	new->value = value;
 	return new;
 }
@@ -200,6 +208,7 @@ void	unquote(t_token **tokens){
 		if (context == NULL)
 			context = init_context(tokens);
 		context->next = next;
+		manage_evar(current, context);
 		current = manage_context(current, prev, next, &context);
 		prev = current;
 		current = current->next;

@@ -1,5 +1,10 @@
-echo $USER$PWD
-echo "$USER$SHLVL$$" 
+echo $ $
+echo $aa $bb $ 
+echo $aa $PWD $a $ 
+echo $USER$HOME
+echo $USER$HOME$HOME$USER
+echo $USER$USER$SHELL$PWD$a$SHELL$
+echo "$USER$HOME$$" 
 echo $TEST
 echo "$TEST"
 echo '$TEST'

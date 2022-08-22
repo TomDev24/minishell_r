@@ -45,6 +45,7 @@ typedef struct s_cmd{
 
 typedef struct s_stack{
 	//save last and first token here
+	int		evars_len;
 	int		q_type;
 	int		replace;
 	char		temp_type;
@@ -79,9 +80,14 @@ t_token		*lexer(char *line);
 /* PARSER */
 t_cmd		*parser(t_token **tokens);
 
-/* PARSER 3*/
+/* PARSE_QS*/
 t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);
 void		unquote(t_token **tokens);
+
+/* PARSE_ENV*/
+void		try_replace_env(t_token *tokens, t_token *st_token, char *value, int *i);
+void		change_token_value(t_token *current, t_stack *context);
+void		manage_evar(t_token *current, t_stack *context);
 
 /* EXECUTOR */
 char		**parse_envp(char **envp);
