@@ -26,8 +26,7 @@ enum	lexer_types{
 	Q2
 };
 
-typedef struct s_token{
-	int		type;
+typedef struct s_token{ int		type;
 	char		*value;
 	char		*addr;
 	char		*end_addr;
@@ -38,6 +37,7 @@ typedef struct s_cmd{
 	int		i;
 	char		*infile;
 	char		*outfile;
+	char		*eof;
 	char		**argv;
 	t_token		*cmd;
 	t_list		*args;
@@ -95,6 +95,9 @@ void		manage_evar(t_token *current, t_stack *context);
 /* EXECUTOR */
 char		**parse_envp(char **envp);
 void		executor(t_cmd *cmds, char **envp);
+
+/* HERE_DOC */
+void		here_doc(t_cmd	*cmd);
 
 /* BUILTINS */
 int		b_pwd();

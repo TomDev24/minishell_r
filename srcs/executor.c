@@ -66,6 +66,8 @@ void	handle_redirects(t_cmd *cmd){
 		dup2(fd, 1);
 		close(fd); //could set errno to error
 	}
+	if (cmd->eof)
+		here_doc(cmd);
 }
 
 int (*find_builtin(char *name))(char **){

@@ -4,6 +4,7 @@ void	init_cmd(t_cmd *cmd){
 	cmd->i = 0;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
+	cmd->eof = NULL;
 	cmd->argv = NULL;
 	cmd->cmd = NULL;
 	cmd->args = NULL;
@@ -71,7 +72,10 @@ t_token	*save_redirection(t_token *tokens, t_cmd *new, int FD_TYPE){
 		else if (FD_TYPE == OUT)
 			new->outfile = tokens->value;
 	}
-	
+	else if (FD_TYPE == ININ && tokens->next->type == DELIMITER){
+		tokens = tokens->next;
+		new->eof = tokens->value;
+	}
 	return tokens;
 }
 
@@ -89,6 +93,8 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 			tokens = save_redirection(tokens, new, IN);
 		else if (tokens->type == OUT)
 			tokens = save_redirection(tokens, new, OUT);
+		else if (tokens->type == ININ)
+			tokens = save_redirection(tokens, new, ININ);
 		tokens = tokens->next;
 	}
 

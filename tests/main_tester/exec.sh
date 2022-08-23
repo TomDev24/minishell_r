@@ -19,32 +19,23 @@ function res(){
 	printf "$1"
 	printf $BOLDYELLOW"PASSED $RESET $BUFF_PASS / $BUFF  [$PASS] / [$COUNT] $RESET\n"
 	printf "^^^^^^^^^^^^^^^^\n"
-	BUFF=0
-	BUFF_PASS=0
+	BUFF=0;
+	BUFF_PASS=0;
 }
 
 function full_p(){
-	for i in {1..20}
-	do
-	printf $1
-	done
+	for i in {1..20}; do printf $1; done
 }
 
 function test_file(){
-	while IFS= read -r line
-	do
-		test "$line" $2
-	done < $1
+	while IFS= read -r line;  do test "$line" $2;  done < $1
 }
 
 #function id is 0
 function output_test(){
 	MY=$(./minishell -c "$1")
 	BASH=$(echo $1 "; exit" | bash )
-
-	if [ "$SHOW" == "-s" ]; then
-		echo "$MY# < MY" ; echo "$BASH# < BASH"
-	fi
+	if [ "$SHOW" == "-s" ]; then echo "$MY# < MY" ; echo "$BASH# < BASH"; fi
 	if [ "$MY" == "$BASH" ]; then return 1; else return 0; fi 
 }
 
@@ -69,7 +60,14 @@ function redir_test(){
 	if [ "$MY" == "$BASH" ]; then return 1; else return 0; fi 
 }
 
-function test(){	
+function heredoc_test(){
+	MY=$(cat $2 | ./minishell -c "$1")
+	BASH=$(echo $1 "; exit" | bash < "$(cat $2)")
+	if [ "$SHOW" == "-s" ]; then echo "$MY# < MY" ; echo "$BASH# < BASH"; fi
+	if [ "$MY" == "$BASH" ]; then return 1; else return 0; fi 
+}
+
+function test(){
 	(( COUNT++ ))
 	(( BUFF++ ))
 	if [ "$EXPAND" == "-e" ]; then
@@ -100,15 +98,15 @@ function test(){
 	fi	
 }
 
-printf "\n$BOLWHTIE-----------------------CMDS and PIPES-----------------------$RESET\n"
+printf "\n$BOLWHTIE-----------------------CMDS and PIPES---------------------$RESET\n"
 test_file "main_tester/cmd_pipe" 0
 res "\n$BOLDMAGENTA/////RESULTS OF: CMDS and PIPES/////$RESET\n"
 
-printf "\n$BOLWHTIE-----------------------QUTATION MARKS TESTS-----------------------$RESET\n"
+printf "\n$BOLWHTIE-----------------------QUTATION MARKS TESTS---------------$RESET\n"
 test_file "main_tester/quotes" 0
 res "\n$BOLDMAGENTA/////RESULTS OF: Qutations/////$RESET\n"
 
-printf "\n$BOLWHTIE-----------------------QUTATION && \$ENV-----------------------$RESET\n"
+printf "\n$BOLWHTIE-----------------------QUTATION && \$ENV------------------$RESET\n"
 test_file "main_tester/env" 0
 res "\n$BOLDMAGENTA/////RESULTS OF: Env & Qutation/////$RESET\n"
 
@@ -119,6 +117,12 @@ res "\n$BOLDMAGENTA/////RESULTS OF: Redirects < /////$RESET\n"
 printf "\n$BOLWHTIE-----------------------REDIRECTS>>>-----------------------$RESET\n"
 test_file "main_tester/redir2" 1
 res "\n$BOLDMAGENTA/////RESULTS OF: Redirects > /////$RESET\n"
+
+printf "\n$BOLWHTIE-----------------------HERE_DOC---------------------------$RESET\n"
+heredoc_test "cat << eof" "./main_tester/f1"  
+echo $?
+heredoc_test "cat << abba" "./main_tester/f2"  
+echo $?
 
 res "\n$BOLDYELLOW/////RESULTS/////$RESET\n"
 rm minishell; rm ./tests/minishell

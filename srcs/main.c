@@ -14,7 +14,7 @@ int	main(int argc, char **argv, char **envp){
 	while(1 && argc == 1){
 		tokens = NULL;
 		cmds = NULL;
-		line = readline(">>");
+		line = readline("sash>");
 		add_history(line);
 		tokens = lexer(line);
 		pretty_lexer(tokens);	

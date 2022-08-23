@@ -68,8 +68,8 @@ void	print_list(t_list *lst){
 void	print_cmds(t_cmd *cmds){
 	while(cmds){
 		printf("--CMD--\n");
-		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |ARGV:%s\n", cmds->i, cmds->cmd->value, 
-				cmds->infile, cmds->outfile, array_to_line(cmds->argv)); //arr_to_line add space at the end
+		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |DELIM:%s |ARGV:%s\n", cmds->i, cmds->cmd->value, 
+				cmds->infile, cmds->outfile, cmds->eof, array_to_line(cmds->argv)); //arr_to_line add space at the end
 		cmds = cmds->next;
 	}
 }
