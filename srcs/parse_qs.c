@@ -125,22 +125,26 @@ t_token	*create_replacer(t_token *st_token){
 void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, char *value, t_token *tokens){
 	int	i;
 	char	*en_addr;
+	char	*st_addr;
 
 	i = 0;
 	en_addr = tkn_eof(en_token);
-	while(st_token->addr <= en_addr){
-		if (context->temp_type == '0' && (*st_token->addr == '"' || *st_token->addr == '\'')){
-			context->temp_type = *st_token->addr; 
-			st_token->addr++;
+	st_addr = st_token->addr;
+	while(st_addr <= en_addr){
+		if (context->temp_type == '0' && (*st_addr == '"' || *st_addr == '\'')){
+			context->temp_type = *st_addr; 
+			st_addr++;
 		}
-		if (context->temp_type == '"')
-			 try_replace_env(tokens, st_token, value, &i);
-		if (*st_token->addr == context->temp_type){
+		if (context->temp_type == '"' && *st_addr == '$'){
+			st_addr = try_replace_env(tokens, st_addr, value, &i);
+			continue;
+		}
+		if (*st_addr == context->temp_type){
 			context->temp_type = '0';
-			st_token->addr++;
+			st_addr++;
 		}
 		else
-			value[i++] = *st_token->addr++;
+			value[i++] = *st_addr++;
 	}
 }
 

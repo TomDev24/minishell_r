@@ -40,7 +40,7 @@ static	char *select_min(char *s){
 	return min;
 }
 
-static int is_char(char *s){
+int	is_char(char *s){
 	int res;
 
 	res = 0;

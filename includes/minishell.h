@@ -30,6 +30,7 @@ typedef struct s_token{
 	int		type;
 	char		*value;
 	char		*addr;
+	char		*end_addr;
 	struct s_token	*next;
 }			t_token;
 
@@ -73,6 +74,7 @@ extern	t_global	mshell;
 
 /* LEXER */
 int		tokens_push(t_token **tokens, int type, char *val, char *addr);
+int		is_char(char *s);
 int		inspect_string(char *line, int i, int type, t_token **tokens);
 int		get_next_token(char *line, t_token **tokens);
 t_token		*lexer(char *line);
@@ -82,10 +84,11 @@ t_cmd		*parser(t_token **tokens);
 
 /* PARSE_QS*/
 t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);
+char		*tkn_eof(t_token *tkn);
 void		unquote(t_token **tokens);
 
 /* PARSE_ENV*/
-void		try_replace_env(t_token *tokens, t_token *st_token, char *value, int *i);
+char		*try_replace_env(t_token *tokens, char *st_addr, char *value, int *i);
 void		change_token_value(t_token *current, t_stack *context);
 void		manage_evar(t_token *current, t_stack *context);
 
