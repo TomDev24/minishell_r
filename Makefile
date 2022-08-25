@@ -28,5 +28,5 @@ test_exec:
 	bash ./tests/test_exec.sh
 
 clean:
-	rm a.out;
-	rm -rf a.out.dSYM;
+	rm minishell;
+	rm -rf minishell.dSYM;
