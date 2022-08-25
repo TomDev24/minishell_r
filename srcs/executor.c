@@ -132,7 +132,7 @@ void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amou
 		if (allowed == 0)
 			path = cmd->argv[0];
 		else
-			return;	
+			exit(0);
 	}
 
 	//pre_exec(cmd, pipes, pipe_amount, cmd_amount);
