@@ -67,6 +67,7 @@ typedef struct s_exec{
 
 typedef struct s_global{
 	t_ht		*hash_envp;
+    struct sigaction    s_int;
 	//char		**array_envp;
 }			t_global;
 
