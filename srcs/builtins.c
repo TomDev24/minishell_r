@@ -1,5 +1,44 @@
 #include "minishell.h"
 
+int	b_exit(char **argv)
+{
+	int	code;
+	int chislo;
+
+	code = 0;
+	chislo = 0;
+//	printf("builtin cmd: exit\n");
+	if (argv[1])
+		chislo = ft_atoi(argv[1]);
+	//	if chislo is not number
+	if (argv[1] && ft_strncmp(argv[1], "0", 2) != 0 && chislo == 0)
+	{
+		write(2, "sash: exit: ", 12);
+		write(2, argv[1], ft_strlen(argv[1]));
+		write(2, ": numeric argument required\n", 28);
+		exit(2);
+	}
+	else if (argv[1] && argv[2])
+	{
+		write(2, "sash: exit: too many arguments\n", 31);
+		return (code);
+	}
+//	printf("chislo = %d\n", chislo);
+	printf("exit\n");
+	exit(chislo);
+	return (code);
+}
+
+int	b_cd(char **argv)
+{
+	int	code;
+
+	(void) argv;
+	code = 0;
+	printf("builtin cmd: cd\n");
+	return (code);
+}
+
 int	b_pwd(){
 	char	buff[MAXPATHLEN];
 	int	code;
@@ -10,7 +49,7 @@ int	b_pwd(){
 	else
 		code = 1;
 
-	return code;
+	return (code);
 }
 
 int	b_echo(char	**argv){
@@ -35,7 +74,7 @@ int	b_echo(char	**argv){
 	if (!n_flag)
 		ft_putstr_fd("\n", 1);
 		//printf("\n");
-	return code;
+	return (code);
 }
 
 int	b_env(){
@@ -45,7 +84,7 @@ int	b_env(){
 	char **s = hash_to_array(mshell.hash_envp);
 	while(*s)
 		printf("%s\n", *s++);
-	return code;
+	return (code);
 }
 
 //works very BAD
@@ -79,7 +118,7 @@ int	b_export(char **argv){
 			ht_set(mshell.hash_envp, key_value[0], ""); 
 		printf("value %s\n", ht_get(mshell.hash_envp, key_value[0]));
 	}
-	return code;
+	return (code);
 }
 
 int	b_unset(char **argv){
@@ -90,5 +129,5 @@ int	b_unset(char **argv){
 		return code;
 	while(*(++argv))
 		ht_del(mshell.hash_envp, *argv);
-	return code;
+	return (code);
 }

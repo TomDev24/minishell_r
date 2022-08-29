@@ -81,6 +81,10 @@ int (*find_builtin(char *name))(char **){
 		return &b_export;
 	if (ft_strncmp("unset", name, ft_strlen(name) + 1) == 0)
 		return &b_unset;
+	if (ft_strncmp("exit", name, ft_strlen(name) + 1) == 0)
+		return &b_exit;
+	if (ft_strncmp("cd", name, ft_strlen(name) + 1) == 0)
+		return &b_cd;
 	return NULL;
 }
 
@@ -104,6 +108,7 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	close_pipes(pipes, pipe_amount);
 
 	code = func(cmd->argv);
+//	printf("cmd->argv: %s\n", cmd->argv[0]);
 	if (pipe_amount > 0)
 		exit(1);
 	else
@@ -184,6 +189,7 @@ void	executor(t_cmd *cmds, char **envp){
 	cmd_amount = cmdlst_size(cmds);	
 	if (cmd_amount == 0)
 		return; //should return code?
+//printf("inside executor\n");
 	pre_process(&exec, cmd_amount);
 	//here for now exec_buitlin calls two times
 	while(cmds){

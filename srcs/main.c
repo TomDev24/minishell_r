@@ -23,19 +23,19 @@ int	main(int argc, char **argv, char **envp){
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
 		python_test(argv[2], envp);
 
-    mshell.s_int.sa_handler = sigint_handler;
-    sigaction(SIGINT, &mshell.s_int, NULL);
-    signal(SIGQUIT, SIG_IGN);
+	mshell.s_int.sa_handler = sigint_handler;
+	sigaction(SIGINT, &mshell.s_int, NULL);
+	signal(SIGQUIT, SIG_IGN);
 
 	while(1 && argc == 1){
 		tokens = NULL;
 		cmds = NULL;
 		line = readline("sash>");
-        if (line == NULL)
-        {
-            printf("exit\n");
-            exit(0);
-        }
+		if (line == NULL)
+		{
+			printf("exit\n");
+			exit(0);
+		}
 		add_history(line);
 		tokens = lexer(line);
 		pretty_lexer(tokens);	
