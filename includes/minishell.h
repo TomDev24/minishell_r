@@ -106,6 +106,8 @@ int		b_echo(char **argv);
 int		b_env();
 int		b_export(char **argv);
 int		b_unset(char **argv);
+int		b_exit(char **argv);
+int		b_cd(char **argv);
 
 /* ENV	*/
 void		init_hash_envp(char **envp);

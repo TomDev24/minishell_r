@@ -31,11 +31,42 @@ int	b_exit(char **argv)
 
 int	b_cd(char **argv)
 {
-	int	code;
+	int		code;
+	char	*curr;
+	char	*old;
+	char	*home;
 
-	(void) argv;
 	code = 0;
-	printf("builtin cmd: cd\n");
+	curr = NULL;
+	old = NULL;
+	home = NULL;
+	curr = getcwd(curr, 1000);
+//	printf("getcwd before action: %s\n", curr);
+	if (!argv[1] || (argv[1] && ft_strncmp(argv[1], "~", 2) == 0))
+	{
+		home = ht_get(mshell.hash_envp, "HOME");
+//		printf("cd detected; HOME dir: %s\n", home);
+		ht_set(mshell.hash_envp, "OLDPWD", curr);
+		chdir(home);
+	}
+	else if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
+	{
+		old = ht_get(mshell.hash_envp, "OLDPWD");
+//		printf("switching to dir: %s\n", old);
+		chdir(old);
+		ht_set(mshell.hash_envp, "OLDPWD", curr);
+	}
+	else
+	{
+		ht_set(mshell.hash_envp, "OLDPWD", curr);
+		if (chdir(argv[1]) != 0)
+		{
+			write(2, "sash: cd: ", 10);
+			write(2, argv[1], ft_strlen(argv[1]));
+			write(2, ": ", 2);
+			perror("");
+		}
+	}
 	return (code);
 }
 
