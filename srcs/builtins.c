@@ -29,45 +29,47 @@ int	b_exit(char **argv)
 	return (code);
 }
 
+static void	chdir_check_error(char **argv)
+{
+	if (chdir(argv[1]) != 0)
+	{
+		write(2, "sash: cd: ", 10);
+		write(2, argv[1], ft_strlen(argv[1]));
+		write(2, ": ", 2);
+		perror("");
+	}
+}
+
 int	b_cd(char **argv)
 {
-	int		code;
-	char	*curr;
-	char	*old;
-	char	*home;
+	char	*vars[3];
 
-	code = 0;
-	curr = NULL;
-	old = NULL;
-	home = NULL;
-	curr = getcwd(curr, 1000);
+	vars[0] = NULL;
+	vars[0] = getcwd(vars[0], 1000);
 //	printf("getcwd before action: %s\n", curr);
-	if (!argv[1] || (argv[1] && ft_strncmp(argv[1], "~", 2) == 0))
+	if (argv[0] && argv[1] && argv[2])
+		printf("sash: cd: too many arguments\n");
+	else if (!argv[1] || (argv[1] && ft_strncmp(argv[1], "~", 2) == 0))
 	{
-		home = ht_get(mshell.hash_envp, "HOME");
+		vars[2] = ht_get(mshell.hash_envp, "HOME");
 //		printf("cd detected; HOME dir: %s\n", home);
-		ht_set(mshell.hash_envp, "OLDPWD", curr);
-		chdir(home);
+		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+		chdir(vars[2]);
 	}
 	else if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
 	{
-		old = ht_get(mshell.hash_envp, "OLDPWD");
+		vars[1] = ht_get(mshell.hash_envp, "OLDPWD");
 //		printf("switching to dir: %s\n", old);
-		chdir(old);
-		ht_set(mshell.hash_envp, "OLDPWD", curr);
+		chdir(vars[1]);
+		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
 	}
 	else
 	{
-		ht_set(mshell.hash_envp, "OLDPWD", curr);
-		if (chdir(argv[1]) != 0)
-		{
-			write(2, "sash: cd: ", 10);
-			write(2, argv[1], ft_strlen(argv[1]));
-			write(2, ": ", 2);
-			perror("");
-		}
+		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+		chdir_check_error(argv);
 	}
-	return (code);
+	free(vars[0]);
+	return (0);
 }
 
 int	b_pwd(){
