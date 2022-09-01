@@ -7,7 +7,7 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr){
 	tmp = *tokens;
 	new = (t_token*)malloc(sizeof(t_token));
 	if (!new)
-		exit(1); // make better error
+		m_error(1);
 	
 	new->type = type;
 	new->value = val;
@@ -17,9 +17,8 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr){
 		*tokens = new;
 		return 1;
 	}
-	while (tmp->next){	
+	while (tmp->next)
 		tmp = tmp->next;
-	}
 	tmp->next = new;	
 	return 1;
 }
@@ -82,25 +81,25 @@ int	get_next_token(char *line, t_token **tokens){
 	
 	i = 0;
 	if (line[i] == '\'' && ++i)
-		return tokens_push(tokens, Q1, "'", line + i - 1)
+		return tokens_push(tokens, Q1, ft_strdup("'"), line + i - 1)
 			* inspect_string(line, i, ARG, tokens);
 	if (line[i] == '"' && ++i)
-		return tokens_push(tokens, Q2, "\"", line + i - 1)
+		return tokens_push(tokens, Q2, ft_strdup("\""), line + i - 1)
 			* inspect_string(line, i, ARG, tokens);
 	if (ft_strncmp(line+i, "<<", 2) == 0)
-		return tokens_push(tokens, ININ, "<<", line + i)
+		return tokens_push(tokens, ININ, ft_strdup("<<"), line + i)
 			* inspect_string(line, i + 2, DELIMITER, tokens);
 	if (ft_strncmp(line+i, ">>", 2) == 0)
-		return tokens_push(tokens, OUTOUT, ">>", line + i)
+		return tokens_push(tokens, OUTOUT, ft_strdup(">>"), line + i)
 			* inspect_string(line, i + 2, FILEN, tokens);
 	if (line[i] == '>' && ++i)
-		return tokens_push(tokens, OUT, ">", line + i - 1)
+		return tokens_push(tokens, OUT, ft_strdup(">"), line + i - 1)
 			* inspect_string(line, i, FILEN, tokens);
 	if (line[i] == '<' && ++i)
-		return tokens_push(tokens, IN, "<", line + i - 1)
+		return tokens_push(tokens, IN, ft_strdup("<"), line + i - 1)
 			* inspect_string(line, i, FILEN, tokens);
 	if (line[i] == '|')
-		return (i+1) * tokens_push(tokens, PIPE, "|", line + i);
+		return (i+1) * tokens_push(tokens, PIPE, ft_strdup("|"), line + i);
 	return inspect_string(line, i, CMD, tokens);
 }
 

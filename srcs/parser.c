@@ -1,6 +1,11 @@
 #include "minishell.h"
 
-void	init_cmd(t_cmd *cmd){
+t_cmd	*allocate_cmd(){
+	t_cmd	*cmd;
+
+	cmd = (t_cmd*)malloc(sizeof(t_cmd));
+	if (!cmd)
+		m_error(1);
 	cmd->i = 0;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
@@ -8,16 +13,8 @@ void	init_cmd(t_cmd *cmd){
 	cmd->cmd = NULL;
 	cmd->args = NULL;
 	cmd->next = NULL;
-}
 
-t_cmd	*allocate_cmd(){
-	t_cmd	*new;
-
-	new = (t_cmd*)malloc(sizeof(t_cmd));
-	if (!new)
-		exit(1); // make better error init_cmd(new);
-	init_cmd(new);
-	return new;
+	return cmd;
 }
 
 void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
@@ -48,18 +45,11 @@ char	**make_argv(t_cmd *cmd){
 	tmp = cmd->args;
 	res = (char **)malloc(sizeof(res) * (size + 1));
 	if (!res)
-		exit(1); // make better exit
+		m_error(1);
 
 	*(res++) = cmd->cmd->value;
 	while (tmp){
 		tkn = tmp->content;
-		//if (!tkn->value){ printf("null\n"); tmp = tmp->next; continue;}
-		//printf("tkn->value %s\n", tkn->value);
-		//printf("tkn->value[0] %c\n", tkn->value[0]);
-		//QUOTES LOGIC !!!!!! GET IT OUT
-		//if (tkn->value[0] == 0 && tkn->addr[0] != '"' && tkn->addr[0] != '\'') //val is null and not " or '
-		//	size--; // correcting size for valid return
-		//else
 		*(res++) = tkn->value;
 		tmp = tmp->next;
 	}
@@ -88,6 +78,7 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 		if (tokens->type == CMD && !new->cmd)
 			new->cmd = tokens;
 		else if (tokens->type == ARG)
+			//lstnew could error FIX THIS
 			ft_lstadd_back(&new->args, ft_lstnew(tokens));
 		else if (tokens->type == IN)
 			tokens = save_redirection(tokens, new, IN);
@@ -95,7 +86,6 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 			tokens = save_redirection(tokens, new, OUT);
 		tokens = tokens->next;
 	}
-
 	new->argv = make_argv(new);
 	add_cmd_to_list(cmds, new);
 	return tokens;
@@ -105,15 +95,8 @@ t_cmd	*parser(t_token **tokens){
 	t_cmd		*cmds;
 	
 	cmds = NULL;
-
-	//pretty_lexer(*tokens);
 	unquote(tokens);
-	//printf("\nAFTER:\n");
-	//pretty_lexer(*tokens);
-	//printf("\n");
-	//print_tokens(*tokens);
-	//exit(1);
-
+	
 	//We should read each token until PIPE or end_of_list (; is not included for now)	
 	while(*tokens){
 		*tokens = pack_cmd(*tokens, &cmds);

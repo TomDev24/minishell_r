@@ -12,6 +12,10 @@ void    sigint_handler(int num)
     rl_redisplay();
 }
 
+//we should free
+//1)line
+//2)tokens
+//3)cmds
 int	main(int argc, char **argv, char **envp){
 	char		*line;
 	t_token		*tokens;
@@ -21,19 +25,19 @@ int	main(int argc, char **argv, char **envp){
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
 		python_test(argv[2], envp);
 
-    mshell.s_int.sa_handler = sigint_handler;
-    sigaction(SIGINT, &mshell.s_int, NULL);
-    signal(SIGQUIT, SIG_IGN);
+	mshell.s_int.sa_handler = sigint_handler;
+	sigaction(SIGINT, &mshell.s_int, NULL);
+	signal(SIGQUIT, SIG_IGN);
 
 	while(1 && argc == 1){
 		tokens = NULL;
 		cmds = NULL;
 		line = readline(">>");
-        if (line == NULL)
-        {
-            printf("exit\n");
-            exit(0);
-        }
+		if (line == NULL)
+		{
+		    printf("exit\n");
+		    exit(0);
+		}
 		add_history(line);
 		tokens = lexer(line);
 		pretty_lexer(tokens);	
@@ -42,8 +46,8 @@ int	main(int argc, char **argv, char **envp){
 		cmds = parser(&tokens);	
 		print_cmds(cmds);
 		executor(cmds, envp);
-		//free_tokens(tokens);
-		//free_cmds(cmds);
+		free_tokens(tokens);
+		free_cmds(cmds);
 	}
 	return 0;
 }

@@ -1,12 +1,17 @@
 #include "minishell.h"
 
 //FREE FUNCTIONS SHOULD REWRITTEN AND PLACED ELSEWHERE
+
+//Free list of tokens and 
+//1)value
+//2)
 void	free_tokens(t_token *tokens){
 	t_token	*tmp;
 
 	while(tokens){
 		tmp = tokens;
 		tokens = tokens->next;
+		free(tmp->value);
 		free(tmp);
 	}
 }
@@ -19,16 +24,30 @@ void	free_arr(char **line){
 	free(line);
 }
 
+//typedef struct s_cmd{
+//	int		i;
+//	char		*infile;
+//	char		*outfile;
+//
+//	char		**argv;  FREE ONLY **
+//	t_token		*cmd;
+//	t_list		*args; 	 FREE ONLY *, not content
+//	struct s_cmd	*next;
+//}			t_cmd;
 void	free_cmds(t_cmd *cmds){
-	//not best way
 	t_cmd	*tmp;
+	t_list	*tmp2;
+
 	while(cmds){
 		tmp = cmds;
 		cmds = cmds->next;
-		free(tmp->infile);
-		free(tmp->outfile);
-		//free_arr(tmp->argv);
-		//ft_lstclear(
+
+		free(tmp->argv);
+		while(tmp->args){
+			tmp2 = tmp->args;
+			tmp->args = tmp->args->next;
+			free(tmp2);
+		}
 		free(tmp);
 	}
 }

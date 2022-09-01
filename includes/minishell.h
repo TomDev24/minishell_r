@@ -71,6 +71,9 @@ typedef struct s_global{
 
 extern	t_global	mshell;
 
+/* ERROR */
+void		m_error(int code);
+
 /* LEXER */
 int		tokens_push(t_token **tokens, int type, char *val, char *addr);
 int		inspect_string(char *line, int i, int type, t_token **tokens);
