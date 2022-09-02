@@ -33,11 +33,13 @@ static	char *select_min(char *s){
 		min = ft_strchr(s, '"'); 
 	if (ft_strchr(s, '\'') < min && ft_strchr(s, '\'') != NULL)
 		min = ft_strchr(s, '\''); 
+	if (ft_strchr(s, '$') < min && ft_strchr(s, '$') != NULL)
+		min = ft_strchr(s, '$'); 
 
 	return min;
 }
 
-static int is_char(char *s){
+int	is_char(char *s){
 	int res;
 
 	res = 0;
@@ -61,7 +63,7 @@ int	inspect_string(char *line, int i, int type, t_token **tokens){
 	while(line[i] == ' ')
 		i++;
 	if (is_char(line+i)) { 
-		tmp = select_min(line+i);
+		tmp = select_min(line+i+1);
 		c = *tmp;
 		*tmp = '\0';
 		val = ft_strdup(line + i); // needs to be free

@@ -6,6 +6,8 @@ void    sigint_handler(int num)
 {
     (void) num;
     waitpid(-1, NULL, 0);
+//    write(1, "\nchild proc over!", 17);
+//    write(1, "\n>>", 3);
     write(1, "\n", 1);
     rl_on_new_line();
     rl_replace_line("", 0);
@@ -32,11 +34,11 @@ int	main(int argc, char **argv, char **envp){
 	while(1 && argc == 1){
 		tokens = NULL;
 		cmds = NULL;
-		line = readline(">>");
+		line = readline("sash>");
 		if (line == NULL)
 		{
-		    printf("exit\n");
-		    exit(0);
+			printf("exit\n");
+			exit(0);
 		}
 		add_history(line);
 		tokens = lexer(line);

@@ -1,5 +1,77 @@
 #include "minishell.h"
 
+int	b_exit(char **argv)
+{
+	int	code;
+	int chislo;
+
+	code = 0;
+	chislo = 0;
+//	printf("builtin cmd: exit\n");
+	if (argv[1])
+		chislo = ft_atoi(argv[1]);
+	//	if chislo is not number
+	if (argv[1] && ft_strncmp(argv[1], "0", 2) != 0 && chislo == 0)
+	{
+		write(2, "sash: exit: ", 12);
+		write(2, argv[1], ft_strlen(argv[1]));
+		write(2, ": numeric argument required\n", 28);
+		exit(2);
+	}
+	else if (argv[1] && argv[2])
+	{
+		write(2, "sash: exit: too many arguments\n", 31);
+		return (code);
+	}
+//	printf("chislo = %d\n", chislo);
+	printf("exit\n");
+	exit(chislo);
+	return (code);
+}
+
+static void	chdir_check_error(char **argv)
+{
+	if (chdir(argv[1]) != 0)
+	{
+		write(2, "sash: cd: ", 10);
+		write(2, argv[1], ft_strlen(argv[1]));
+		write(2, ": ", 2);
+		perror("");
+	}
+}
+
+int	b_cd(char **argv)
+{
+	char	*vars[3];
+
+	vars[0] = NULL;
+	vars[0] = getcwd(vars[0], 1000);
+//	printf("getcwd before action: %s\n", curr);
+	if (argv[0] && argv[1] && argv[2])
+		printf("sash: cd: too many arguments\n");
+	else if (!argv[1] || (argv[1] && ft_strncmp(argv[1], "~", 2) == 0))
+	{
+		vars[2] = ht_get(mshell.hash_envp, "HOME");
+//		printf("cd detected; HOME dir: %s\n", home);
+		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+		chdir(vars[2]);
+	}
+	else if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
+	{
+		vars[1] = ht_get(mshell.hash_envp, "OLDPWD");
+//		printf("switching to dir: %s\n", old);
+		chdir(vars[1]);
+		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+	}
+	else
+	{
+		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+		chdir_check_error(argv);
+	}
+	free(vars[0]);
+	return (0);
+}
+
 int	b_pwd(){
 	char	buff[MAXPATHLEN];
 	int	code;
@@ -10,7 +82,7 @@ int	b_pwd(){
 	else
 		code = 1;
 
-	return code;
+	return (code);
 }
 
 int	b_echo(char	**argv){
@@ -35,7 +107,7 @@ int	b_echo(char	**argv){
 	if (!n_flag)
 		ft_putstr_fd("\n", 1);
 		//printf("\n");
-	return code;
+	return (code);
 }
 
 int	b_env(){
@@ -45,7 +117,7 @@ int	b_env(){
 	char **s = hash_to_array(mshell.hash_envp);
 	while(*s)
 		printf("%s\n", *s++);
-	return code;
+	return (code);
 }
 
 //works very BAD
@@ -79,7 +151,7 @@ int	b_export(char **argv){
 			ht_set(mshell.hash_envp, key_value[0], ""); 
 		printf("value %s\n", ht_get(mshell.hash_envp, key_value[0]));
 	}
-	return code;
+	return (code);
 }
 
 int	b_unset(char **argv){
@@ -90,5 +162,5 @@ int	b_unset(char **argv){
 		return code;
 	while(*(++argv))
 		ht_del(mshell.hash_envp, *argv);
-	return code;
+	return (code);
 }
