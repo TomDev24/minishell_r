@@ -15,6 +15,8 @@ t_cmd	*allocate_cmd(){
 	cmd->args = NULL;
 	cmd->next = NULL;
 	cmd->redirs = NULL;
+
+	return cmd;
 }
 
 void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
