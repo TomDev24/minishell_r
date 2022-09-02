@@ -9,6 +9,7 @@ void	init_cmd(t_cmd *cmd){
 	cmd->cmd = NULL;
 	cmd->args = NULL;
 	cmd->next = NULL;
+	cmd->redirs = NULL;
 }
 
 t_cmd	*allocate_cmd(){
@@ -65,6 +66,17 @@ char	**make_argv(t_cmd *cmd){
 }
 
 t_token	*save_redirection(t_token *tokens, t_cmd *new, int FD_TYPE){
+	if (tokens->next->type == FILEN || tokens->next->type == DELIMITER){
+		//tokens->next could not exist
+		//lstnew could error
+		t_redir *redir;
+
+		redir = malloc(sizeof(t_redir));
+		redir->type= tokens->type;
+		redir->filen = tokens->next->value;
+		ft_lstadd_back(&new->redirs, ft_lstnew(redir));
+	}
+
 	if (tokens->next->type == FILEN){
 		tokens = tokens->next;
 		if (FD_TYPE == IN) 

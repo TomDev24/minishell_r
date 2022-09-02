@@ -54,20 +54,49 @@ void	handle_pipes(t_cmd *cmd, int **pipes, int cmd_amount){
 
 void	handle_redirects(t_cmd *cmd){
 	int	fd;
+	t_redir	*r;
+	t_list	*redirects;
+	int	std_in;
 
+	/*while(cmd->redirs){
+		t_redir *r = cmd->redirs->content;
+		printf("Redir FN: %s\n", r->filen);
+		cmd->redirs = cmd->redirs->next;
+	}*/ 
+		
+	std_in = dup(0);
+	redirects = cmd->redirs;	
+	while(redirects){
+		r = redirects->content;
+		if (r->type == IN){
+			fd = open(r->filen, O_RDONLY);
+			dup2(fd, 0);
+			close(fd);
+		}
+		else if (r->type == OUT){
+			fd = open(r->filen, O_TRUNC | O_CREAT | O_WRONLY, 0664);
+			dup2(fd, 1);
+			close(fd);
+		}
+		else if (r->type == ININ){
+			dup2(std_in, 0);
+			here_doc(r->filen);
+		}
+		redirects = redirects->next;
+	}
 	//is duplecation of descriptor, second time is good thing?
-	if (cmd->infile){
-		fd = open(cmd->infile, O_RDONLY);
-		dup2(fd, 0);
-		close(fd); //could set errno to error
-	}
-	if (cmd->outfile){
-		fd = open(cmd->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0664);
-		dup2(fd, 1);
-		close(fd); //could set errno to error
-	}
-	if (cmd->eof)
-		here_doc(cmd);
+	//if (cmd->infile){
+	//	fd = open(cmd->infile, O_RDONLY);
+	//	dup2(fd, 0);
+	//	close(fd); //could set errno to error
+	//}
+	//if (cmd->outfile){
+	//	fd = open(cmd->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	//	dup2(fd, 1);
+	//	close(fd); //could set errno to error
+	//}
+	//if (cmd->eof)
+	//	here_doc(cmd);
 }
 
 int (*find_builtin(char *name))(char **){

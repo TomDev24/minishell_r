@@ -39,7 +39,7 @@ void	evaluate_and_write(char *line, int fd){
 	}
 }
 
-void	here_doc(t_cmd	*cmd){
+void	here_doc(char *eof){
 	int	fd;
 	char	*line;
 			
@@ -47,7 +47,7 @@ void	here_doc(t_cmd	*cmd){
 	fd = open(".heredoc_tmp", O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0)
 		exit(2);
-	while (ft_strncmp(line, cmd->eof, ft_strlen(cmd->eof) + 1) != 0){
+	while (ft_strncmp(line, eof, ft_strlen(eof) + 1) != 0){
 		if (*line){
 			evaluate_and_write(line, fd);
 			write(fd, "\n", 1);

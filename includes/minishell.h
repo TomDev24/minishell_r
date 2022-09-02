@@ -26,7 +26,8 @@ enum	lexer_types{
 	Q2
 };
 
-typedef struct s_token{ int		type;
+typedef struct s_token{ 
+	int		type;
 	char		*value;
 	char		*addr;
 	char		*end_addr;
@@ -38,11 +39,17 @@ typedef struct s_cmd{
 	char		*infile;
 	char		*outfile;
 	char		*eof;
+	t_list		*redirs;
 	char		**argv;
 	t_token		*cmd;
 	t_list		*args;
 	struct s_cmd	*next;
 }			t_cmd;
+
+typedef struct s_redir{
+	int		type;
+	char		*filen;
+}			t_redir;
 
 typedef struct s_stack{
 	//save last and first token here
@@ -98,7 +105,7 @@ char		**parse_envp(char **envp);
 void		executor(t_cmd *cmds, char **envp);
 
 /* HERE_DOC */
-void		here_doc(t_cmd	*cmd);
+void		here_doc(char *eof);
 
 /* BUILTINS */
 int		b_pwd();
