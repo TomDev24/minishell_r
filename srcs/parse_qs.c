@@ -4,6 +4,8 @@ t_stack		*init_context(t_token **tokens){
 	t_stack	*res;
 	
 	res = malloc(sizeof(t_stack));
+	if (!res)
+		m_error(1);
 	res->evars_len = 0;
 	res->q_type = -1;
 	res->temp_type = '0';
@@ -17,7 +19,19 @@ t_stack		*init_context(t_token **tokens){
 }
 
 void	free_context(t_stack **context){
+	t_list	*elements;
+	t_list	*tmp;
+	t_stack *ctx;
+
+	ctx = *context;
+	elements = ctx->elements;
 	(*context)->q_type = 0;
+	while (elements){
+		tmp = elements;
+		elements = elements->next;
+		free(tmp);
+	}
+	free(*context);
 	*context = NULL;
 }
 
@@ -58,10 +72,11 @@ void	replace_token(t_token *replacer, t_stack **context, t_token *current, t_tok
 		*tokens = replacer;
 		replacer->type = CMD;
 	}
-	else if (context_el->type != current->type)
+	else if (context_el) // != current->type)
 		context_el->next = replacer;
 	else
 		*tokens = replacer;
+	current += 1 -1;
 }
 
 //st_token=Q1/Q2/PREV en_token=Q1/Q2
@@ -116,6 +131,8 @@ t_token	*create_replacer(t_token *st_token){
 	t_token	*new;
 
 	new = (t_token*)malloc(sizeof(t_token));
+	if (!new)
+		m_error(1);
 	new->type = determine_type(st_token);
 	new->addr= NULL; 
 	new->next = NULL;
@@ -148,6 +165,31 @@ void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, 
 	}
 }
 
+void	free_context_elements(t_stack *context){
+	t_token	*st_token;
+	t_list	*head;
+
+	head = context->elements;
+	st_token = head->content;
+	if (st_token->type != context->q_type)
+		head = head->next;
+	
+	//tmp = head->content;
+	//free(tmp->value);
+	//free(tmp);
+	//head->content = NULL;
+	free_tkn((t_token**)&head->content);
+	head = head->next;
+
+	st_token = head->content;
+	while(st_token->type != context->q_type){
+		free_tkn((t_token**)&head->content);
+		head = head->next;
+		st_token = head->content;
+	}
+	free_tkn((t_token**)&head->content);
+}
+
 //SHOULD CHOSE CORRECT TYPE AND PARSE VALUE RIGHT
 t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	//delete all from context
@@ -162,11 +204,12 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	prep_end_start_addr(context, &st_token, &en_token, tokens);
 	value = (char*)ft_calloc((size_t)en_token->addr - (size_t)st_token->addr + context->evars_len, sizeof(char));
 	if (!value)
-		exit(2);
+		m_error(1);
 
 	//can catch error here
 	set_replacer_value(context, st_token, en_token, value, *tokens);
 	new->value = value;
+	free_context_elements(context);
 	return new;
 }
 
@@ -217,4 +260,6 @@ void	unquote(t_token **tokens){
 		prev = current;
 		current = current->next;
 	}
+	if (context)
+		free(context);
 }

@@ -5,14 +5,25 @@
 //Free list of tokens and 
 //1)value
 //2)
+void	free_tkn(t_token **tkn){
+	t_token *tmp;
+
+	if (!*tkn)
+		return;
+	tmp = *tkn;
+	if (*tmp->value != 0)
+		free(tmp->value);
+	free(*tkn);
+	*tkn = NULL;
+
+}
 void	free_tokens(t_token *tokens){
 	t_token	*tmp;
 
 	while(tokens){
 		tmp = tokens;
 		tokens = tokens->next;
-		free(tmp->value);
-		free(tmp);
+		free_tkn(&tmp);
 	}
 }
 

@@ -29,10 +29,18 @@ char *type_to_string(int type){
 
 static	char *array_to_line(char **arr){
 	char *res;
+	char *tmp1;
+	char *tmp2;
 
 	res = "";
 	while(*arr){
-		res = ft_strjoin(res, ft_strjoin(*arr, " "));
+		tmp1 = res;
+		tmp2 = ft_strjoin(*arr, " ");
+		res = ft_strjoin(res, tmp2);
+		if (*tmp1)
+			free(tmp1);
+		if (*tmp2)
+			free(tmp2);
 		arr++;
 	}
 	return res;
@@ -66,12 +74,16 @@ void	print_list(t_list *lst){
 /* CMDS PRINTER */
 
 void	print_cmds(t_cmd *cmds){
+	char	*argv;
+
+	argv = array_to_line(cmds->argv);
 	while(cmds){
 		printf("--CMD--\n");
 		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |DELIM:%s |ARGV:%s\n", cmds->i, cmds->cmd->value, 
-				cmds->infile, cmds->outfile, cmds->eof, array_to_line(cmds->argv)); //arr_to_line add space at the end
+				cmds->infile, cmds->outfile, cmds->eof, argv); //arr_to_line add space at the end
 		cmds = cmds->next;
 	}
+	free(argv);
 }
 
 /* TOKENS PRINTER */

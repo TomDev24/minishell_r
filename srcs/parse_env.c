@@ -60,6 +60,8 @@ void	change_token_value(t_token *current, t_stack *context){
 	while (current && *current->addr == '$'){
 		if (prev && first->end_addr != current->addr)
 			break;
+		//else
+		
 		first->end_addr = tkn_eof(current) + 1; //tkn_eof points on last valid char
 		key = current->value + 1;
 		value = ht_get(mshell.hash_envp, key);
@@ -80,7 +82,8 @@ void	change_token_value(t_token *current, t_stack *context){
 
 
 void	manage_evar(t_token *current, t_stack *context){
-	if(current->type != CMD && current->type != ARG)
+	if(current->type != CMD && current->type != ARG
+		&& current->type != FILEN && current->type != DELIMITER)
 		return;
 	if(*current->addr != '$')
 		return;	

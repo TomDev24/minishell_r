@@ -51,5 +51,6 @@ int	main(int argc, char **argv, char **envp){
 		free_tokens(tokens);
 		free_cmds(cmds);
 	}
+	ht_delete(mshell.hash_envp);	
 	return 0;
 }

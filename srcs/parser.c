@@ -114,14 +114,16 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 
 t_cmd	*parser(t_token **tokens){
 	t_cmd		*cmds;
+	t_token		*tkns;
 	
 	cmds = NULL;
 	unquote(tokens);
+	tkns = *tokens;
 	//We should read each token until PIPE or end_of_list (; is not included for now)	
-	while(*tokens){
-		*tokens = pack_cmd(*tokens, &cmds);
-		if (*tokens && (*tokens)->type == PIPE)
-			*tokens = (*tokens)->next;
+	while(tkns){
+		tkns = pack_cmd(tkns, &cmds);
+		if (tkns && tkns->type == PIPE)
+			tkns = tkns->next;
 	}
 	return cmds;
 }

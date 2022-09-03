@@ -116,6 +116,25 @@ void	ht_del(t_ht *ht, char *key){
 	}
 }
 
+void	ht_delete(t_ht *ht){
+	unsigned int	i;
+	t_entry		*tmp;
+	t_entry		*tmp2;
+
+	i = -1;
+	while(++i < SLOT_AMOUNT){
+		if(ht->entries[i]){
+			tmp = ht->entries[i];
+			while(tmp){
+				tmp2 = tmp;
+				tmp = tmp->next;
+				free(tmp2->key);
+				free(tmp2->value);
+			}
+		}
+	}
+}
+
 //calculated amount of existing keys (not just slots)
 unsigned int ht_size(t_ht *ht){
 	unsigned int i;

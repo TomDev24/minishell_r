@@ -17,7 +17,8 @@ enum	lexer_types{
 	CMD,
 	ARG,
 	PIPE,
-	FILEN, OUT,
+	FILEN, 
+	OUT,
 	IN,
 	ININ,
 	OUTOUT,
@@ -131,6 +132,7 @@ char		**sort_array(char **s);
 
 
 /* FREEING */
+void		free_tkn(t_token **tkn);
 void		free_tokens(t_token *tokens);
 void		free_arr(char **line);
 void		free_cmds(t_cmd *cmds);

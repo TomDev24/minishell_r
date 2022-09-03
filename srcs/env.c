@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+//HASH_ENVP should always have alocated key and str
 void	init_hash_envp(char **envp){
 	t_ht	*ht;
 	char	*key;
@@ -9,10 +10,12 @@ void	init_hash_envp(char **envp){
 	ht = mshell.hash_envp;
 	while(*envp){
 		//its very bad, think of something else
-		key = ft_strdup(*envp);
+		key = *envp;
 		tmp = ft_strchr(key, '=');
 		*tmp = '\0';
 		ht_set(ht, key, tmp + 1);
+		*tmp = '=';
 		envp++;
 	}
 }
+

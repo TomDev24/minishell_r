@@ -84,19 +84,6 @@ void	handle_redirects(t_cmd *cmd){
 		}
 		redirects = redirects->next;
 	}
-	//is duplecation of descriptor, second time is good thing?
-	//if (cmd->infile){
-	//	fd = open(cmd->infile, O_RDONLY);
-	//	dup2(fd, 0);
-	//	close(fd); //could set errno to error
-	//}
-	//if (cmd->outfile){
-	//	fd = open(cmd->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0664);
-	//	dup2(fd, 1);
-	//	close(fd); //could set errno to error
-	//}
-	//if (cmd->eof)
-	//	here_doc(cmd);
 }
 
 int (*find_builtin(char *name))(char **){
@@ -187,7 +174,7 @@ int	post_process(t_exec *exec, int cmd_amount){
 	close_pipes(exec->pipes, exec->pipe_amount);
 	while (++j < cmd_amount)
 		waitpid(exec->pids[j], NULL, 0);
-	//free_pipes(exec->pipes, exec->pipe_amount);	
+	free_pipes(exec->pipes, exec->pipe_amount);	
 	free(exec->pids);
 	
 	return 1;
@@ -200,8 +187,9 @@ void	pre_process(t_exec *exec, int cmd_amount){
 
 	pipe_amount = cmd_amount - 1;
 	pids = (int*)malloc(sizeof(int) * cmd_amount);
-	pipes = init_pipes(pipe_amount);
-	
+	if (!pids)
+		m_error(1);
+	pipes = init_pipes(pipe_amount);	
 	exec->pipe_amount = pipe_amount;
 	exec->pids = pids;
 	exec->pipes = pipes;	
@@ -224,8 +212,10 @@ void	executor(t_cmd *cmds, char **envp){
 	while(cmds){
 		if (cmd_amount == 1){
 			code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
-			if (code != -42)
+			if (code != -42){
+				post_process(&exec, cmd_amount);
 				return;
+			}
 		}
 		exec.pids[i] = fork();
 		if (exec.pids[i] == 0){
