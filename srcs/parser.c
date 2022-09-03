@@ -62,18 +62,21 @@ char	**make_argv(t_cmd *cmd){
 	return res - size;
 }
 
-t_token	*save_redirection(t_token *tokens, t_cmd *new, int FD_TYPE){
+t_token	*save_redirection(t_token *tokens, t_cmd *new){
+	t_redir *redir;
+
 	if (tokens->next->type == FILEN || tokens->next->type == DELIMITER){
 		//tokens->next could not exist
 		//lstnew could error
-		t_redir *redir;
 
 		redir = malloc(sizeof(t_redir));
+		if (!redir)
+			m_error(1);
 		redir->type= tokens->type;
 		redir->filen = tokens->next->value;
 		ft_lstadd_back(&new->redirs, ft_lstnew(redir));
 	}
-
+	/*
 	if (tokens->next->type == FILEN){
 		tokens = tokens->next;
 		if (FD_TYPE == IN) 
@@ -84,7 +87,7 @@ t_token	*save_redirection(t_token *tokens, t_cmd *new, int FD_TYPE){
 	else if (FD_TYPE == ININ && tokens->next->type == DELIMITER){
 		tokens = tokens->next;
 		new->eof = tokens->value;
-	}
+	}*/
 	return tokens;
 }
 
@@ -100,11 +103,11 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 			//lstnew could error FIX THIS
 			ft_lstadd_back(&new->args, ft_lstnew(tokens));
 		else if (tokens->type == IN)
-			tokens = save_redirection(tokens, new, IN);
+			tokens = save_redirection(tokens, new);
 		else if (tokens->type == OUT)
-			tokens = save_redirection(tokens, new, OUT);
+			tokens = save_redirection(tokens, new);
 		else if (tokens->type == ININ)
-			tokens = save_redirection(tokens, new, ININ);
+			tokens = save_redirection(tokens, new);
 		tokens = tokens->next;
 	}
 	new->argv = make_argv(new);

@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+//we should parse hash_envp
+//and we should free it, after we done
 char    **parse_envp(char **envp){
 	char **res;
 	int i = 0;
@@ -20,21 +22,22 @@ int	**init_pipes(int pipes_amount){
 	int	**res; 
 
 	res = (int**)malloc( sizeof(int*) * (pipes_amount + 1) );
-	if (!res){
-		perror("CANT ALLOCATE MEM\n");
-		exit(1);
-	}
+	if (!res)
+		m_error(1);
 	//res[pipes_amount] = NULL;
 	while (i < pipes_amount){
 		res[i] = (int*)malloc(sizeof(int) * 2);	
+		if (!res[i])
+			m_error(1);
 		if (pipe(res[i]) < 0)
-			perror("PIPE ERROR");
+			m_error(3);
 		i++;
 	}
 
 	return res;
 }
 
+//cmd->outfile etc. is outdated needs refactor
 void	handle_pipes(t_cmd *cmd, int **pipes, int cmd_amount){
 	if (cmd->i == 0){
 		if (!cmd->outfile)
@@ -57,13 +60,7 @@ void	handle_redirects(t_cmd *cmd){
 	t_redir	*r;
 	t_list	*redirects;
 	int	std_in;
-
-	/*while(cmd->redirs){
-		t_redir *r = cmd->redirs->content;
-		printf("Redir FN: %s\n", r->filen);
-		cmd->redirs = cmd->redirs->next;
-	}*/ 
-		
+			
 	std_in = dup(0);
 	redirects = cmd->redirs;	
 	while(redirects){
@@ -139,21 +136,32 @@ void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amou
 	char	*path;
 	int	allowed;
 	char	**cmd_paths;
+	char	*tmp;
+	int	i;
 
+	i = 0;
 	cmd_paths = parse_envp(envp);
-	while(*cmd_paths){
-		path = ft_strjoin(*cmd_paths, ft_strjoin("/", cmd->argv[0]));
+	while(cmd_paths[i]){
+		tmp = ft_strjoin("/", cmd->argv[0]);
+		path = ft_strjoin(cmd_paths[i], tmp);
+		free(tmp);
 		allowed = access(path, X_OK);
 		//printf("PAth %s access %d\n", path, allowed);
 		if (allowed == 0)
 			break;
-		cmd_paths++;
+		i++;
+		if (cmd_paths[i]){
+			free(path);
+		}
 	}
+	free_arr(cmd_paths);
 	//checking if cmd itself is path // is check on '.' or '/' required?
 	if (allowed < 0){
 		allowed = access(cmd->argv[0], X_OK);
-		if (allowed == 0)
+		if (allowed == 0){
+			free(path); // freeing old path
 			path = cmd->argv[0];
+		}
 		else
 			exit(0);
 	}
@@ -164,6 +172,7 @@ void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amou
 		handle_pipes(cmd, pipes, cmd_amount);
 
 	close_pipes(pipes, pipe_amount);
+	//path is heap alocated is it get lost in fork?
 	execve(path, cmd->argv, envp);
 }
 
@@ -172,7 +181,7 @@ int	post_process(t_exec *exec, int cmd_amount){
 
 	j = -1;
 	close_pipes(exec->pipes, exec->pipe_amount);
-	while (++j < cmd_amount)
+	while (++j < cmd_amount && exec->pids[j])
 		waitpid(exec->pids[j], NULL, 0);
 	free_pipes(exec->pipes, exec->pipe_amount);	
 	free(exec->pids);
@@ -184,11 +193,15 @@ void	pre_process(t_exec *exec, int cmd_amount){
 	int	**pipes;
 	int	pipe_amount;
 	int	*pids;
+	int	i;
 
 	pipe_amount = cmd_amount - 1;
+	i = -1;
 	pids = (int*)malloc(sizeof(int) * cmd_amount);
 	if (!pids)
 		m_error(1);
+	while (++i < cmd_amount)
+		pids[i] = -1;	
 	pipes = init_pipes(pipe_amount);	
 	exec->pipe_amount = pipe_amount;
 	exec->pids = pids;

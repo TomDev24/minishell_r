@@ -18,7 +18,7 @@ typedef struct s_ht {
 unsigned int	hash(char *key);
 t_entry		*ht_pair(char *key, char *value);
 t_ht		*ht_create();
-void		ht_delete(t_ht *ht);
+void		ht_delete(t_ht **ht);
 void		ht_set(t_ht *hashtable, char *key, char *value);
 char		*ht_get(t_ht *hashtable, char *key);
 void		ht_del(t_ht *ht, char *key);

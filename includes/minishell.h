@@ -134,7 +134,7 @@ char		**sort_array(char **s);
 /* FREEING */
 void		free_tkn(t_token **tkn);
 void		free_tokens(t_token *tokens);
-void		free_arr(char **line);
+void		free_arr(char **arr);
 void		free_cmds(t_cmd *cmds);
 void		free_pipes(int **pipes, int pipe_amount);
 void		close_pipes(int	**pipes, int pipe_amount);

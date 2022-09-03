@@ -98,42 +98,46 @@ int	b_echo(char	**argv){
 	}
 	while(*argv){
 		ft_putstr_fd(*argv++, 1);
-		//printf("%s",*argv++);
 		if (*argv)
 			ft_putstr_fd(" ", 1);
-			//printf(" ");
 	}
 	
 	if (!n_flag)
 		ft_putstr_fd("\n", 1);
-		//printf("\n");
 	return (code);
 }
 
 int	b_env(){
-	int code;
+	int 	code;
+	int	i;
 
 	code = 0;
+	i = -1;
 	char **s = hash_to_array(mshell.hash_envp);
-	while(*s)
-		printf("%s\n", *s++);
+	while(s[++i])
+		printf("%s\n", s[i]);
+	free_arr(s);
 	return (code);
 }
 
 //works very BAD
+//no free in while part
 int	b_export(char **argv){
 	int	code;
 	char	**envp;
 	char	**key_value;
 	char	*equal_ptr;
+	int	i;
 
 	code = 0;
+	i = -1;
 	if (!argv[1]){
 		//print sorted env
 		envp = hash_to_array(mshell.hash_envp);
 		envp = sort_array(envp);
-		while(*envp)
-			printf("declare -x %s\n", *envp++);
+		while(envp[++i])
+			printf("declare -x %s\n", envp[i]);
+		free_arr(envp);
 	}
 	//3 cases
 	//1) var=value

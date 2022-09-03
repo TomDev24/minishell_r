@@ -66,8 +66,7 @@ int	inspect_string(char *line, int i, int type, t_token **tokens){
 		tmp = select_min(line+i+1);
 		c = *tmp;
 		*tmp = '\0';
-		val = ft_strdup(line + i); // needs to be free
-		//printf("VAL:%s\n", val);
+		val = ft_strdup(line + i);
 		*tmp = c; 
 		tokens_push(tokens, type, val, line + i);
 		if (type == CMD || type == ARG){

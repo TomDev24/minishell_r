@@ -1,38 +1,5 @@
 #include "minishell.h"
 
-/*
-void	change_token_value(t_token *current, char *key){
-	char	*value;
-	char	*addr;
-
-	//printf("--RECUR COUNT\n");
-	//if(key)
-	//	printf("key %s\n", key+1);
-
-	if (!key)
-		return;
-	key++;
-	addr = ft_strchr(key, '$');
-	if (addr)
-		*addr = 0;
-	value = ht_get(mshell.hash_envp, key);
-	if (value){
-		if (*(key-1) == 0){
-			current->value = ft_strjoin(current->value, value);
-		}
-		else{
-			current->value =value;
-		}
-	}
-	else{
-		if (*(key-1) != 0)
-			current->value = "";
-	}
-	change_token_value(current, addr);
-}
-*/
-
-
 char	*try_replace_env(t_token *tokens, char *st_addr, char *value, int *i){
 	t_token	*evar;
 	int	j;
@@ -54,14 +21,14 @@ void	change_token_value(t_token *current, t_stack *context){
 	char	*key;
 	t_token	*first;
 	t_token	*prev;
+	char	*tmp;
 
 	first = current;
 	prev = NULL;
 	while (current && *current->addr == '$'){
 		if (prev && first->end_addr != current->addr)
 			break;
-		//else
-		
+
 		first->end_addr = tkn_eof(current) + 1; //tkn_eof points on last valid char
 		key = current->value + 1;
 		value = ht_get(mshell.hash_envp, key);
@@ -71,9 +38,14 @@ void	change_token_value(t_token *current, t_stack *context){
 		if (value){
 			if (context->q_type != -1)
 				context->evars_len += ft_strlen(value);
+			tmp = first->value;
 			first->value = ft_strjoin(first->value, value);
+			if (*tmp)
+				free(tmp);
 		}
-
+		//FIX THIS
+		//if (prev)
+		//	free_tkn(&current);
 		prev = current;
 		current = current->next;
 	}

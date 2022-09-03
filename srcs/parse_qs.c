@@ -165,7 +165,27 @@ void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, 
 	}
 }
 
-void	free_context_elements(t_stack *context){
+void	free_context_elements(t_stack *context, t_token *st_token, t_token *en_token){
+	t_list	*head;
+	t_token	*tmp;
+
+	head = context->elements;
+	while(st_token != en_token){
+		tmp = st_token;
+		st_token = st_token->next;
+		if (head && head->content == tmp){
+			free_tkn((t_token**)&head->content);
+			head = head->next;
+		}
+		else
+			free_tkn(&tmp);
+	}
+	if (head && head->content == st_token)
+		free_tkn((t_token**)&head->content);
+	else
+		free_tkn(&st_token);
+	
+	/*
 	t_token	*st_token;
 	t_list	*head;
 
@@ -174,13 +194,8 @@ void	free_context_elements(t_stack *context){
 	if (st_token->type != context->q_type)
 		head = head->next;
 	
-	//tmp = head->content;
-	//free(tmp->value);
-	//free(tmp);
-	//head->content = NULL;
 	free_tkn((t_token**)&head->content);
 	head = head->next;
-
 	st_token = head->content;
 	while(st_token->type != context->q_type){
 		free_tkn((t_token**)&head->content);
@@ -188,6 +203,7 @@ void	free_context_elements(t_stack *context){
 		st_token = head->content;
 	}
 	free_tkn((t_token**)&head->content);
+	*/
 }
 
 //SHOULD CHOSE CORRECT TYPE AND PARSE VALUE RIGHT
@@ -209,7 +225,7 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	//can catch error here
 	set_replacer_value(context, st_token, en_token, value, *tokens);
 	new->value = value;
-	free_context_elements(context);
+	free_context_elements(context, st_token, en_token);
 	return new;
 }
 

@@ -27,12 +27,15 @@ void	free_tokens(t_token *tokens){
 	}
 }
 
-void	free_arr(char **line){
-	while(*line){
-		free(*line);
-		line++;
+void	free_arr(char **arr){
+	int	i;
+
+	i = 0;
+	while(arr[i]){
+		free(arr[i]);
+		i++;
 	}
-	free(line);
+	free(arr);
 }
 
 //typedef struct s_cmd{
@@ -40,6 +43,7 @@ void	free_arr(char **line){
 //	char		*infile;
 //	char		*outfile;
 //
+//	t_list		*redirs; FREE * and content
 //	char		**argv;  FREE ONLY **
 //	t_token		*cmd;
 //	t_list		*args; 	 FREE ONLY *, not content
@@ -54,6 +58,12 @@ void	free_cmds(t_cmd *cmds){
 		cmds = cmds->next;
 
 		free(tmp->argv);
+		while(tmp->redirs){	
+			tmp2 = tmp->redirs;
+			tmp->redirs = tmp->redirs->next;
+			free(tmp2->content);
+			free(tmp2);
+		}
 		while(tmp->args){
 			tmp2 = tmp->args;
 			tmp->args = tmp->args->next;
@@ -81,6 +91,7 @@ void	close_pipes(int	**pipes, int pipe_amount){
 	i = 0;
 	while (i < pipe_amount){
 		close(pipes[i][0]);
-		close(pipes[i][1]); i++;
+		close(pipes[i][1]);
+		i++;
 	}
 }

@@ -20,7 +20,7 @@ t_entry	*ht_pair(char *key, char *value) {
 
 	entry = (t_entry*)malloc(sizeof(t_entry));
 	if (!entry)
-		exit(1); //make better free
+		m_error(1);
 	entry->key = ft_strdup(key); 
 	entry->value = ft_strdup(value); 
 	entry->next = NULL;	
@@ -34,9 +34,11 @@ t_ht	*ht_create(){
 
 	i = 0;	
 	ht = (t_ht*)malloc(sizeof(t_ht));
+	if (!ht)
+		m_error(1);
 	ht->entries = (t_entry**)malloc(sizeof(t_entry*) * SLOT_AMOUNT);
 	if (!ht->entries)
-		exit(1); //better free
+		m_error(1);
 
 	while (i < SLOT_AMOUNT)
 		ht->entries[i++] = NULL;
@@ -102,6 +104,7 @@ void	ht_del(t_ht *ht, char *key){
 		if (ft_strncmp(entry->key, key, ft_strlen(key) + 1) == 0){
 			free(entry->key);
 			free(entry->value);
+			free(entry);
 			if (prev && next)
 				prev->next = next;
 			else if (prev && !next)
@@ -116,23 +119,26 @@ void	ht_del(t_ht *ht, char *key){
 	}
 }
 
-void	ht_delete(t_ht *ht){
+void	ht_delete(t_ht **ht){
 	unsigned int	i;
 	t_entry		*tmp;
 	t_entry		*tmp2;
 
 	i = -1;
 	while(++i < SLOT_AMOUNT){
-		if(ht->entries[i]){
-			tmp = ht->entries[i];
+		if((*ht)->entries[i]){
+			tmp = (*ht)->entries[i];
 			while(tmp){
 				tmp2 = tmp;
 				tmp = tmp->next;
 				free(tmp2->key);
 				free(tmp2->value);
+				free(tmp2);
 			}
 		}
 	}
+	free((*ht)->entries);
+	free(*ht);
 }
 
 //calculated amount of existing keys (not just slots)
@@ -158,23 +164,26 @@ unsigned int ht_size(t_ht *ht){
 
 char	**hash_to_array(t_ht *ht){
 	unsigned int	i;
-	char	**res;
+	char		**res;
 	unsigned int	size_ht;
-	int	j;
+	int		j;
 	t_entry		*tmp;
+	char		*tmp2;
 
 	i = -1;
 	j = 0;
 	size_ht = ht_size(ht);
 	res = (char **)malloc(sizeof(char*) * (size_ht + 1));
 	if (!res)
-		exit(1); //better
+		m_error(1);
 	while(++i < SLOT_AMOUNT){
 		if(!ht->entries[i])
 			continue;
 		tmp = ht->entries[i];
 		while(tmp){
-			res[j++] = ft_strjoin(ft_strjoin(tmp->key, "="), tmp->value);
+			tmp2 = ft_strjoin(tmp->key, "=");
+			res[j++] = ft_strjoin(tmp2, tmp->value);
+			free(tmp2);
 			tmp = tmp->next;
 		}
 	}
