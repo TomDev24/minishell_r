@@ -43,7 +43,7 @@ int	is_char(char *s){
 	int res;
 
 	res = 0;
-	if (ft_isprint(*s))
+	if (ft_isprint(*s) || *s < 0)
 		res=1;
 	if (*s == '<' || *s == '>' || *s == '|' || *s =='"' || *s == '\'')
 		res = 0;
