@@ -47,7 +47,7 @@ int	main(int argc, char **argv, char **envp){
 
 		cmds = parser(&tokens);	
 		print_cmds(cmds);
-		executor(cmds, envp);
+		executor(cmds);
 		free_tokens(tokens);
 		free_cmds(cmds);
 	}

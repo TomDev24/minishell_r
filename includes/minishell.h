@@ -105,8 +105,8 @@ void		change_token_value(t_token *current, t_stack *context);
 void		manage_evar(t_token *current, t_stack *context);
 
 /* EXECUTOR */
-char		**parse_envp(char **envp);
-void		executor(t_cmd *cmds, char **envp);
+char		**parse_envp();
+void		executor(t_cmd *cmds);
 
 /* HERE_DOC */
 void		here_doc(char *eof);

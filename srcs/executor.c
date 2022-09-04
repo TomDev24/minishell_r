@@ -2,18 +2,14 @@
 
 //we should parse hash_envp
 //and we should free it, after we done
-char    **parse_envp(char **envp){
-	char **res;
-	int i = 0;
+char    **parse_envp(){
+	char	**res;
+	char	*paths;
 
 	res = NULL;
-	while(envp[i]){
-		if (ft_strncmp(envp[i], "PATH", 4) == 0){
-			res = ft_split(ft_strchr(envp[i], '=') + 1, ':');
-			break;
-		}
-		i++;
-	}
+	paths = ht_get(mshell.hash_envp, "PATH");
+	if (paths)
+		res = ft_split(paths, ':');
 	return res;
 }
 
@@ -132,16 +128,17 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 }
 
 
-void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amount){
+void	run_cmd(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	char	*path;
 	int	allowed;
 	char	**cmd_paths;
 	char	*tmp;
 	int	i;
+	char	**envp;
 
 	i = 0;
-	cmd_paths = parse_envp(envp);
-	while(cmd_paths[i]){
+	cmd_paths = parse_envp();
+	while(cmd_paths && cmd_paths[i]){
 		tmp = ft_strjoin("/", cmd->argv[0]);
 		path = ft_strjoin(cmd_paths[i], tmp);
 		free(tmp);
@@ -154,7 +151,8 @@ void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amou
 			free(path);
 		}
 	}
-	free_arr(cmd_paths);
+	if (cmd_paths)
+		free_arr(cmd_paths);
 	//checking if cmd itself is path // is check on '.' or '/' required?
 	if (allowed < 0){
 		allowed = access(cmd->argv[0], X_OK);
@@ -172,6 +170,8 @@ void	run_cmd(t_cmd *cmd, char **envp, int **pipes, int pipe_amount, int cmd_amou
 		handle_pipes(cmd, pipes, cmd_amount);
 
 	close_pipes(pipes, pipe_amount);
+	//check if envp is null required
+	envp = hash_to_array(mshell.hash_envp);
 	//path is heap alocated is it get lost in fork?
 	execve(path, cmd->argv, envp);
 }
@@ -208,7 +208,7 @@ void	pre_process(t_exec *exec, int cmd_amount){
 	exec->pipes = pipes;	
 }
 
-void	executor(t_cmd *cmds, char **envp){
+void	executor(t_cmd *cmds){
 	t_exec	exec;	
 	int	cmd_amount;
 	int	code;
@@ -234,7 +234,7 @@ void	executor(t_cmd *cmds, char **envp){
 		if (exec.pids[i] == 0){
 			code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
 			if (code == -42)
-				run_cmd(cmds,  envp, exec.pipes, exec.pipe_amount, cmd_amount);
+				run_cmd(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
 		}
 		cmds = cmds->next;
 	}

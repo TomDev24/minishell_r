@@ -15,7 +15,8 @@ void	python_test(char *line, char **envp){
 	cmds = NULL;
 	tokens = lexer(line);
 	cmds = parser(&tokens);	
-	executor(cmds, envp);
+	executor(cmds);
+	envp++;
 }
 
 int	cmdlst_size(t_cmd *cmds){
