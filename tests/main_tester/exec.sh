@@ -110,11 +110,9 @@ printf "\n$BOLWHTIE-----------------------QUTATION && \$ENV------------------$RE
 test_file "main_tester/env" 0
 res "\n$BOLDMAGENTA/////RESULTS OF: Env & Qutation/////$RESET\n"
 
-printf "\n$BOLWHTIE-----------------------REDIRECTS<<<-----------------------$RESET\n"
+printf "\n$BOLWHTIE-----------------------REDIRECTS-----------------------$RESET\n"
 test_file "main_tester/redir" 0
 res "\n$BOLDMAGENTA/////RESULTS OF: Redirects < /////$RESET\n"
-
-printf "\n$BOLWHTIE-----------------------REDIRECTS>>>-----------------------$RESET\n"
 test_file "main_tester/redir2" 1
 res "\n$BOLDMAGENTA/////RESULTS OF: Redirects > /////$RESET\n"
 
@@ -125,4 +123,13 @@ heredoc_test "cat << abba" "./main_tester/f2"
 echo $?
 
 res "\n$BOLDYELLOW/////RESULTS/////$RESET\n"
-rm minishell; rm ./tests/minishell
+
+./minishell << EOF
+pwd
+echo $USER
+EOF
+bash << EOF
+pwd
+echo $USER
+EOF
+rm minishell;

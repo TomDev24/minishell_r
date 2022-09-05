@@ -1,2 +1,5 @@
 echo s > file1
 echo longer text > file2
+cat < ../f1 < ../f2 > res1 > res2 > res3 
+< ../f2 cat < ../f1 < ../f2 > res1 > res2 > res3 > res4 
+< ../f2 cat < ../f1 | wc > r1 | cat < ../f2 ../f1 > r2 > r3

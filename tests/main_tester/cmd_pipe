@@ -13,4 +13,5 @@ ls | head | wc
 pwd | cat
 pwd | cat | echo yes
 echo | pwd | head | echo | env | head -10 | head -10 | echo some text val yes | pwd | env | grep P | wc | wc
-env
+env | grep USER=
+env | grep PATH=/
