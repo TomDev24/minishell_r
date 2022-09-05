@@ -183,14 +183,17 @@ void	run_cmd(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 int	post_process(t_exec *exec, int cmd_amount){
 	int	j;
+	int	status;
 
 	j = -1;
 	close_pipes(exec->pipes, exec->pipe_amount);
 	while (++j < cmd_amount && exec->pids[j])
-		waitpid(exec->pids[j], NULL, 0);
+	{
+		waitpid(exec->pids[j], &status, 0);
+		printf("status = %d\n", WEXITSTATUS(status));
+	}
 	free_pipes(exec->pipes, exec->pipe_amount);	
 	free(exec->pids);
-	
 	return 1;
 }
 
