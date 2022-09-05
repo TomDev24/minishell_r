@@ -3,8 +3,10 @@
 int	tokens_push(t_token **tokens, int type, char *val, char *addr){
 	t_token	*new;
 	t_token *tmp;
+	int	index;
 
 	tmp = *tokens;
+	index = 0;
 	new = (t_token*)malloc(sizeof(t_token));
 	if (!new)
 		m_error(1);
@@ -12,14 +14,22 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr){
 	new->type = type;
 	new->value = val;
 	new->addr= addr; 
+	new->i = index;
 	new->end_addr = NULL; 
 	new->next = NULL;
 	if (*tokens == NULL){
 		*tokens = new;
 		return 1;
 	}
-	while (tmp->next)
+	while (tmp->next){
 		tmp = tmp->next;
+		if(tmp->i >= index)
+			index = tmp->i;
+		tmp->i = index;
+	}
+	new->i = index;
+	if (type == PIPE)
+		new->i = index + 1;
 	tmp->next = new;	
 	return 1;
 }

@@ -3,6 +3,7 @@ echo
 echo this text yes
 echo -n
 echo -n some val
+echo some|cat|wc
 pwd | echo
 pwd | echo | wc
 pwd | echo | wc | wc
@@ -13,5 +14,5 @@ ls | head | wc
 pwd | cat
 pwd | cat | echo yes
 echo | pwd | head | echo | env | head -10 | head -10 | echo some text val yes | pwd | env | grep P | wc | wc
-env | grep USER=
-env | grep PATH=/
+env | grep '\bUSER\b'
+env | grep '\bPATH\b'

@@ -118,8 +118,9 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 	code = func(cmd->argv);
 //	printf("cmd->argv: %s\n", cmd->argv[0]);
+	update_mshell(code, cmd->i);
 	if (pipe_amount > 0)
-		exit(1);
+		exit(code);
 	else
 		//printf does not write immedialty to fd!!!(it has buffer)
 		dup2(save_fd, 1);
@@ -181,8 +182,10 @@ int	post_process(t_exec *exec, int cmd_amount){
 
 	j = -1;
 	close_pipes(exec->pipes, exec->pipe_amount);
-	while (++j < cmd_amount && exec->pids[j])
+	while (++j < cmd_amount && exec->pids[j]){
 		waitpid(exec->pids[j], NULL, 0);
+		update_mshell(j+20, j);
+	}
 	free_pipes(exec->pipes, exec->pipe_amount);	
 	free(exec->pids);
 	

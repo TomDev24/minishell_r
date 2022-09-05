@@ -28,6 +28,7 @@ enum	lexer_types{
 };
 
 typedef struct s_token{ 
+	int		i;
 	int		type;
 	char		*value;
 	char		*addr;
@@ -74,8 +75,10 @@ typedef struct s_exec{
 }			t_exec;
 
 typedef struct s_global{
+	t_token		*tokens;
 	t_ht		*hash_envp;
-    struct sigaction    s_int;
+	struct sigaction    s_int;
+	int		exit_code;
 	//char		**array_envp;
 }			t_global;
 
@@ -121,6 +124,7 @@ int		b_cd(char **argv);
 
 /* ENV	*/
 void		init_hash_envp(char **envp);
+void		update_mshell(int code, int cmd_i, t_cmd *cmd);
 
 /* UTILS */
 t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);

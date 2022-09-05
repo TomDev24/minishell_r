@@ -91,6 +91,7 @@ void	print_cmds(t_cmd *cmds){
 void	print_tokens(t_token *tokens){
 	while(tokens){
 		printf("//TOKEN//\n");
+		printf("i: %d ", tokens->i);
 		printf("Type: %d  ", tokens->type);
 		printf("Value: %s  ", tokens->value);
 		printf("Addr: %s\n", tokens->addr);

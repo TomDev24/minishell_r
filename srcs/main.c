@@ -42,6 +42,7 @@ int	main(int argc, char **argv, char **envp){
 		}
 		add_history(line);
 		tokens = lexer(line);
+		mshell.tokens = tokens;
 		//pretty_lexer(tokens);	
 		//print_tokens(tokens);
 

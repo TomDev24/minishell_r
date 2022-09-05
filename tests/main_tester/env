@@ -24,3 +24,4 @@ echo "$1TEST"
 echo "$"
 echo $TEST $TEST
 echo "$T1TEST"
+echo sometext$USER$TEST

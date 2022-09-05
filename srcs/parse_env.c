@@ -25,6 +25,7 @@ void	change_token_value(t_token *current, t_stack *context){
 	t_token	*tmp_tkn;
 
 	first = current;
+	//set first to previous if some_arg$VAR
 	//prev = NULL;
 	while (current && *current->addr == '$'){
 		if (first->end_addr && first->end_addr != current->addr)
@@ -35,6 +36,10 @@ void	change_token_value(t_token *current, t_stack *context){
 		value = ht_get(mshell.hash_envp, key);
 		if (*key == 0)
 			value = "$";
+		else if (ft_strncmp(key, "?", 2) == 0 && current->i == 0)
+			value = ft_itoa(mshell.exit_code);
+		else if(ft_strncmp(key, "?", 2) == 0)
+			value = "$?";
 		free(current->value);
 		current->value = "";
 		if (value){
