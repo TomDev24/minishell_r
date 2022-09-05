@@ -92,7 +92,7 @@ int	b_echo(char	**argv){
 	code = 0;
 	n_flag = 0;
 	argv++;
-	if (*argv && ft_strncmp(*argv, "-n", 2) == 0){
+	if (*argv && ft_strncmp(*argv, "-n", 3) == 0){
 		n_flag = 1;
 		argv++;
 	}

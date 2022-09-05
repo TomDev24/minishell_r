@@ -95,7 +95,6 @@ t_token		*lexer(char *line);
 t_cmd		*parser(t_token **tokens);
 
 /* PARSE_QS*/
-t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);
 char		*tkn_eof(t_token *tkn);
 void		unquote(t_token **tokens);
 
@@ -124,6 +123,8 @@ int		b_cd(char **argv);
 void		init_hash_envp(char **envp);
 
 /* UTILS */
+t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);
+char		*tkn_eof(t_token *tkn);
 char		type_to_char(int Q);
 void		python_test(char *line, char **envp);
 int		cmdlst_size(t_cmd *cmds);
@@ -132,6 +133,8 @@ char		**sort_array(char **s);
 
 
 /* FREEING */
+void		free_context(t_stack **context);
+void		free_context_elements(t_stack *context, t_token *st_token, t_token *en_token);
 void		free_tkn(t_token **tkn);
 void		free_tokens(t_token *tokens);
 void		free_arr(char **arr);

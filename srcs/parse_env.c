@@ -20,13 +20,14 @@ void	change_token_value(t_token *current, t_stack *context){
 	char	*value;
 	char	*key;
 	t_token	*first;
-	t_token	*prev;
+	//t_token	*prev;
 	char	*tmp;
+	t_token	*tmp_tkn;
 
 	first = current;
-	prev = NULL;
+	//prev = NULL;
 	while (current && *current->addr == '$'){
-		if (prev && first->end_addr != current->addr)
+		if (first->end_addr && first->end_addr != current->addr)
 			break;
 
 		first->end_addr = tkn_eof(current) + 1; //tkn_eof points on last valid char
@@ -34,6 +35,7 @@ void	change_token_value(t_token *current, t_stack *context){
 		value = ht_get(mshell.hash_envp, key);
 		if (*key == 0)
 			value = "$";
+		free(current->value);
 		current->value = "";
 		if (value){
 			if (context->q_type != -1)
@@ -43,11 +45,11 @@ void	change_token_value(t_token *current, t_stack *context){
 			if (*tmp)
 				free(tmp);
 		}
-		//FIX THIS
-		//if (prev)
-		//	free_tkn(&current);
-		prev = current;
+		//prev = current;
+		tmp_tkn = current;
 		current = current->next;
+		if (first != tmp_tkn)
+			free_tkn(&tmp_tkn);
 	}
 	first->next = current;
 }

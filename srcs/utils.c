@@ -1,5 +1,38 @@
 #include "minishell.h"
 
+//Needs refactor // I have some questions about it
+t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag){
+	t_token *res;
+	t_token *prev;
+	t_token *next;
+	
+	res = NULL;
+	prev = NULL;
+	while(tokens){
+		next = tokens->next ? tokens->next : NULL; 
+		if (tokens->addr == addr){
+			if (prev_flag == 1)
+				return prev;
+			if (prev_flag == 0)
+				return tokens;
+			if (prev_flag == 2)
+				return next;
+		}
+		prev = tokens;
+		tokens = tokens->next;
+	}
+	return res;
+}
+
+char	*tkn_eof(t_token *tkn){
+	int	i;
+
+	i = 0;
+	while(tkn->value[i] && tkn->addr[i] == tkn->value[i])
+		i++;
+	return tkn->addr + i - 1;
+}
+
 char	type_to_char(int Q){
 	if (Q == Q1)
 		return '\'';

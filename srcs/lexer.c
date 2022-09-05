@@ -12,6 +12,7 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr){
 	new->type = type;
 	new->value = val;
 	new->addr= addr; 
+	new->end_addr = NULL; 
 	new->next = NULL;
 	if (*tokens == NULL){
 		*tokens = new;

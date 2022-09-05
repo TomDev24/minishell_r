@@ -18,47 +18,6 @@ t_stack		*init_context(t_token **tokens){
 	return res;
 }
 
-void	free_context(t_stack **context){
-	t_list	*elements;
-	t_list	*tmp;
-	t_stack *ctx;
-
-	ctx = *context;
-	elements = ctx->elements;
-	(*context)->q_type = 0;
-	while (elements){
-		tmp = elements;
-		elements = elements->next;
-		free(tmp);
-	}
-	free(*context);
-	*context = NULL;
-}
-
-//Needs refactor // I have some questions about it
-t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag){
-	t_token *res;
-	t_token *prev;
-	t_token *next;
-	
-	res = NULL;
-	prev = NULL;
-	while(tokens){
-		next = tokens->next ? tokens->next : NULL; 
-		if (tokens->addr == addr){
-			if (prev_flag == 1)
-				return prev;
-			if (prev_flag == 0)
-				return tokens;
-			if (prev_flag == 2)
-				return next;
-		}
-		prev = tokens;
-		tokens = tokens->next;
-	}
-	return res;
-}
-
 void	replace_token(t_token *replacer, t_stack **context, t_token *current, t_token **tokens){
 	t_token		*context_el;
 
@@ -90,15 +49,6 @@ int	determine_type(t_token *st_token){
 	if (st_token->type == PIPE)
 		return CMD;
 	return ARG;
-}
-
-char	*tkn_eof(t_token *tkn){
-	int	i;
-
-	i = 0;
-	while(tkn->value[i] && tkn->addr[i] == tkn->value[i])
-		i++;
-	return tkn->addr + i - 1;
 }
 
 void	prep_end_start_addr(t_stack *context, t_token **s_token, t_token **e_token, t_token **tokens){
@@ -163,47 +113,7 @@ void	set_replacer_value(t_stack *context, t_token *st_token, t_token *en_token, 
 		else
 			value[i++] = *st_addr++;
 	}
-}
-
-void	free_context_elements(t_stack *context, t_token *st_token, t_token *en_token){
-	t_list	*head;
-	t_token	*tmp;
-
-	head = context->elements;
-	while(st_token != en_token){
-		tmp = st_token;
-		st_token = st_token->next;
-		if (head && head->content == tmp){
-			free_tkn((t_token**)&head->content);
-			head = head->next;
-		}
-		else
-			free_tkn(&tmp);
-	}
-	if (head && head->content == st_token)
-		free_tkn((t_token**)&head->content);
-	else
-		free_tkn(&st_token);
-	
-	/*
-	t_token	*st_token;
-	t_list	*head;
-
-	head = context->elements;
-	st_token = head->content;
-	if (st_token->type != context->q_type)
-		head = head->next;
-	
-	free_tkn((t_token**)&head->content);
-	head = head->next;
-	st_token = head->content;
-	while(st_token->type != context->q_type){
-		free_tkn((t_token**)&head->content);
-		head = head->next;
-		st_token = head->content;
-	}
-	free_tkn((t_token**)&head->content);
-	*/
+	//value[i] = 0;
 }
 
 //SHOULD CHOSE CORRECT TYPE AND PARSE VALUE RIGHT
@@ -218,7 +128,7 @@ t_token		*resolve_context(t_stack *context, t_token *current, t_token **tokens){
 	en_token = current;
 	new = create_replacer(st_token);
 	prep_end_start_addr(context, &st_token, &en_token, tokens);
-	value = (char*)ft_calloc((size_t)en_token->addr - (size_t)st_token->addr + context->evars_len, sizeof(char));
+	value = (char*)ft_calloc((size_t)tkn_eof(en_token) - (size_t)st_token->addr + 2 + context->evars_len, sizeof(char));
 	if (!value)
 		m_error(1);
 
