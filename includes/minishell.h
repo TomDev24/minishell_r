@@ -12,6 +12,7 @@
 #include "signal.h"
 #include "libft.h"
 #include "hash_t.h"
+#include <termios.h>
 
 enum	lexer_types{
 	CMD,
@@ -26,6 +27,8 @@ enum	lexer_types{
 	Q1,
 	Q2
 };
+
+typedef struct termios	t_termios;
 
 typedef struct s_token{ 
 	int		type;
@@ -67,19 +70,28 @@ typedef struct s_stack{
 
 
 typedef struct s_exec{
-	int	**pipes;
-	int	pipe_amount;
-	int	*pids;
+	int		**pipes;
+	int		pipe_amount;
+	int		*pids;
 	t_list	*built_ins;
 }			t_exec;
 
 typedef struct s_global{
-	t_ht		*hash_envp;
-    struct sigaction    s_int;
+	t_ht				*hash_envp;
+	struct sigaction	s_int;
+	struct sigaction	s_quit;
+	sigset_t			newset;
+	t_termios			setting_tty;
+	t_termios			setting_out_tty;
 	//char		**array_envp;
 }			t_global;
 
-extern	t_global	mshell;
+extern	t_global		mshell;
+
+void	set_param_tty();
+void	unset_param_tty();
+void	sigint_handler(int num);
+void	sigquit_handler(int num);
 
 /* ERROR */
 void		m_error(int code);

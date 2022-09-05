@@ -2,16 +2,15 @@
 
 t_global	mshell;
 
-void    sigint_handler(int num)
+void	sighandler_prepare()
 {
-    (void) num;
-    waitpid(-1, NULL, 0);
-//    write(1, "\nchild proc over!", 17);
-//    write(1, "\n>>", 3);
-    write(1, "\n", 1);
-    rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
+	sigemptyset(&mshell.newset);
+	sigaddset(&mshell.newset, SIGINT);
+	sigaddset(&mshell.newset, SIGQUIT);
+	mshell.s_int.sa_handler = sigint_handler;
+	mshell.s_int.sa_mask = SIGINT;
+	sigaction(SIGINT, &mshell.s_int, NULL);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 //we should free
@@ -26,11 +25,8 @@ int	main(int argc, char **argv, char **envp){
 	init_hash_envp(envp);
 	if (argc > 1 && ft_strncmp(argv[1], "-c", 2) == 0)
 		python_test(argv[2], envp);
-
-	mshell.s_int.sa_handler = sigint_handler;
-	sigaction(SIGINT, &mshell.s_int, NULL);
-	signal(SIGQUIT, SIG_IGN);
-
+	set_param_tty();
+	sighandler_prepare();
 	while(1 && argc == 1){
 		tokens = NULL;
 		cmds = NULL;
@@ -51,6 +47,7 @@ int	main(int argc, char **argv, char **envp){
 		free_tokens(tokens);
 		free_cmds(cmds);
 	}
+	unset_param_tty();
 	ht_delete(&mshell.hash_envp);	
 	return 0;
 }

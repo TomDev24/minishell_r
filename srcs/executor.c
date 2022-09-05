@@ -119,7 +119,8 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 	code = func(cmd->argv);
 //	printf("cmd->argv: %s\n", cmd->argv[0]);
 	if (pipe_amount > 0)
-		exit(1);
+		exit(code);
+//		exit(1);
 	else
 		//printf does not write immedialty to fd!!!(it has buffer)
 		dup2(save_fd, 1);
@@ -170,6 +171,10 @@ void	run_cmd(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		handle_pipes(cmd, pipes, cmd_amount);
 
 	close_pipes(pipes, pipe_amount);
+//	printf("CMD: %s\n", cmd->argv[0]);
+	mshell.s_quit.sa_handler = sigquit_handler;
+	mshell.s_quit.sa_mask = SIGQUIT;
+	sigaction(SIGQUIT, &mshell.s_quit, NULL);
 	//check if envp is null required
 	envp = hash_to_array(mshell.hash_envp);
 	//path is heap alocated is it get lost in fork?
