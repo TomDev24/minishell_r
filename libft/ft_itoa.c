@@ -3,62 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dbrittan <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cgregory <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 13:11:41 by dbrittan          #+#    #+#             */
-/*   Updated: 2020/11/06 21:54:20 by dbrittan         ###   ########.fr       */
+/*   Created: 2021/10/13 01:26:43 by cgregory          #+#    #+#             */
+/*   Updated: 2021/10/13 05:11:17 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static void		append(char *to, unsigned int n)
-{
-	if (n + '0' >= '0' && n + '0' <= '9')
-	{
-		while (*to != '\0')
-			to++;
-		*to = n + '0';
-	}
-	else
-	{
-		append(to, n / 10);
-		append(to, n % 10);
-	}
-}
-
-static int		count_len(int n)
+static int	dig_count(int n)
 {
 	int	count;
 
 	count = 0;
-	if (n < 0)
+	while (n)
 	{
-		count++;
-		n *= -1;
-	}
-	while (n / 10 != 0)
-	{
-		count++;
 		n = n / 10;
+		count++;
 	}
-	return (++count);
+	return (count);
 }
 
-char			*ft_itoa(int n)
+static char	*strfill(char *str, int count, int n)
 {
-	char *res;
-	char *buf;
+	int	sign;
 
-	res = (char*)ft_calloc(count_len(n) + 1, sizeof(char));
-	buf = res;
-	if (!res)
-		return (0);
+	sign = 1;
 	if (n < 0)
+		sign = -sign;
+	while (count--)
 	{
-		n *= -1;
-		*res++ = '-';
+		str[count] = (n % 10) * sign + '0';
+		n = n / 10;
 	}
-	append(res, n);
-	return (buf);
+	return (str);
+}
+
+char	*ft_itoa(int n)
+{
+	char	*str;
+	int		count;
+
+	count = dig_count(n);
+	if (n <= 0)
+		count = count + 1;
+	str = (char *)ft_calloc((count + 1), sizeof(char));
+	if (!str)
+		return (NULL);
+	str = strfill(str, count, n);
+	if (n < 0)
+		str[0] = '-';
+	return (str);
 }

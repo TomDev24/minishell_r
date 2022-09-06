@@ -3,35 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dbrittan <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cgregory <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 14:05:42 by dbrittan          #+#    #+#             */
-/*   Updated: 2020/11/05 17:31:42 by dbrittan         ###   ########.fr       */
+/*   Created: 2021/10/11 21:00:10 by cgregory          #+#    #+#             */
+/*   Updated: 2021/10/13 05:11:46 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_putnbr_fd(int n, int fd)
+static	void	ft_nbrrec_fd(int nbr, int fd)
 {
-	if (n == -2147483648)
-	{
-		ft_putstr_fd("-2147483648", fd);
+	char	c;
+
+	if (nbr == 0)
 		return ;
-	}
-	if (n < 0)
-	{
-		ft_putchar_fd('-', fd);
-		n *= -1;
-	}
-	if (n <= 9)
-	{
-		ft_putchar_fd(n + '0', fd);
-		return ;
-	}
 	else
 	{
-		ft_putnbr_fd(n / 10, fd);
-		ft_putnbr_fd(n % 10, fd);
+		c = nbr % 10;
+		if (c < 0)
+			c = -c;
+		c = c + '0';
+		nbr = nbr / 10;
+		ft_nbrrec_fd(nbr, fd);
+		write(fd, &c, 1);
 	}
+}
+
+void	ft_putnbr_fd(int n, int fd)
+{
+	if (n < 0)
+		write (fd, "-", 1);
+	if (n == 0)
+		write (fd, "0", 1);
+	ft_nbrrec_fd(n, fd);
 }

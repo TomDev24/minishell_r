@@ -3,22 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstiter.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dbrittan <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cgregory <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 13:31:12 by dbrittan          #+#    #+#             */
-/*   Updated: 2020/11/04 13:32:15 by dbrittan         ###   ########.fr       */
+/*   Created: 2021/10/19 05:28:16 by cgregory          #+#    #+#             */
+/*   Updated: 2021/10/19 05:36:21 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_lstiter(t_list *lst, void (*f)(void *))
+void	ft_lstiter(t_list *lst, void (*f)(void*))
 {
-	if (!lst)
-		return ;
 	while (lst)
 	{
-		f(lst->content);
+		f (lst->content);
 		lst = lst->next;
 	}
+	return ;
 }
