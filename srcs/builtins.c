@@ -29,14 +29,28 @@ int	b_exit(char **argv)
 	return (code);
 }
 
-static void	chdir_check_error(char **argv)
+static void	err_msg(char *argv)
 {
-	if (chdir(argv[1]) != 0)
+		write(2, "sash: cd: ", 10);
+		write(2, argv, ft_strlen(argv));
+		write(2, " not set\n", 9);
+}
+
+static void	chdir_check_error(char *argv)
+{
+//	int	i;
+
+//	i = chdir(argv);
+//	printf("i = %d\n", i);
+//	if (i != 0)
+	if (chdir(argv) != 0)
 	{
 		write(2, "sash: cd: ", 10);
-		write(2, argv[1], ft_strlen(argv[1]));
+//		printf("argv: %s\n", argv);
+		write(2, argv, ft_strlen(argv));
 		write(2, ": ", 2);
 		perror("");
+//		printf("Error: %s\n", strerror(errno));
 	}
 }
 
@@ -52,23 +66,29 @@ int	b_cd(char **argv)
 	else if (!argv[1] || (argv[1] && ft_strncmp(argv[1], "~", 2) == 0))
 	{
 		vars[2] = ht_get(mshell.hash_envp, "HOME");
-//		printf("cd detected; HOME dir: %s\n", home);
-		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+		if (!vars[2])
+			err_msg("HOME");
+		else
+			ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
 		chdir(vars[2]);
 	}
 	else if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
 	{
 		vars[1] = ht_get(mshell.hash_envp, "OLDPWD");
-//		printf("switching to dir: %s\n", old);
+		if (!vars[1])
+			err_msg("OLDPWD");
+		else
+			ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
 		chdir(vars[1]);
-		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
 	}
 	else
 	{
 		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
-		chdir_check_error(argv);
+		chdir_check_error(argv[1]);
 	}
 	free(vars[0]);
+//	printf("errno = %d\n", errno);
+//	printf("exit_code = %d\n", errno/errno);
 	return (0);
 }
 
@@ -94,6 +114,7 @@ int	b_echo(char	**argv){
 	argv++;
 	if (*argv && ft_strncmp(*argv, "-n", 3) == 0){
 		n_flag = 1;
+	while (ft_strncmp(*argv, "-n", 3) == 0)
 		argv++;
 	}
 	while(*argv){
@@ -101,7 +122,6 @@ int	b_echo(char	**argv){
 		if (*argv)
 			ft_putstr_fd(" ", 1);
 	}
-	
 	if (!n_flag)
 		ft_putstr_fd("\n", 1);
 	return (code);

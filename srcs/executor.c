@@ -172,6 +172,10 @@ void	run_cmd(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 		handle_pipes(cmd, pipes, cmd_amount);
 
 	close_pipes(pipes, pipe_amount);
+//	printf("CMD: %s\n", cmd->argv[0]);
+	mshell.s_quit.sa_handler = sigquit_handler;
+	mshell.s_quit.sa_mask = SIGQUIT;
+	sigaction(SIGQUIT, &mshell.s_quit, NULL);
 	//check if envp is null required
 	envp = hash_to_array(mshell.hash_envp);
 	//path is heap alocated is it get lost in fork?
@@ -180,16 +184,18 @@ void	run_cmd(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 int	post_process(t_exec *exec, int cmd_amount){
 	int	j;
+	int	status;
 
 	j = -1;
 	close_pipes(exec->pipes, exec->pipe_amount);
-	while (++j < cmd_amount && exec->pids[j]){
-		waitpid(exec->pids[j], NULL, 0);
+	while (++j < cmd_amount && exec->pids[j])
+	{
+		waitpid(exec->pids[j], &status, 0);
+		printf("status = %d\n", WEXITSTATUS(status));
 		update_mshell(j+20, j);
 	}
 	free_pipes(exec->pipes, exec->pipe_amount);	
 	free(exec->pids);
-	
 	return 1;
 }
 
