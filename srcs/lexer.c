@@ -1,21 +1,21 @@
 #include "minishell.h"
 
-int	tokens_push(t_token **tokens, int type, char *val, char *addr){
-	t_token	*new;
-	t_token *tmp;
-	int	index;
+int	tokens_push(t_token **tokens, int type, char *val, char *addr)
+{
+	t_token		*new;
+	t_token		*tmp;
+	int		index;
 
 	tmp = *tokens;
 	index = 0;
-	new = (t_token*)malloc(sizeof(t_token));
+	new = (t_token*) malloc(sizeof(t_token));
 	if (!new)
 		m_error(1);
-	
 	new->type = type;
 	new->value = val;
-	new->addr= addr; 
+	new->addr= addr;
 	new->i = index;
-	new->end_addr = NULL; 
+	new->end_addr = NULL;
 	new->next = NULL;
 	if (*tokens == NULL){
 		*tokens = new;

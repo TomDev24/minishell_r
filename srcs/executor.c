@@ -191,7 +191,7 @@ int	post_process(t_exec *exec, int cmd_amount){
 	{
 		waitpid(exec->pids[j], &status, 0);
 		mshell.exit_code = WEXITSTATUS(status);
-		printf("status = %d\n", WEXITSTATUS(status));
+		//printf("status = %d\n", WEXITSTATUS(status));
 		//update_mshell(j+20, j);
 	}
 	free_pipes(exec->pipes, exec->pipe_amount);	
