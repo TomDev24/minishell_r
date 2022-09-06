@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/06 19:23:41 by cgregory          #+#    #+#             */
+/*   Updated: 2022/09/06 20:44:38 by cgregory         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	b_exit(char **argv)
 {
 	int	code;
-	int chislo;
+	int	chislo;
 
 	code = 0;
 	chislo = 0;
@@ -31,15 +43,14 @@ int	b_exit(char **argv)
 
 static void	err_msg(char *argv)
 {
-		write(2, "sash: cd: ", 10);
-		write(2, argv, ft_strlen(argv));
-		write(2, " not set\n", 9);
+	write(2, "sash: cd: ", 10);
+	write(2, argv, ft_strlen(argv));
+	write(2, " not set\n", 9);
 }
 
 static void	chdir_check_error(char *argv)
 {
 //	int	i;
-
 //	i = chdir(argv);
 //	printf("i = %d\n", i);
 //	if (i != 0)
@@ -65,25 +76,25 @@ int	b_cd(char **argv)
 		printf("sash: cd: too many arguments\n");
 	else if (!argv[1] || (argv[1] && ft_strncmp(argv[1], "~", 2) == 0))
 	{
-		vars[2] = ht_get(mshell.hash_envp, "HOME");
+		vars[2] = ht_get(g_mshell.hash_envp, "HOME");
 		if (!vars[2])
 			err_msg("HOME");
 		else
-			ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+			ht_set(g_mshell.hash_envp, "OLDPWD", vars[0]);
 		chdir(vars[2]);
 	}
 	else if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
 	{
-		vars[1] = ht_get(mshell.hash_envp, "OLDPWD");
+		vars[1] = ht_get(g_mshell.hash_envp, "OLDPWD");
 		if (!vars[1])
 			err_msg("OLDPWD");
 		else
-			ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+			ht_set(g_mshell.hash_envp, "OLDPWD", vars[0]);
 		chdir(vars[1]);
 	}
 	else
 	{
-		ht_set(mshell.hash_envp, "OLDPWD", vars[0]);
+		ht_set(g_mshell.hash_envp, "OLDPWD", vars[0]);
 		chdir_check_error(argv[1]);
 	}
 	free(vars[0]);
@@ -92,32 +103,36 @@ int	b_cd(char **argv)
 	return (0);
 }
 
-int	b_pwd(){
+int	b_pwd(char **argv)
+{
 	char	buff[MAXPATHLEN];
-	int	code;
-	
+	int		code;
+
+	(void) argv;
 	code = 0;
 	if (getcwd(buff, MAXPATHLEN))
 		printf("%s\n", buff);
 	else
 		code = 1;
-
 	return (code);
 }
 
-int	b_echo(char	**argv){
+int	b_echo(char	**argv)
+{
 	int	code;
 	int	n_flag;
 
 	code = 0;
 	n_flag = 0;
 	argv++;
-	if (*argv && ft_strncmp(*argv, "-n", 3) == 0){
+	if (*argv && ft_strncmp(*argv, "-n", 3) == 0)
+	{
 		n_flag = 1;
-	while (ft_strncmp(*argv, "-n", 3) == 0)
+		while (ft_strncmp(*argv, "-n", 3) == 0)
 		argv++;
 	}
-	while(*argv){
+	while (*argv)
+	{
 		ft_putstr_fd(*argv++, 1);
 		if (*argv)
 			ft_putstr_fd(" ", 1);
@@ -127,14 +142,17 @@ int	b_echo(char	**argv){
 	return (code);
 }
 
-int	b_env(){
-	int 	code;
-	int	i;
+int	b_env(char	**argv)
+{
+	int		code;
+	int		i;
+	char	**s;
 
+	(void) argv;
 	code = 0;
 	i = -1;
-	char **s = hash_to_array(mshell.hash_envp);
-	while(s[++i])
+	s = hash_to_array(g_mshell.hash_envp);
+	while (s[++i])
 		printf("%s\n", s[i]);
 	free_arr(s);
 	return (code);
@@ -142,20 +160,22 @@ int	b_env(){
 
 //works very BAD
 //no free in while part
-int	b_export(char **argv){
-	int	code;
+int	b_export(char **argv)
+{
+	int		code;
 	char	**envp;
 	char	**key_value;
 	char	*equal_ptr;
-	int	i;
+	int		i;
 
 	code = 0;
 	i = -1;
-	if (!argv[1]){
+	if (!argv[1])
+	{
 		//print sorted env
-		envp = hash_to_array(mshell.hash_envp);
+		envp = hash_to_array(g_mshell.hash_envp);
 		envp = sort_array(envp);
-		while(envp[++i])
+		while (envp[++i])
 			printf("declare -x %s\n", envp[i]);
 		free_arr(envp);
 	}
@@ -163,28 +183,31 @@ int	b_export(char **argv){
 	//1) var=value
 	//2) var=
 	//3) var
-	while(*(++argv)){
+	while (*(++argv))
+	{
 		//printf("arg %s\n", *argv);
-		key_value = ft_split(*argv, '=');	
+		key_value = ft_split(*argv, '=');
 		equal_ptr = ft_strchr(*argv, '=');
 		if (key_value[1])
-			ht_set(mshell.hash_envp, key_value[0], *argv); //key_value[0], key_value[1]); 
+//			ht_set(g_mshell.hash_envp, key_value[0], *argv); //key_value[0], key_value[1]);
+			ht_set(g_mshell.hash_envp, key_value[0], key_value[1]); //key_value[0], key_value[1]);
 		else if (equal_ptr != NULL)
-			ht_set(mshell.hash_envp, key_value[0], ft_strjoin(*argv,"empty")); 
+			ht_set(g_mshell.hash_envp, key_value[0], ft_strjoin(*argv, "empty"));
 		else
-			ht_set(mshell.hash_envp, key_value[0], ""); 
-		printf("value %s\n", ht_get(mshell.hash_envp, key_value[0]));
+			ht_set(g_mshell.hash_envp, key_value[0], "");
+		printf("value %s\n", ht_get(g_mshell.hash_envp, key_value[0]));
 	}
 	return (code);
 }
 
-int	b_unset(char **argv){
+int	b_unset(char **argv)
+{
 	int	code;
 
 	code = 0;
 	if (!argv[1])
-		return code;
-	while(*(++argv))
-		ht_del(mshell.hash_envp, *argv);
+		return (code);
+	while (*(++argv))
+		ht_del(g_mshell.hash_envp, *argv);
 	return (code);
 }

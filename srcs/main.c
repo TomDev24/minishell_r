@@ -1,23 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/06 17:06:48 by cgregory          #+#    #+#             */
+/*   Updated: 2022/09/06 19:52:39 by cgregory         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-t_global	mshell;
+t_global	g_mshell;
 
-void	sighandler_prepare()
+void	sighandler_prepare(void)
 {
-	sigemptyset(&mshell.newset);
-	sigaddset(&mshell.newset, SIGINT);
-	sigaddset(&mshell.newset, SIGQUIT);
-	mshell.s_int.sa_handler = sigint_handler;
-	mshell.s_int.sa_mask = SIGINT;
-	sigaction(SIGINT, &mshell.s_int, NULL);
+	sigemptyset(&g_mshell.newset);
+	sigaddset(&g_mshell.newset, SIGINT);
+	sigaddset(&g_mshell.newset, SIGQUIT);
+	g_mshell.s_int.sa_handler = sigint_handler;
+	g_mshell.s_int.sa_mask = SIGINT;
+	sigaction(SIGINT, &g_mshell.s_int, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }
 
-//we should free
-//1)line
-//2)tokens
-//3)cmds
-int	main(int argc, char **argv, char **envp){
+int	main(int argc, char **argv, char **envp)
+{
 	char		*line;
 	t_token		*tokens;
 	t_cmd		*cmds;
@@ -27,7 +36,8 @@ int	main(int argc, char **argv, char **envp){
 		python_test(argv[2], envp);
 	set_param_tty();
 	sighandler_prepare();
-	while(1 && argc == 1){
+	while (1 && argc == 1)
+	{
 		tokens = NULL;
 		cmds = NULL;
 		line = readline("sash>");
@@ -38,18 +48,17 @@ int	main(int argc, char **argv, char **envp){
 		}
 		add_history(line);
 		tokens = lexer(line);
-		mshell.tokens = tokens;
-		//pretty_lexer(tokens);	
+		g_mshell.tokens = tokens;
+		//pretty_lexer(tokens);
 		//print_tokens(tokens);
-
-		cmds = parser(&tokens);	
-		mshell.cmds = cmds;
+		cmds = parser(&tokens);
+		g_mshell.cmds = cmds;
 		print_cmds(cmds);
 		executor(cmds);
 		free_tokens(tokens);
 		//free_cmds(cmds);
 	}
 	unset_param_tty();
-	ht_delete(&mshell.hash_envp);	
-	return 0;
+	ht_delete(&g_mshell.hash_envp);
+	return (0);
 }

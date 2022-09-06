@@ -1,16 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   memfree.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/06 17:21:13 by cgregory          #+#    #+#             */
+/*   Updated: 2022/09/06 17:23:10 by cgregory         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 //FREE FUNCTIONS SHOULD REWRITTEN AND PLACED ELSEWHERE
 
-void	free_context(t_stack **context){
+void	free_context(t_stack **context)
+{
 	t_list	*elements;
 	t_list	*tmp;
-	t_stack *ctx;
+	t_stack	*ctx;
 
 	ctx = *context;
 	elements = ctx->elements;
 	(*context)->q_type = 0;
-	while (elements){
+	while (elements)
+	{
 		tmp = elements;
 		elements = elements->next;
 		free(tmp);
@@ -19,29 +33,32 @@ void	free_context(t_stack **context){
 	*context = NULL;
 }
 
-void	free_context_elements(t_stack *context, t_token *st_token, t_token *en_token){
+void	free_context_elements(t_stack *context,
+	t_token *st_token, t_token *en_token)
+{
 	t_list	*head;
 	t_token	*tmp;
 
 	head = context->elements;
 	if (head->next->content == st_token)
 		head = head->next;
-	while(st_token != en_token){
+	while (st_token != en_token)
+	{
 		tmp = st_token;
 		st_token = st_token->next;
-		if (head && head->content == tmp){
-			free_tkn((t_token**)&head->content);
+		if (head && head->content == tmp)
+		{
+			free_tkn ((t_token **)&head->content);
 			head = head->next;
 		}
 		else
-			free_tkn(&tmp);
+			free_tkn (&tmp);
 	}
 	if (head && head->content == st_token)
-		free_tkn((t_token**)&head->content);
+		free_tkn ((t_token **)&head->content);
 	else
-		free_tkn(&st_token);
-	
-	/*
+		free_tkn (&st_token);
+		/*
 	t_token	*st_token;
 	t_list	*head;
 
@@ -62,43 +79,43 @@ void	free_context_elements(t_stack *context, t_token *st_token, t_token *en_toke
 	*/
 }
 
-
-//Free list of tokens and 
-//1)value
-//2)
-void	free_tkn(t_token **tkn){
-	t_token *tmp;
+void	free_tkn(t_token **tkn)
+{
+	t_token	*tmp;
 
 	if (!*tkn)
-		return;
+		return ;
 	tmp = *tkn;
 	if (*tmp->value != 0)
 		free(tmp->value);
 	free(*tkn);
 	*tkn = NULL;
-
 }
-void	free_tokens(t_token *tokens){
+
+void	free_tokens(t_token *tokens)
+{
 	t_token	*tmp;
 
-	while(tokens){
+	while (tokens)
+	{
 		tmp = tokens;
 		tokens = tokens->next;
 		free_tkn(&tmp);
 	}
 }
 
-void	free_arr(char **arr){
+void	free_arr(char **arr)
+{
 	int	i;
 
 	i = 0;
-	while(arr[i]){
+	while (arr[i])
+	{
 		free(arr[i]);
 		i++;
 	}
 	free(arr);
 }
-
 //typedef struct s_cmd{
 //	int		i;
 //	char		*infile;
@@ -110,22 +127,26 @@ void	free_arr(char **arr){
 //	t_list		*args; 	 FREE ONLY *, not content
 //	struct s_cmd	*next;
 //}			t_cmd;
-void	free_cmds(t_cmd *cmds){
+
+void	free_cmds(t_cmd *cmds)
+{
 	t_cmd	*tmp;
 	t_list	*tmp2;
 
-	while(cmds){
+	while (cmds)
+	{
 		tmp = cmds;
 		cmds = cmds->next;
-
 		free(tmp->argv);
-		while(tmp->redirs){	
+		while (tmp->redirs)
+		{
 			tmp2 = tmp->redirs;
 			tmp->redirs = tmp->redirs->next;
 			free(tmp2->content);
 			free(tmp2);
 		}
-		while(tmp->args){
+		while (tmp->args)
+		{
 			tmp2 = tmp->args;
 			tmp->args = tmp->args->next;
 			free(tmp2);
@@ -134,23 +155,26 @@ void	free_cmds(t_cmd *cmds){
 	}
 }
 
-void	free_pipes(int **pipes, int pipe_amount){
+void	free_pipes(int **pipes, int pipe_amount)
+{
 	int	i;
 
 	i = 0;
-	while (i < pipe_amount){
+	while (i < pipe_amount)
+	{
 		free(pipes[i]);
 		i++;
 	}
-	
 	free(pipes);
 }
 
-void	close_pipes(int	**pipes, int pipe_amount){
-	int i;
-	
+void	close_pipes(int	**pipes, int pipe_amount)
+{
+	int	i;
+
 	i = 0;
-	while (i < pipe_amount){
+	while (i < pipe_amount)
+	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
 		i++;

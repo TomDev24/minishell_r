@@ -1,9 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/06 17:23:44 by cgregory          #+#    #+#             */
+/*   Updated: 2022/09/06 17:34:45 by cgregory         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-t_cmd	*allocate_cmd(){
+t_cmd	*allocate_cmd(void)
+{
 	t_cmd	*cmd;
 
-	cmd = (t_cmd*)malloc(sizeof(t_cmd));
+	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!cmd)
 		m_error(1);
 	cmd->i = 0;
@@ -15,20 +28,21 @@ t_cmd	*allocate_cmd(){
 	cmd->args = NULL;
 	cmd->next = NULL;
 	cmd->redirs = NULL;
-
-	return cmd;
+	return (cmd);
 }
 
-void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
-	t_cmd 	*tmp;
-	int	i;
-	
+void	add_cmd_to_list(t_cmd **cmds, t_cmd *new)
+{
+	t_cmd	*tmp;
+	int		i;
+
 	i = 1;
 	tmp = *cmds;
 	new->i = 0;
-	if (*cmds == NULL){
+	if (*cmds == NULL)
+	{
 		*cmds = new;
-		return;
+		return ;
 	}
 	while (tmp->next && ++i)
 		tmp = tmp->next;
@@ -36,10 +50,10 @@ void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
 	tmp->next = new;
 }
 
-char	**make_argv(t_cmd *cmd){
-	//when packing in **argv everything should be trimmed
+char	**make_argv(t_cmd *cmd)
+{
 	char	**res;
-	int	size;
+	int		size;
 	t_list	*tmp;
 	t_token	*tkn;
 
@@ -48,9 +62,9 @@ char	**make_argv(t_cmd *cmd){
 	res = (char **)malloc(sizeof(res) * (size + 1));
 	if (!res)
 		m_error(1);
-
 	*(res++) = cmd->cmd->value;
-	while (tmp){
+	while (tmp)
+	{
 		tkn = tmp->content;
 		if (*tkn->value)
 			*(res++) = tkn->value;
@@ -59,20 +73,21 @@ char	**make_argv(t_cmd *cmd){
 		tmp = tmp->next;
 	}
 	*res = NULL;
-	return res - size;
+	return (res - size);
 }
 
-t_token	*save_redirection(t_token *tokens, t_cmd *new){
-	t_redir *redir;
+t_token	*save_redirection(t_token *tokens, t_cmd *new)
+{
+	t_redir	*redir;
 
-	if (tokens->next->type == FILEN || tokens->next->type == DELIMITER){
+	if (tokens->next->type == FILEN || tokens->next->type == DELIMITER)
+	{
 		//tokens->next could not exist
 		//lstnew could error
-
 		redir = malloc(sizeof(t_redir));
 		if (!redir)
 			m_error(1);
-		redir->type= tokens->type;
+		redir->type = tokens->type;
 		redir->filen = tokens->next->value;
 		ft_lstadd_back(&new->redirs, ft_lstnew(redir));
 	}
@@ -88,15 +103,17 @@ t_token	*save_redirection(t_token *tokens, t_cmd *new){
 		tokens = tokens->next;
 		new->eof = tokens->value;
 	}*/
-	return tokens;
+	return (tokens);
 }
 
 //we got problems with redirection
-t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
+t_token	*pack_cmd(t_token *tokens, t_cmd **cmds)
+{
 	t_cmd		*new;
 
 	new = allocate_cmd();
-	while(tokens && tokens->type != PIPE){
+	while (tokens && tokens->type != PIPE)
+	{
 		if (tokens->type == CMD && !new->cmd)
 			new->cmd = tokens;
 		else if (tokens->type == ARG)
@@ -112,21 +129,24 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	}
 	new->argv = make_argv(new);
 	add_cmd_to_list(cmds, new);
-	return tokens;
+	return (tokens);
 }
 
-t_cmd	*parser(t_token **tokens){
-	t_cmd		*cmds;
-	t_token		*tkns;
-	
+t_cmd	*parser(t_token **tokens)
+{
+	t_cmd	*cmds;
+	t_token	*tkns;
+
 	cmds = NULL;
 	unquote(tokens);
 	tkns = *tokens;
-	//We should read each token until PIPE or end_of_list (; is not included for now)	
-	while(tkns){
+	//We should read each token until PIPE or
+	//end_of_list (; is not included for now)	
+	while (tkns)
+	{
 		tkns = pack_cmd(tkns, &cmds);
 		if (tkns && tkns->type == PIPE)
 			tkns = tkns->next;
 	}
-	return cmds;
+	return (cmds);
 }
