@@ -20,11 +20,20 @@ void	change_token_value(t_token *current, t_stack *context){
 	char	*value;
 	char	*key;
 	t_token	*first;
-	//t_token	*prev;
 	char	*tmp;
 	t_token	*tmp_tkn;
+	//t_token	*prev;
 
 	first = current;
+	if (*current->addr != '$')
+		current = current->next;
+	/*
+	while((prev=get_token_by_addr(first->addr, *context->tokens, 1))){
+		if (tkn_eof(prev) + 1 == first->addr)
+			first = prev;
+		else
+			break;
+	}*/
 	//set first to previous if some_arg$VAR
 	//prev = NULL;
 	while (current && *current->addr == '$'){
@@ -61,13 +70,17 @@ void	change_token_value(t_token *current, t_stack *context){
 
 
 void	manage_evar(t_token *current, t_stack *context){
+	//t_token	*tmp;
+
 	if(current->type != CMD && current->type != ARG
 		&& current->type != FILEN && current->type != DELIMITER)
 		return;
-	if(*current->addr != '$')
+	//tmp = current;
+		//tmp = tmp->next;
+	//if (ft_strncmp(current->value, "$", 2) == 0)
+	//	return;
+	else if(*current->addr != '$' && *(tkn_eof(current) + 1) != '$')
 		return;	
-	if (ft_strncmp(current->value, "$", 2) == 0)
-		return;
 	
 	//printf("current->value %s\n", current->value + 1);
 	change_token_value(current, context);

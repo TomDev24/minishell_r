@@ -76,14 +76,14 @@ void	print_list(t_list *lst){
 void	print_cmds(t_cmd *cmds){
 	char	*argv;
 
-	argv = array_to_line(cmds->argv);
 	while(cmds){
+		argv = array_to_line(cmds->argv);
 		printf("--CMD--\n");
 		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |DELIM:%s |ARGV:%s\n", cmds->i, cmds->cmd->value, 
 				cmds->infile, cmds->outfile, cmds->eof, argv); //arr_to_line add space at the end
 		cmds = cmds->next;
+		free(argv);
 	}
-	free(argv);
 }
 
 /* TOKENS PRINTER */

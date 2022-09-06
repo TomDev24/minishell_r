@@ -19,7 +19,7 @@ void	init_hash_envp(char **envp){
 	}
 }
 
-void	change_question(t_token *tokens, t_cmd *cmd){
+void	change_question(t_token *tokens){
 	//char	*s;
 
 	//s = ft_strchr(tokens->value, '$');	
@@ -27,14 +27,21 @@ void	change_question(t_token *tokens, t_cmd *cmd){
 	//	return;
 	//printf("change\n");
 	if (ft_strncmp(tokens->value, "$?", 3) == 0){
-		printf("CHAING DSK %s#\n", tokens->value);
+		printf("Changin token value to exit_code %s# ", tokens->value);
 		free(tokens->value);
 		tokens->value = ft_itoa(mshell.exit_code);
 		printf("%s\n", tokens->value);
+		while(mshell.cmds){
+			if (tokens->i == mshell.cmds->i){
+				while(*mshell.cmds->argv)
+					printf("cmd_i %d %s ", mshell.cmds->i, *mshell.cmds->argv++);
+			}
+			mshell.cmds = mshell.cmds->next;
+		}
 	}	
 }
 
-void	update_mshell(int code, int cmd_i, t_cmd *cmd){
+void	update_mshell(int code, int cmd_i){
 	t_token	*tokens;
 
 	mshell.exit_code = code;
@@ -42,10 +49,11 @@ void	update_mshell(int code, int cmd_i, t_cmd *cmd){
 	//printf("UPDAT# MSHEL cmd-i %d\n", cmd_i);
 	while (tokens){
 		//printf("tkns-i %d\n", tokens->i);
-		if (tokens->i == cmd_i + 1)
-			change_question(tokens, cmd);
-		else if (tokens->i > cmd_i + 1)
-			break;
+		//if (tokens->i == cmd_i + 1)
+		cmd_i++;
+		change_question(tokens);
+		//else if (tokens->i > cmd_i + 1)
+			//break;
 		tokens = tokens->next;
 	}
 }

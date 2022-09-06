@@ -76,6 +76,7 @@ typedef struct s_exec{
 
 typedef struct s_global{
 	t_token		*tokens;
+	t_cmd		*cmds;
 	t_ht		*hash_envp;
 	struct sigaction    s_int;
 	int		exit_code;
@@ -124,7 +125,7 @@ int		b_cd(char **argv);
 
 /* ENV	*/
 void		init_hash_envp(char **envp);
-void		update_mshell(int code, int cmd_i, t_cmd *cmd);
+void		update_mshell(int code, int cmd_i);
 
 /* UTILS */
 t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);

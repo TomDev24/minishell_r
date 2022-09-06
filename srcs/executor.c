@@ -118,7 +118,8 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 	code = func(cmd->argv);
 //	printf("cmd->argv: %s\n", cmd->argv[0]);
-	update_mshell(code, cmd->i);
+	if (pipe_amount == 0)
+		update_mshell(code, cmd->i);
 	if (pipe_amount > 0)
 		exit(code);
 	else

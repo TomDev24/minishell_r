@@ -47,10 +47,11 @@ int	main(int argc, char **argv, char **envp){
 		//print_tokens(tokens);
 
 		cmds = parser(&tokens);	
-		//print_cmds(cmds);
+		mshell.cmds = cmds;
+		print_cmds(cmds);
 		executor(cmds);
 		free_tokens(tokens);
-		free_cmds(cmds);
+		//free_cmds(cmds);
 	}
 	ht_delete(&mshell.hash_envp);	
 	return 0;
