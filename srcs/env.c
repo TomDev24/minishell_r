@@ -7,6 +7,7 @@ void	init_hash_envp(char **envp){
 	char	*tmp;
 
 	mshell.hash_envp = ht_create(); 
+	mshell.exit_code = 0;
 	ht = mshell.hash_envp;
 	while(*envp){
 		//its very bad, think of something else
@@ -41,6 +42,7 @@ void	change_question(t_token *tokens){
 	}	
 }
 
+/*
 void	update_mshell(int code, int cmd_i){
 	t_token	*tokens;
 
@@ -56,4 +58,4 @@ void	update_mshell(int code, int cmd_i){
 			//break;
 		tokens = tokens->next;
 	}
-}
+}*/

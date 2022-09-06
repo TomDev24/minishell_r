@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+int	get_last_token_i(t_token *tokens){
+	t_token *tkns;
+	
+	tkns = tokens;
+	while(tkns->next)
+		tkns = tkns->next;
+	return tkns->i;
+}
+
 //Needs refactor // I have some questions about it
 t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag){
 	t_token *res;
@@ -40,7 +49,8 @@ char	type_to_char(int Q){
 		return '"';
 }
 
-void	python_test(char *line, char **envp){
+void	python_test(char *line){
+	/*
 	t_token		*tokens;
 	t_cmd		*cmds;
 
@@ -48,8 +58,45 @@ void	python_test(char *line, char **envp){
 	cmds = NULL;
 	tokens = lexer(line);
 	cmds = parser(&tokens);	
-	executor(cmds);
-	envp++;
+	cmds++;
+	//executor(cmds);
+	*/
+	t_token		*tokens;
+	t_token		*cur_tokens;
+	t_token		*tmp;
+	t_cmd		*cmds;
+	t_exec		exec;	
+	int		cmd_amount;
+
+	tokens = NULL;
+	cmds = NULL;
+	tokens = lexer(line);
+	cmd_amount = get_last_token_i(tokens) + 1;
+	cur_tokens = tokens;
+	pre_process(&exec, cmd_amount);
+	while(cur_tokens){
+		if (cur_tokens->next && cur_tokens->next->type == PIPE){
+			tmp = cur_tokens->next;
+			cur_tokens->next = NULL;
+			cmds = parser(&tokens);	
+			//print_cmds(cmds);
+			executor(cmds, &exec, cmd_amount, cur_tokens->i);
+			free_tokens(tokens);
+			free_cmds(cmds);
+			tokens = tmp->next;
+			cur_tokens = tmp->next;
+			free_tkn(&tmp);
+			continue;
+		} else if(!cur_tokens->next){
+			cmds = parser(&tokens);	
+			executor(cmds, &exec, cmd_amount, cur_tokens->i);
+			free_tokens(tokens);
+			free_cmds(cmds);
+		}
+		cur_tokens= cur_tokens->next;
+	}		
+	post_process(&exec, cmd_amount);
+
 }
 
 int	cmdlst_size(t_cmd *cmds){

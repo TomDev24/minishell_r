@@ -120,8 +120,11 @@ void		change_token_value(t_token *current, t_stack *context);
 void		manage_evar(t_token *current, t_stack *context);
 
 /* EXECUTOR */
+void		pre_process(t_exec *exec, int cmd_amount);
+int		post_process(t_exec *exec, int cmd_amount);
+int		**init_pipes(int pipes_amount);
 char		**parse_envp();
-void		executor(t_cmd *cmds);
+void		executor(t_cmd *cmds, t_exec *exec, int cmd_amount, int i);
 
 /* HERE_DOC */
 void		here_doc(char *eof);
@@ -140,10 +143,11 @@ void		init_hash_envp(char **envp);
 void		update_mshell(int code, int cmd_i);
 
 /* UTILS */
+int		get_last_token_i(t_token *tokens);
 t_token		*get_token_by_addr(char *addr, t_token *tokens, int prev);
 char		*tkn_eof(t_token *tkn);
 char		type_to_char(int Q);
-void		python_test(char *line, char **envp);
+void		python_test(char *line);
 int		cmdlst_size(t_cmd *cmds);
 int		array_size(char **s);
 char		**sort_array(char **s);

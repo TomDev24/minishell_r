@@ -102,7 +102,7 @@ int	b_pwd(){
 	else
 		code = 1;
 
-	return (code);
+	return (44 * (code +1));
 }
 
 int	b_echo(char	**argv){

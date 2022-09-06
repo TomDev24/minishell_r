@@ -1,12 +1,12 @@
 #include "minishell.h"
 
-t_cmd	*allocate_cmd(){
+t_cmd	*allocate_cmd(t_token *tkn){
 	t_cmd	*cmd;
 
 	cmd = (t_cmd*)malloc(sizeof(t_cmd));
 	if (!cmd)
 		m_error(1);
-	cmd->i = 0;
+	cmd->i = tkn->i;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
 	cmd->eof = NULL;
@@ -21,18 +21,14 @@ t_cmd	*allocate_cmd(){
 
 void	add_cmd_to_list(t_cmd **cmds, t_cmd *new){
 	t_cmd 	*tmp;
-	int	i;
 	
-	i = 1;
 	tmp = *cmds;
-	new->i = 0;
 	if (*cmds == NULL){
 		*cmds = new;
 		return;
 	}
-	while (tmp->next && ++i)
+	while (tmp->next)
 		tmp = tmp->next;
-	new->i = i;
 	tmp->next = new;
 }
 
@@ -95,7 +91,7 @@ t_token	*save_redirection(t_token *tokens, t_cmd *new){
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds){
 	t_cmd		*new;
 
-	new = allocate_cmd();
+	new = allocate_cmd(tokens);
 	while(tokens && tokens->type != PIPE){
 		if (tokens->type == CMD && !new->cmd)
 			new->cmd = tokens;
