@@ -118,8 +118,7 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount){
 
 	code = func(cmd->argv);
 //	printf("cmd->argv: %s\n", cmd->argv[0]);
-	if (pipe_amount == 0)
-		update_mshell(code, cmd->i);
+	mshell.exit_code = code;
 	if (pipe_amount > 0)
 		exit(code);
 	else
@@ -188,11 +187,12 @@ int	post_process(t_exec *exec, int cmd_amount){
 
 	j = -1;
 	close_pipes(exec->pipes, exec->pipe_amount);
-	while (++j < cmd_amount && exec->pids[j])
+	while (++j < cmd_amount && exec->pids[j] >= 0)
 	{
 		waitpid(exec->pids[j], &status, 0);
+		mshell.exit_code = WEXITSTATUS(status);
 		printf("status = %d\n", WEXITSTATUS(status));
-		update_mshell(j+20, j);
+		//update_mshell(j+20, j);
 	}
 	free_pipes(exec->pipes, exec->pipe_amount);	
 	free(exec->pids);
@@ -229,7 +229,7 @@ void	executor(t_cmd *cmds){
 	cmd_amount = cmdlst_size(cmds);	
 	if (cmd_amount == 0)
 		return; //should return code?
-//printf("inside executor\n");
+	//printf("inside executor\n");
 	pre_process(&exec, cmd_amount);
 	//here for now exec_buitlin calls two times
 	while(cmds){

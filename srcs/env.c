@@ -19,6 +19,7 @@ void	init_hash_envp(char **envp){
 	}
 }
 
+/*
 void	change_question(t_token *tokens){
 	//char	*s;
 
@@ -56,4 +57,4 @@ void	update_mshell(int code, int cmd_i){
 			//break;
 		tokens = tokens->next;
 	}
-}
+}*/
