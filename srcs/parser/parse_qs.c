@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:51:28 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/07 13:48:39 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 17:13:03 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,7 @@ void	set_replacer_value(t_stack *c, t_token *s_t, t_token *e_t, char *value)
 		if (c->temp_type == '0' && (*st_addr == '"' || *st_addr == '\''))
 			c->temp_type = *st_addr++;
 		if (c->temp_type == '"' && *st_addr == '$')
-		{
 			st_addr = try_replace_env(*c->tokens, st_addr, value, &i);
-			continue ;
-		}
 		if (*st_addr == c->temp_type)
 		{
 			c->temp_type = '0';
@@ -60,6 +57,8 @@ void	set_replacer_value(t_stack *c, t_token *s_t, t_token *e_t, char *value)
 		else
 			value[i++] = *st_addr++;
 	}
+	if (c->temp_type != '0')
+		m_error(-6, "");
 }
 
 //SHOULD CHOSE CORRECT TYPE AND PARSE VALUE RIGHT
@@ -78,7 +77,7 @@ t_token	*resolve_context(t_stack *context, t_token *current)
 	value_len = tkn_eof(en_token) - st_token->addr + 2 + context->evars_len;
 	value = ft_calloc(value_len, sizeof(char));
 	if (!value)
-		m_error(1);
+		m_error(1, "");
 	set_replacer_value(context, st_token, en_token, value);
 	new->value = value;
 	free_context_elements(context, st_token, en_token);
@@ -136,5 +135,7 @@ void	unquote(t_token **tokens)
 		prev = current;
 		current = current->next;
 	}
+	if (context && context->q_type != -1)
+		m_error(-6, "");
 	free_context(&context);
 }

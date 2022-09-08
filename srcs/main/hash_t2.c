@@ -6,7 +6,7 @@
 /*   By: dbrittan <dbrittan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 20:07:43 by dbrittan          #+#    #+#             */
-/*   Updated: 2022/09/07 20:26:14 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 13:23:25 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ char	**hash_to_array(t_ht *ht, int size_ht)
 	j = 0;
 	res = (char **)malloc(sizeof(char *) * (size_ht + 1));
 	if (!res)
-		m_error(1);
+		m_error(1, "");
 	while (++i < SLOT_AMOUNT)
 	{
 		tmp = ht->entries[i];

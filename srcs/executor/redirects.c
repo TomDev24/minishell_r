@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:26:50 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 12:28:46 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 13:21:48 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	here_doc(char *eof)
 	line = "";
 	fd = open(".heredoc_tmp", O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0)
-		m_error(2);
+		m_error(2, "");
 	while (ft_strncmp(line, eof, ft_strlen(eof) + 1) != 0)
 	{
 		if (*line)

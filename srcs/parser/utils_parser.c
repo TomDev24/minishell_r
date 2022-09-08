@@ -6,7 +6,7 @@
 /*   By: dbrittan <dbrittan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 11:10:44 by dbrittan          #+#    #+#             */
-/*   Updated: 2022/09/07 13:24:54 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 13:24:15 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_cmd	*allocate_cmd(void)
 
 	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!cmd)
-		m_error(1);
+		m_error(1, "");
 	cmd->i = 0;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
@@ -37,7 +37,7 @@ t_stack	*init_context(t_token **tokens)
 
 	res = malloc(sizeof(t_stack));
 	if (!res)
-		m_error(1);
+		m_error(1, "");
 	res->evars_len = 0;
 	res->q_type = -1;
 	res->temp_type = '0';
@@ -70,7 +70,7 @@ t_token	*create_replacer(t_token *st_token)
 
 	new = (t_token *)malloc(sizeof(t_token));
 	if (!new)
-		m_error(1);
+		m_error(1, "");
 	new->type = determine_type(st_token);
 	new->addr = NULL;
 	new->next = NULL;

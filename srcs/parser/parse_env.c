@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:46:52 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 10:37:09 by tom              ###   ########.fr       */
+/*   Updated: 2022/09/08 13:23:29 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	merge_vars(t_token *first, t_token *current, t_stack *context)
 	tmp = first->value;
 	first->value = ft_strjoin(first->value, value);
 	if (!first->value)
-		m_error(1);
+		m_error(1, "");
 	if (tmp && *tmp)
 		free(tmp);
 }

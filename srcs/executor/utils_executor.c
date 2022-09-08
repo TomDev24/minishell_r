@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:56:18 by dbrittan          #+#    #+#             */
-/*   Updated: 2022/09/08 10:37:09 by tom              ###   ########.fr       */
+/*   Updated: 2022/09/08 13:22:59 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,14 @@ int	**init_pipes(int pipes_amount)
 	i = 0;
 	res = (int **)malloc(sizeof(int *) * (pipes_amount + 1));
 	if (!res)
-		m_error(1);
+		m_error(1, "");
 	while (i < pipes_amount)
 	{
 		res[i] = (int *)malloc(sizeof(int) * 2);
 		if (!res[i])
-			m_error(1);
+			m_error(1, "");
 		if (pipe(res[i]) < 0)
-			m_error(3);
+			m_error(3, "");
 		i++;
 	}
 	return (res);
@@ -92,7 +92,7 @@ void	pre_process(t_exec *exec, int cmd_amount)
 	i = -1;
 	pids = (int *)malloc(sizeof(int) * cmd_amount);
 	if (!pids)
-		m_error(1);
+		m_error(1, "");
 	while (++i < cmd_amount)
 		pids[i] = -1;
 	pipes = init_pipes(pipe_amount);

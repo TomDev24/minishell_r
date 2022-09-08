@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:46:51 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 11:33:25 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 14:53:32 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	run_cmd(t_cmd *cmd, int **pipes, int cmd_amount, int i)
 	}
 	free_arr(cmd_paths);
 	if (allowed < 0)
-		exit(0);
+		m_error(127, cmd->argv[0]);
 	i = handle_redirects(cmd) * handle_pipes(cmd, pipes, cmd_amount);
 	g_mshell.s_quit.sa_handler = sigquit_handler;
 	sigaction(SIGQUIT, &g_mshell.s_quit, NULL);
@@ -96,7 +96,7 @@ void	executor(t_cmd *cmds, int cmd_amount)
 	int		code;
 
 	code = 0;
-	if (cmd_amount == 0)
+	if (handle_error_code() || cmd_amount == 0)
 		return ;
 	pre_process(&exec, cmd_amount);
 	while (cmds)

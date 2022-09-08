@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:28:30 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/07 20:11:17 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 13:23:19 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_entry	*ht_pair(char *key, char *value)
 
 	entry = (t_entry *)malloc(sizeof(t_entry));
 	if (!entry)
-		m_error(1);
+		m_error(1, "");
 	entry->key = ft_strdup(key);
 	entry->value = ft_strdup(value);
 	entry->next = NULL;
@@ -48,10 +48,10 @@ t_ht	*ht_create(void)
 	i = 0;
 	ht = (t_ht *)malloc(sizeof(t_ht));
 	if (!ht)
-		m_error(1);
+		m_error(1, "");
 	ht->entries = (t_entry **)malloc(sizeof(t_entry *) * SLOT_AMOUNT);
 	if (!ht->entries)
-		m_error(1);
+		m_error(1, "");
 	while (i < SLOT_AMOUNT)
 		ht->entries[i++] = NULL;
 	return (ht);

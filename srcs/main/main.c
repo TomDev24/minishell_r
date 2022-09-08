@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:06:48 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 10:37:09 by tom              ###   ########.fr       */
+/*   Updated: 2022/09/08 14:53:47 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static	void	minishell(char *line)
 	cmds = NULL;
 	add_history(line);
 	tokens = lexer(line);
+	pretty_lexer(tokens);
 	cmds = parser(&tokens);
 	executor(cmds, cmdlst_size(cmds));
 	free_tokens(tokens);

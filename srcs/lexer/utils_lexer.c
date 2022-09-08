@@ -6,7 +6,7 @@
 /*   By: dbrittan <dbrittan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 10:51:16 by dbrittan          #+#    #+#             */
-/*   Updated: 2022/09/07 11:05:16 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 13:42:39 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_token	*init_token(int type, char *val, char *addr)
 
 	new = (t_token *) malloc(sizeof(t_token));
 	if (!new)
-		m_error(1);
+		m_error(1, "");
 	new->type = type;
 	new->value = val;
 	new->addr = addr;
@@ -41,6 +41,12 @@ char	*select_min(char *s)
 		min = ft_strchr(s, '\'');
 	if (ft_strchr(s, '$') < min && ft_strchr(s, '$') != NULL)
 		min = ft_strchr(s, '$');
+	if (ft_strchr(s, '|') < min && ft_strchr(s, '|') != NULL)
+		min = ft_strchr(s, '|');
+	if (ft_strchr(s, '<') < min && ft_strchr(s, '<') != NULL)
+		min = ft_strchr(s, '<');
+	if (ft_strchr(s, '>') < min && ft_strchr(s, '>') != NULL)
+		min = ft_strchr(s, '>');
 	return (min);
 }
 

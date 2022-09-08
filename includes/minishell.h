@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 20:02:56 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 11:34:53 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/08 14:30:26 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,6 @@ typedef struct s_exec{
 }				t_exec;
 
 typedef struct s_global{
-	t_token				*tokens;
-	t_cmd				*cmds;
 	int					exit_code;
 	t_ht				*env;
 	struct sigaction	s_int;
@@ -107,7 +105,8 @@ void	sigint_handler(int num);
 void	sigquit_handler(int num);
 
 /* ERROR */
-void	m_error(int code);
+int		handle_error_code(void);
+void	m_error(int code, char *msg);
 
 /* LEXER */
 int		tokens_push(t_token **tokens, int type, char *val, char *addr);
