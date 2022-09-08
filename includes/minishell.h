@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 20:02:56 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 20:44:56 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/08 11:34:53 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include "hash_t.h"
 # include <termios.h>
 
+//order matters
 enum	e_lexer_types{
 	CMD,
 	ARG,
@@ -90,13 +91,12 @@ typedef struct s_global{
 	t_token				*tokens;
 	t_cmd				*cmds;
 	int					exit_code;
-	t_ht				*hash_envp;
+	t_ht				*env;
 	struct sigaction	s_int;
 	struct sigaction	s_quit;
 	sigset_t			newset;
 	t_termios			setting_tty;
 	t_termios			setting_out_tty;
-	//char				**array_envp;
 }	t_global;
 
 extern t_global			g_mshell;
@@ -111,13 +111,28 @@ void	m_error(int code);
 
 /* LEXER */
 int		tokens_push(t_token **tokens, int type, char *val, char *addr);
-int		is_char(char *s);
 int		inspect_string(char *line, int i, int type, t_token **tokens);
 int		get_next_token(char *line, t_token **tokens);
 t_token	*lexer(char *line);
 
+/* UTILS_LEXER */
+t_token	*init_token(int type, char *val, char *addr);
+char	*select_min(char *s);
+int		is_char(char *s);
+
 /* PARSER */
 t_cmd	*parser(t_token **tokens);
+
+/* UTILS_PARSER */
+t_cmd	*allocate_cmd(void);
+t_stack	*init_context(t_token **tokens);
+int		determine_type(t_token *st_token);
+void	start_end_addr(t_stack *context, t_token **s_token, t_token **e_token);
+t_token	*create_replacer(t_token *st_token);
+
+/* FREE_PARSER */
+void	free_context(t_stack **context);
+void	free_context_elements(t_stack *c, t_token *st_token, t_token *en_token);
 
 /* PARSE_QS*/
 char	*tkn_eof(t_token *tkn);
@@ -129,10 +144,17 @@ void	change_token_value(t_token *current, t_stack *context);
 void	manage_evar(t_token *current, t_stack *context);
 
 /* EXECUTOR */
-char	**parse_envp(void);
-void	executor(t_cmd *cmds);
+void	executor(t_cmd *cmds, int cmd_amount);
 
-/* HERE_DOC */
+/* UTILS_EXECUTOR */
+char	**parse_envp(void);
+int		**init_pipes(int pipes_amount);
+int		(*find_builtin(char *name))(char **value);
+int		post_process(t_exec *exec, int cmd_amount);
+void	pre_process(t_exec *exec, int cmd_amount);
+
+/* REDIRECTS */
+int		handle_redirects(t_cmd *cmd);
 void	here_doc(char *eof);
 
 /* BUILTINS */
@@ -145,7 +167,7 @@ int		b_exit(char **argv);
 int		b_cd(char **argv);
 
 /* ENV	*/
-void	init_hash_envp(char **envp);
+void	init_env(char **envp);
 void	update_g_mshell(int code, int cmd_i);
 
 /* UTILS */
@@ -155,12 +177,9 @@ char	type_to_char(int Q);
 void	python_test(char *line, char **envp);
 int		cmdlst_size(t_cmd *cmds);
 int		array_size(char **s);
-char	**sort_array(char **s);
+char	**sort_array(char **s, int len_array);
 
 /* FREEING */
-void	free_context(t_stack **context);
-void	free_context_elements(t_stack *context,
-			t_token *st_token, t_token *en_token);
 void	free_tkn(t_token **tkn);
 void	free_tokens(t_token *tokens);
 void	free_arr(char **arr);
@@ -170,7 +189,6 @@ void	close_pipes(int	**pipes, int pipe_amount);
 
 /* DEBUG */
 char	*type_to_string(int type);
-void	print_list(t_list *lst);
 void	print_cmds(t_cmd *cmds);
 void	print_tokens(t_token *tokens);
 void	pretty_lexer(t_token *tokens);

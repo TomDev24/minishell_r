@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:46:52 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 19:49:42 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/08 10:37:09 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ char	*try_replace_env(t_token *tokens, char *st_addr, char *value, int *i)
 	t_token	*evar;
 	int		j;
 
-	//token of $ should be 100%
 	j = 0;
 	evar = get_token_by_addr(st_addr, tokens, 0);
 	if (*evar->value)
@@ -28,54 +27,52 @@ char	*try_replace_env(t_token *tokens, char *st_addr, char *value, int *i)
 			*i = *i + 1;
 		}
 	}
-	return evar->end_addr ? evar->end_addr : ++st_addr;
+	if (evar->end_addr)
+		return (evar->end_addr);
+	return (st_addr + 1);
+}
+
+void	merge_vars(t_token *first, t_token *current, t_stack *context)
+{
+	char	*value;
+	char	*key;
+	char	*tmp;
+
+	tmp = NULL;
+	key = current->value + 1;
+	value = ht_get(g_mshell.env, key);
+	if (*key == 0)
+		value = "$";
+	else if (ft_strncmp(key, "?", 2) == 0)
+		value = ft_itoa(g_mshell.exit_code);
+	free(current->value);
+	current->value = "";
+	if (!value)
+		return ;
+	if (context->q_type != -1)
+		context->evars_len += ft_strlen(value);
+	tmp = first->value;
+	first->value = ft_strjoin(first->value, value);
+	if (!first->value)
+		m_error(1);
+	if (tmp && *tmp)
+		free(tmp);
 }
 
 void	change_token_value(t_token *current, t_stack *context)
 {
-	char	*value;
-	char	*key;
 	t_token	*first;
-	char	*tmp;
 	t_token	*tmp_tkn;
-	//t_token	*prev;
+
 	first = current;
 	if (*current->addr != '$')
 		current = current->next;
-	/*
-	while((prev=get_token_by_addr(first->addr, *context->tokens, 1))){
-		if (tkn_eof(prev) + 1 == first->addr)
-			first = prev;
-		else
-			break;
-	}*/
-	//set first to previous if some_arg$VAR
-	//prev = NULL;
 	while (current && *current->addr == '$')
 	{
 		if (first->end_addr && first->end_addr != current->addr)
 			break ;
-		first->end_addr = tkn_eof(current) + 1; //tkn_eof points on last valid char
-		key = current->value + 1;
-		value = ht_get(g_mshell.hash_envp, key);
-		if (*key == 0)
-			value = "$";
-		else if (ft_strncmp(key, "?", 2) == 0)
-			value = ft_itoa(g_mshell.exit_code);
-		else if (ft_strncmp(key, "?", 2) == 0)
-			value = "$?";
-		free(current->value);
-		current->value = "";
-		if (value)
-		{
-			if (context->q_type != -1)
-				context->evars_len += ft_strlen(value);
-			tmp = first->value;
-			first->value = ft_strjoin(first->value, value);
-			if (*tmp)
-				free(tmp);
-		}
-		//prev = current;
+		first->end_addr = tkn_eof(current) + 1;
+		merge_vars(first, current, context);
 		tmp_tkn = current;
 		current = current->next;
 		if (first != tmp_tkn)
@@ -84,19 +81,12 @@ void	change_token_value(t_token *current, t_stack *context)
 	first->next = current;
 }
 
-
 void	manage_evar(t_token *current, t_stack *context)
 {
-	//t_token	*tmp;
 	if (current->type != CMD && current->type != ARG
 		&& current->type != FILEN && current->type != DELIMITER)
 		return ;
-	//tmp = current;
-		//tmp = tmp->next;
-	//if (ft_strncmp(current->value, "$", 2) == 0)
-	//	return;
-	else if(*current->addr != '$' && *(tkn_eof(current) + 1) != '$')
+	else if (*current->addr != '$' && *(tkn_eof(current) + 1) != '$')
 		return ;
-	//printf("current->value %s\n", current->value + 1);
 	change_token_value(current, context);
 }

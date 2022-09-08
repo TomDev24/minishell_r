@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 19:19:29 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 19:23:19 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/07 18:22:25 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,33 +60,6 @@ static char	*array_to_line(char **arr)
 	return (res);
 }
 
-/*
-static	char *list_to_line(t_list *lst){
-	char	*res;
-	t_token	*el;
-
-	res = "";
-	while(lst){
-		el = lst->content;
-		res = ft_strjoin(res, ft_strjoin(el->value, " "));
-		lst = lst->next;
-	}
-	return res;
-}
-*/
-
-void	print_list(t_list *lst)
-{
-	t_token	*tkn;
-
-	while (lst)
-	{
-		tkn = lst->content;
-		printf("Token value %s\n", tkn->value);
-		lst = lst->next;
-	}
-}
-
 /* CMDS PRINTER */
 
 void	print_cmds(t_cmd *cmds)
@@ -100,7 +73,7 @@ void	print_cmds(t_cmd *cmds)
 		printf("i:%d |CMD:%s |INFILE:%s |OUTFILE:%s |DELIM:%s |ARGV:%s\n",
 			cmds->i, cmds->cmd->value,
 			cmds->infile, cmds->outfile,
-			cmds->eof, argv); //arr_to_line add space at the end
+			cmds->eof, argv);
 		cmds = cmds->next;
 		free(argv);
 	}

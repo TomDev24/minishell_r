@@ -33,11 +33,11 @@ void	test_del(t_ht *ht){
 		key = ft_itoa(i);
 
 		res = ht_get(ht, key);
-		//printf("Before res: %s\n", res);
+		printf("Before res: %s\n", res);
 		ht_del(ht, key);
 
 		res = ht_get(ht, key);
-		//printf("After res: %s\n", res);
+		printf("After res: %s\n", res);
 		if (res != NULL)
 			printf("ERROR: element not deleted\n");
 	}

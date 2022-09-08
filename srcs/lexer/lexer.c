@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:07:38 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 18:26:03 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/07 11:03:59 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,7 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr)
 
 	tmp = *tokens;
 	index = 0;
-	new = (t_token *) malloc(sizeof(t_token));
-	if (!new)
-		m_error(1);
-	new->type = type;
-	new->value = val;
-	new->addr = addr;
-	new->i = index;
-	new->end_addr = NULL;
-	new->next = NULL;
+	new = init_token(type, val, addr);
 	if (*tokens == NULL)
 	{
 		*tokens = new;
@@ -46,35 +38,6 @@ int	tokens_push(t_token **tokens, int type, char *val, char *addr)
 		new->i = index + 1;
 	tmp->next = new;
 	return (1);
-}
-
-static char	*select_min(char *s)
-{
-	char	*min;
-
-	min = ft_strchr(s, '\0'); //actually the biggest
-	if (ft_strchr(s, ' ') < min && ft_strchr(s, ' ') != NULL)
-		min = ft_strchr(s, ' ');
-	if (ft_strchr(s, '"') < min && ft_strchr(s, '"') != NULL)
-		min = ft_strchr(s, '"');
-	if (ft_strchr(s, '\'') < min && ft_strchr(s, '\'') != NULL)
-		min = ft_strchr(s, '\'');
-	if (ft_strchr(s, '$') < min && ft_strchr(s, '$') != NULL)
-		min = ft_strchr(s, '$');
-	return (min);
-}
-
-int	is_char(char *s)
-{
-	int	res;
-
-	res = 0;
-	if (ft_isprint(*s) || *s < 0)
-		res = 1;
-	if (*s == '<' || *s == '>' || *s == '|' || *s == '"' || *s == '\'')
-		res = 0;
-	//if ()	res = 0; //should i cmp >> and << ?
-	return (res);
 }
 
 int	inspect_string(char *line, int i, int type, t_token **tokens)
@@ -104,7 +67,6 @@ int	inspect_string(char *line, int i, int type, t_token **tokens)
 	return (i + ft_strlen(val));
 }
 
-//we need to split $a$b$c on separate args
 int	get_next_token(char *line, t_token **tokens)
 {
 	int	i;

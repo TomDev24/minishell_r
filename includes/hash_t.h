@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 20:09:49 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 20:11:04 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/07 20:24:11 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void			ht_del(t_ht *ht, char *key);
 
 /* UTILS */
 unsigned int	ht_size(t_ht *ht);
-char			**hash_to_array(t_ht *ht);
+char			**hash_to_array(t_ht *ht, int size_ht);
 void			print_ht(t_ht *ht);
 
 #endif

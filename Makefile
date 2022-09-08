@@ -1,5 +1,5 @@
 INCLUDES = -I./includes/ -I./libft
-SRCS = ./srcs/*.c
+SRCS = ./srcs/main/*.c ./srcs/lexer/*.c ./srcs/parser/*.c ./srcs/executor/*.c ./srcs/executor/builtins/*.c ./srcs/utils/*.c 
 LIBFT = ./libft/libft.a 
 MAC = -L/Users/dbrittan/.brew/Cellar/readline/8.1.2/lib/ -I/Users/dbrittan/.brew/Cellar/readline/8.1.2/include/readline
 
@@ -20,7 +20,7 @@ test_parser:
 	rm test_parser;	
 
 test_ht:
-	gcc tests/test_ht.c srcs/hash_t.c $(INCLUDES) $(LIBFT) -lreadline -o test_ht
+	gcc tests/test_ht.c srcs/main/hash*.c srcs/utils/*.c $(INCLUDES) $(LIBFT) -lreadline -o test_ht
 	./test_ht
 	rm ./test_ht;
 

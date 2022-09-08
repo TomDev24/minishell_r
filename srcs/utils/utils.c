@@ -6,13 +6,12 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:39:06 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 17:46:40 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/07 18:32:41 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//Needs refactor // I have some questions about it
 t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag)
 {
 	t_token	*res;
@@ -23,7 +22,7 @@ t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag)
 	prev = NULL;
 	while (tokens)
 	{
-		next = tokens->next ? tokens->next : NULL;
+		next = tokens->next;
 		if (tokens->addr == addr)
 		{
 			if (prev_flag == 1)
@@ -39,6 +38,7 @@ t_token	*get_token_by_addr(char *addr, t_token *tokens, int prev_flag)
 	return (res);
 }
 
+//points on last char of tkn->value in tkn->addr
 char	*tkn_eof(t_token *tkn)
 {
 	int	i;
@@ -47,27 +47,6 @@ char	*tkn_eof(t_token *tkn)
 	while (tkn->value[i] && tkn->addr[i] == tkn->value[i])
 		i++;
 	return (tkn->addr + i - 1);
-}
-
-char	type_to_char(int Q)
-{
-	if (Q == Q1)
-		return ('\'');
-	else
-		return ('"');
-}
-
-void	python_test(char *line, char **envp)
-{
-	t_token	*tokens;
-	t_cmd	*cmds;
-
-	tokens = NULL;
-	cmds = NULL;
-	tokens = lexer(line);
-	cmds = parser(&tokens);
-	executor(cmds);
-	envp++;
 }
 
 int	cmdlst_size(t_cmd *cmds)
@@ -95,18 +74,16 @@ int	array_size(char **s)
 	return (i);
 }
 
-char	**sort_array(char **s)
+char	**sort_array(char **s, int len_array)
 {
 	int		i;
 	int		j;
-	int		len_array;
 	char	*tmp;
 	int		offset;
 
 	i = -1;
 	j = 0;
 	offset = 0;
-	len_array = array_size(s);
 	while (++i < len_array - 1)
 	{
 		while (++j < len_array)

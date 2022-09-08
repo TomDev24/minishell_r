@@ -1,16 +1,62 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   here_doc.c                                         :+:      :+:    :+:   */
+/*   redirects.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:26:50 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 18:28:21 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/08 12:28:46 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	redirect(t_redir *r, int std_in)
+{
+	int		fd;
+
+	if (r->type == IN)
+	{
+		fd = open(r->filen, O_RDONLY);
+		dup2(fd, 0);
+		close(fd);
+	}
+	else if (r->type == OUT)
+	{
+		fd = open(r->filen, O_TRUNC | O_CREAT | O_WRONLY, 0664);
+		dup2(fd, 1);
+		close(fd);
+	}
+	else if (r->type == OUTOUT)
+	{
+		fd = open(r->filen, O_APPEND | O_CREAT | O_WRONLY, 0664);
+		dup2(fd, 1);
+		close(fd);
+	}
+	else if (r->type == ININ)
+	{
+		dup2(std_in, 0);
+		here_doc(r->filen);
+	}
+}
+
+int	handle_redirects(t_cmd *cmd)
+{
+	t_redir	*r;
+	t_list	*redirects;
+	int		std_in;
+
+	std_in = dup(0);
+	redirects = cmd->redirs;
+	while (redirects)
+	{
+		r = redirects->content;
+		redirect(r, std_in);
+		redirects = redirects->next;
+	}
+	return (1);
+}
 
 void	evaluate_and_write(char *line, int fd)
 {
@@ -45,7 +91,6 @@ void	here_doc(char *eof)
 		{
 			evaluate_and_write(line, fd);
 			write(fd, "\n", 1);
-			//should i free line?
 			free(line);
 		}
 		line = readline(">");

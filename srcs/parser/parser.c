@@ -6,30 +6,11 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:23:44 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/06 17:34:45 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/07 11:42:20 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-t_cmd	*allocate_cmd(void)
-{
-	t_cmd	*cmd;
-
-	cmd = (t_cmd *)malloc(sizeof(t_cmd));
-	if (!cmd)
-		m_error(1);
-	cmd->i = 0;
-	cmd->infile = NULL;
-	cmd->outfile = NULL;
-	cmd->eof = NULL;
-	cmd->argv = NULL;
-	cmd->cmd = NULL;
-	cmd->args = NULL;
-	cmd->next = NULL;
-	cmd->redirs = NULL;
-	return (cmd);
-}
 
 void	add_cmd_to_list(t_cmd **cmds, t_cmd *new)
 {
@@ -79,37 +60,29 @@ char	**make_argv(t_cmd *cmd)
 t_token	*save_redirection(t_token *tokens, t_cmd *new)
 {
 	t_redir	*redir;
+	t_list	*item;
 
+	if (!tokens->next)
+		m_error(10);
 	if (tokens->next->type == FILEN || tokens->next->type == DELIMITER)
 	{
-		//tokens->next could not exist
-		//lstnew could error
 		redir = malloc(sizeof(t_redir));
 		if (!redir)
 			m_error(1);
 		redir->type = tokens->type;
 		redir->filen = tokens->next->value;
-		ft_lstadd_back(&new->redirs, ft_lstnew(redir));
+		item = ft_lstnew(redir);
+		if (!item)
+			m_error(1);
+		ft_lstadd_back(&new->redirs, item);
 	}
-	/*
-	if (tokens->next->type == FILEN){
-		tokens = tokens->next;
-		if (FD_TYPE == IN) 
-			new->infile = tokens->value;
-		else if (FD_TYPE == OUT)
-			new->outfile = tokens->value;
-	}
-	else if (FD_TYPE == ININ && tokens->next->type == DELIMITER){
-		tokens = tokens->next;
-		new->eof = tokens->value;
-	}*/
 	return (tokens);
 }
 
-//we got problems with redirection
 t_token	*pack_cmd(t_token *tokens, t_cmd **cmds)
 {
 	t_cmd		*new;
+	t_list		*item;
 
 	new = allocate_cmd();
 	while (tokens && tokens->type != PIPE)
@@ -117,13 +90,13 @@ t_token	*pack_cmd(t_token *tokens, t_cmd **cmds)
 		if (tokens->type == CMD && !new->cmd)
 			new->cmd = tokens;
 		else if (tokens->type == ARG)
-			//lstnew could error FIX THIS
-			ft_lstadd_back(&new->args, ft_lstnew(tokens));
-		else if (tokens->type == IN)
-			tokens = save_redirection(tokens, new);
-		else if (tokens->type == OUT)
-			tokens = save_redirection(tokens, new);
-		else if (tokens->type == ININ)
+		{
+			item = ft_lstnew(tokens);
+			if (!item)
+				m_error(1);
+			ft_lstadd_back(&new->args, item);
+		}
+		else if (tokens->type >= OUT && tokens->type <= OUTOUT)
 			tokens = save_redirection(tokens, new);
 		tokens = tokens->next;
 	}
@@ -140,8 +113,6 @@ t_cmd	*parser(t_token **tokens)
 	cmds = NULL;
 	unquote(tokens);
 	tkns = *tokens;
-	//We should read each token until PIPE or
-	//end_of_list (; is not included for now)	
 	while (tkns)
 	{
 		tkns = pack_cmd(tkns, &cmds);
