@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:46:51 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/09 14:39:25 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 21:14:33 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,11 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount)
 	return (code);
 }
 
-char	*find_path(t_cmd *cmd, int *allowed, char **cmd_paths)
+char	*find_path(t_cmd *cmd, int *allowed, char **cmd_paths, char *path)
 {
-	char	*path;
 	char	*tmp;
 	int		i;
 
-	path = "";
 	i = -1;
 	while (*allowed != 0 && cmd_paths && cmd_paths[++i])
 	{
@@ -100,7 +98,7 @@ void	run_cmd(t_cmd *cmd, int **pipes, int cmd_amount)
 		shlvl = ft_itoa(ft_atoi(ht_get(g_mshell.env, "SHLVL")) + 1);
 		ht_set(g_mshell.env, "SHLVL", shlvl);
 	}
-	path = find_path(cmd, &allowed, cmd_paths);
+	path = find_path(cmd, &allowed, cmd_paths, path);
 	if (allowed < 0)
 		m_error(127, cmd->argv[0]);
 	cmd_amount = handle_redirects(cmd) * handle_pipes(cmd, pipes, cmd_amount);
