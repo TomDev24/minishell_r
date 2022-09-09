@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dbrittan <dbrittan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 16:03:57 by dbrittan          #+#    #+#             */
-/*   Updated: 2022/09/07 16:04:16 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 18:19:06 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@ int	b_exit(char **argv)
 
 	code = 0;
 	chislo = 0;
-//	printf("builtin cmd: exit\n");
 	if (argv[1])
 		chislo = ft_atoi(argv[1]);
-	//	if chislo is not number
 	if (argv[1] && ft_strncmp(argv[1], "0", 2) != 0 && chislo == 0)
 	{
 		write(2, "sash: exit: ", 12);
@@ -35,8 +33,7 @@ int	b_exit(char **argv)
 		write(2, "sash: exit: too many arguments\n", 31);
 		return (code);
 	}
-//	printf("chislo = %d\n", chislo);
 	printf("exit\n");
 	exit(chislo);
-	return (code);
+	return (0);
 }

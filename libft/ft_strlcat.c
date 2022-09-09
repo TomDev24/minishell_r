@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dbrittan <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cgregory <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/01 16:50:24 by dbrittan          #+#    #+#             */
-/*   Updated: 2020/11/06 17:01:37 by dbrittan         ###   ########.fr       */
+/*   Created: 2021/10/09 08:36:19 by cgregory          #+#    #+#             */
+/*   Updated: 2021/10/10 19:59:38 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,20 @@
 
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {
-	size_t len_src;
-	size_t len_dst;
+	size_t	i;
+	size_t	dst_len;
+	size_t	src_len;
 
-	len_src = ft_strlen(src);
-	len_dst = ft_strlen(dst);
-	if (dstsize == 0)
-		return (len_src + (len_dst < dstsize ? len_dst : dstsize));
-	if (dstsize <= len_dst)
-		return (len_src + (len_dst < dstsize ? len_dst : dstsize));
-	if (len_src < dstsize - len_dst)
-		ft_memccpy(dst + len_dst, src, '\0', dstsize - 1);
-	else
+	i = 0;
+	dst_len = ft_strlen(dst);
+	src_len = ft_strlen(src);
+	if (dstsize <= dst_len)
+		return (dstsize + src_len);
+	while (src[i] && (dst_len + i < dstsize - 1))
 	{
-		ft_memccpy(dst + len_dst, src, '\0', dstsize - len_dst - 1);
-		dst[len_dst + dstsize - len_dst - 1] = '\0';
+		dst[dst_len + i] = src[i];
+		i++;
 	}
-	return (len_src + (len_dst < dstsize ? len_dst : dstsize));
+	dst[dst_len + i] = '\0';
+	return (dst_len + src_len);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dbrittan <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cgregory <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/02 11:17:09 by dbrittan          #+#    #+#             */
-/*   Updated: 2020/11/06 16:23:21 by dbrittan         ###   ########.fr       */
+/*   Created: 2021/10/12 19:20:23 by cgregory          #+#    #+#             */
+/*   Updated: 2022/01/19 19:33:08 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,26 @@
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	unsigned int	i;
-	char			*res;
+	size_t	s_len;
+	size_t	m_len;
+	char	*substr;
 
-	i = start;
 	if (!s)
-		return (0);
-	if (start > ft_strlen(s))
-		len = 0;
-	res = (char*)malloc(sizeof(*s) * (len + 1));
-	if (res)
+		return (NULL);
+	s_len = ft_strlen(s);
+	if (start < s_len)
 	{
-		while (len-- && *s != '\0')
-			*(res++) = s[i++];
-		*res = '\0';
+		m_len = s_len - start;
+		if (m_len > len)
+			m_len = len;
 	}
 	else
-		errno = ENOMEM;
-	return (res - (i - start));
+		m_len = 0;
+	substr = (char *)ft_calloc(m_len + 1, sizeof(char));
+	if (!substr)
+		return (NULL);
+	while (start--)
+		s++;
+	ft_strlcpy(substr, s, m_len + 1);
+	return (substr);
 }
