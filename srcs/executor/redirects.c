@@ -6,39 +6,38 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:26:50 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 13:21:48 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 14:33:35 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	redirect(t_redir *r, int std_in)
+void	redirect(t_redir *r, int std_in, int fd)
 {
-	int		fd;
-
 	if (r->type == IN)
 	{
 		fd = open(r->filen, O_RDONLY);
+		if (fd < 0)
+			m_error(-9, "");
 		dup2(fd, 0);
-		close(fd);
 	}
 	else if (r->type == OUT)
 	{
 		fd = open(r->filen, O_TRUNC | O_CREAT | O_WRONLY, 0664);
 		dup2(fd, 1);
-		close(fd);
 	}
 	else if (r->type == OUTOUT)
 	{
 		fd = open(r->filen, O_APPEND | O_CREAT | O_WRONLY, 0664);
 		dup2(fd, 1);
-		close(fd);
 	}
 	else if (r->type == ININ)
 	{
 		dup2(std_in, 0);
 		here_doc(r->filen);
 	}
+	if (r->type == IN || r->type == OUT || r->type == OUTOUT)
+		close(fd);
 }
 
 int	handle_redirects(t_cmd *cmd)
@@ -46,13 +45,15 @@ int	handle_redirects(t_cmd *cmd)
 	t_redir	*r;
 	t_list	*redirects;
 	int		std_in;
+	int		fd;
 
 	std_in = dup(0);
+	fd = -1;
 	redirects = cmd->redirs;
 	while (redirects)
 	{
 		r = redirects->content;
-		redirect(r, std_in);
+		redirect(r, std_in, fd);
 		redirects = redirects->next;
 	}
 	return (1);

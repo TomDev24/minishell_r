@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 19:18:22 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 17:15:15 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 14:20:04 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ void	m_error(int code, char *msg)
 		ft_putstr_fd("command not provided\n", 2);
 	else if (code == -8)
 		ft_putstr_fd("syntax error\n", 2);
+	else if (code == -9)
+		ft_putstr_fd("No such file or directory\n", 2);
 	else
 		ft_putstr_fd("error\n", 2);
 	if (code < 0)

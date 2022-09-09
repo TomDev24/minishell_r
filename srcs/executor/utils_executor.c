@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:56:18 by dbrittan          #+#    #+#             */
-/*   Updated: 2022/09/08 13:22:59 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 13:59:42 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	post_process(t_exec *exec, int cmd_amount)
 	close_pipes(exec->pipes, exec->pipe_amount);
 	while (++j < cmd_amount && exec->pids[j] >= 0)
 	{
-		waitpid(exec->pids[j], &status, 0);
+		waitpid(-1, &status, 0);
 		g_mshell.exit_code = WEXITSTATUS(status);
 	}
 	free_pipes(exec->pipes, exec->pipe_amount);

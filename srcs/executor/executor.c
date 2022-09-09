@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 18:46:51 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 14:53:32 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 14:39:25 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,32 +61,53 @@ int	exec_builtin(t_cmd *cmd, int **pipes, int pipe_amount, int cmd_amount)
 	return (code);
 }
 
-void	run_cmd(t_cmd *cmd, int **pipes, int cmd_amount, int i)
+char	*find_path(t_cmd *cmd, int *allowed, char **cmd_paths)
+{
+	char	*path;
+	char	*tmp;
+	int		i;
+
+	path = "";
+	i = -1;
+	while (*allowed != 0 && cmd_paths && cmd_paths[++i])
+	{
+		tmp = ft_strjoin("/", cmd->argv[0]);
+		path = ft_strjoin(cmd_paths[i], tmp);
+		free(tmp);
+		*allowed = access(path, X_OK);
+		if (*allowed != 0)
+			free(path);
+	}
+	free_arr(cmd_paths);
+	return (path);
+}
+
+void	run_cmd(t_cmd *cmd, int **pipes, int cmd_amount)
 {
 	char	*path;
 	int		allowed;
 	char	**cmd_paths;
-	char	*tmp;
+	char	*shlvl;
+	char	*m;
 
 	cmd_paths = parse_envp();
 	allowed = access(cmd->argv[0], X_OK);
 	if (allowed == 0)
 		path = cmd->argv[0];
-	while (allowed != 0 && cmd_paths && cmd_paths[++i])
+	m = ft_strchr(path, 'm');
+	if (m && ft_strncmp(m, "minishell", 10) == 0)
 	{
-		tmp = ft_strjoin("/", cmd->argv[0]);
-		path = ft_strjoin(cmd_paths[i], tmp);
-		free(tmp);
-		allowed = access(path, X_OK);
-		if (allowed != 0)
-			free(path);
+		shlvl = ft_itoa(ft_atoi(ht_get(g_mshell.env, "SHLVL")) + 1);
+		ht_set(g_mshell.env, "SHLVL", shlvl);
 	}
-	free_arr(cmd_paths);
+	path = find_path(cmd, &allowed, cmd_paths);
 	if (allowed < 0)
 		m_error(127, cmd->argv[0]);
-	i = handle_redirects(cmd) * handle_pipes(cmd, pipes, cmd_amount);
+	cmd_amount = handle_redirects(cmd) * handle_pipes(cmd, pipes, cmd_amount);
 	g_mshell.s_quit.sa_handler = sigquit_handler;
 	sigaction(SIGQUIT, &g_mshell.s_quit, NULL);
+	if (g_mshell.exit_code == -9)
+		exit(9);
 	execve(path, cmd->argv, hash_to_array(g_mshell.env, ht_size(g_mshell.env)));
 }
 
@@ -94,25 +115,23 @@ void	executor(t_cmd *cmds, int cmd_amount)
 {
 	t_exec	exec;
 	int		code;
+	int		i;
 
 	code = 0;
+	i = -1;
 	if (handle_error_code() || cmd_amount == 0)
 		return ;
 	pre_process(&exec, cmd_amount);
-	while (cmds)
+	if (cmd_amount == 1)
+		code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
+	while (cmds && (cmd_amount > 1 || code == -42))
 	{
-		if (cmd_amount == 1)
-		{
-			code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
-			if (code != -42)
-				break ;
-		}
-		exec.pids[0] = fork();
-		if (exec.pids[0] == 0)
+		exec.pids[++i] = fork();
+		if (exec.pids[i] == 0)
 		{
 			code = exec_builtin(cmds, exec.pipes, exec.pipe_amount, cmd_amount);
 			if (code == -42)
-				run_cmd(cmds, exec.pipes, cmd_amount, -1);
+				run_cmd(cmds, exec.pipes, cmd_amount);
 		}
 		cmds = cmds->next;
 	}

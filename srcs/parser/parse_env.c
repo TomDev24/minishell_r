@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:46:52 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 13:23:29 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 11:30:28 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*try_replace_env(t_token *tokens, char *st_addr, char *value, int *i)
 
 	j = 0;
 	evar = get_token_by_addr(st_addr, tokens, 0);
-	if (*evar->value)
+	if (evar->value && *evar->value)
 	{
 		while (evar->value[j])
 		{
@@ -78,6 +78,8 @@ void	change_token_value(t_token *current, t_stack *context)
 		if (first != tmp_tkn)
 			free_tkn(&tmp_tkn);
 	}
+	if (!*first->value)
+		first->value = NULL;
 	first->next = current;
 }
 

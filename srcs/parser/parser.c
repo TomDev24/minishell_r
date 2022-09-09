@@ -6,7 +6,7 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 17:23:44 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/08 17:05:14 by dbrittan         ###   ########.fr       */
+/*   Updated: 2022/09/09 14:12:24 by dbrittan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ char	**make_argv(t_cmd *cmd, int size)
 	while (tmp && cmd->cmd)
 	{
 		tkn = tmp->content;
-		if (*tkn->value)
+		if (tkn->value)
 			*(res++) = tkn->value;
 		else
 			size--;
@@ -76,6 +76,10 @@ t_token	*save_redirection(t_token *ts, t_cmd *new)
 		if (!redir)
 			m_error(1, "");
 		redir->type = ts->type;
+		if (redir->type == IN || redir->type == ININ)
+			new->infile = ts->next->value;
+		if (redir->type == OUT || redir->type == OUTOUT)
+			new->outfile = ts->next->value;
 		redir->filen = ts->next->value;
 		item = ft_lstnew(redir);
 		if (!item)
