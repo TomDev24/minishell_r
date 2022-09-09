@@ -6,13 +6,14 @@
 /*   By: cgregory <cgregory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 20:02:56 by cgregory          #+#    #+#             */
-/*   Updated: 2022/09/09 18:18:29 by cgregory         ###   ########.fr       */
+/*   Updated: 2022/09/09 19:30:02 by cgregory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "hash_t.h"
 # include <stdio.h>
 # include <fcntl.h>
 # include <readline/readline.h>
@@ -20,10 +21,8 @@
 # include <sys/param.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-
-# include "signal.h"
+# include <signal.h>
 # include "libft.h"
-# include "hash_t.h"
 # include <termios.h>
 
 //order matters
